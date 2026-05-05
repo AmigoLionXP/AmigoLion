@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AmigoLion — Admin</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, sans-serif; background: #F8FAFC; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .card { background: #fff; border-radius: 16px; padding: 32px; width: 100%; max-width: 440px; box-shadow: 0 4px 24px rgba(0,0,0,.08); }
+  .logo { text-align: center; margin-bottom: 24px; }
+  .logo div { font-size: 40px; }
+  .logo h1 { font-size: 18px; font-weight: 700; color: #001A33; margin-top: 8px; }
+  .logo p { font-size: 12px; color: #64748B; margin-top: 2px; }
+  .gate { margin-bottom: 20px; }
+  label { display: block; font-size: 12px; font-weight: 700; color: #64748B; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+  input { width: 100%; padding: 11px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; font-size: 14px; color: #0F172A; outline: none; transition: border .2s; }
+  input:focus { border-color: #D4AF37; }
+  select { width: 100%; padding: 11px 14px; border: 1.5px solid #E2E8F0; border-radius: 10px; font-size: 14px; color: #0F172A; background: #fff; outline: none; }
+  .btn { width: 100%; padding: 13px; background: linear-gradient(90deg, #001A33, #003366); color: #fff; border: none; border-radius: 12px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 8px; transition: opacity .2s; }
+  .btn:hover { opacity: .9; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .result { margin-top: 20px; border-radius: 12px; padding: 16px; display: none; }
+  .result.success { background: #F0FDF4; border: 1.5px solid #86EFAC; }
+  .result.error { background: #FEF2F2; border: 1.5px solid #FECACA; }
+  .result-title { font-size: 13px; font-weight: 800; margin-bottom: 8px; }
+  .result.success .result-title { color: #166534; }
+  .result.error .result-title { color: #991B1B; }
+  .token-box { background: #fff; border: 1.5px dashed #D4AF37; border-radius: 8px; padding: 10px 12px; font-family: monospace; font-size: 12px; color: #001A33; word-break: break-all; margin: 8px 0; }
+  .result-msg { font-size: 12px; color: #64748B; line-height: 1.5; }
+  .copy-btn { background: #D4AF37; color: #fff; border: none; border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 700; cursor: pointer; margin-top: 6px; width: 100%; }
+  .divider { border: none; border-top: 1px solid #F1F5F9; margin: 20px 0; }
+  .badge { display: inline-block; background: #FEF9C3; color: #92400E; border-radius: 99px; padding: 2px 10px; font-size: 11px; font-weight: 700; }
+  #loginSection { }
+  #adminSection { display: none; }
+  .spinner { display: inline-block; width: 16px; height: 16px; border: 2px solid rgba(255,255,255,.3); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; vertical-align: middle; margin-right: 6px; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .history { margin-top: 20px; }
+  .history h3 { font-size: 12px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: .5px; margin-bottom: 10px; }
+  .hist-item { background: #F8FAFC; border-radius: 8px; padding: 9px 12px; margin-bottom: 6px; font-size: 12px; color: #334155; }
+  .hist-item strong { color: #001A33; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="logo">
+    <div>🦁</div>
+    <h1>AmigoLion Admin</h1>
+    <p>Gerador de tokens de ativação</p>
+  </div>
+
+  <!-- LOGIN -->
+  <div id="loginSection">
+    <div class="gate">
+      <label>Senha de administrador</label>
+      <input type="password" id="pwdInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')checkPwd()"/>
+    </div>
+    <button class="btn" onclick="checkPwd()">Entrar</button>
+    <div id="pwdError" style="color:#DC2626;font-size:12px;margin-top:8px;display:none;">Senha incorreta.</div>
+  </div>
+
+  <!-- ADMIN -->
+  <div id="adminSection">
+    <span class="badge">✅ Acesso autorizado</span>
+    <hr class="divider"/>
+
+    <div style="margin-bottom:14px;">
+      <label>E-mail do cliente</label>
+      <input type="email" id="emailInput" placeholder="cliente@gmail.com"/>
+    </div>
+
+    <div style="margin-bottom:14px;">
+      <label>Moeda / Plano</label>
+      <select id="currencyInput">
+        <option value="brl">BRL — R$ 37,00 (Brasil)</option>
+        <option value="chf">CHF — 9,90 (Suíça)</option>
+      </select>
+    </div>
+
+    <button class="btn" id="generateBtn" onclick="generateToken()">
+      Gerar token e enviar e-mail
+    </button>
+
+    <div class="result" id="resultBox">
+      <div class="result-title" id="resultTitle"></div>
+      <div class="token-box" id="tokenBox" style="display:none;"></div>
+      <button class="copy-btn" id="copyBtn" style="display:none;" onclick="copyToken()">📋 Copiar token</button>
+      <div class="result-msg" id="resultMsg"></div>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="history">
+      <h3>Últimos tokens gerados</h3>
+      <div id="historyList"><div style="font-size:12px;color:#94A3B8;">Nenhum token gerado ainda.</div></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const WORKER = "https://lionxp-webhook.wispy-shape-d6ef.workers.dev";
+const ADMIN_PWD = "lionxp2025";
+let lastToken = "";
+let history = JSON.parse(localStorage.getItem("admin_history") || "[]");
+
+function checkPwd() {
+  const pwd = document.getElementById("pwdInput").value;
+  if (pwd === ADMIN_PWD) {
+    document.getElementById("loginSection").style.display = "none";
+    document.getElementById("adminSection").style.display = "block";
+    renderHistory();
+  } else {
+    document.getElementById("pwdError").style.display = "block";
+  }
+}
+
+async function generateToken() {
+  const email = document.getElementById("emailInput").value.trim();
+  const currency = document.getElementById("currencyInput").value;
+  if (!email || !email.includes("@")) {
+    alert("Digite um e-mail válido.");
+    return;
+  }
+
+  const btn = document.getElementById("generateBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Gerando...';
+
+  const resultBox = document.getElementById("resultBox");
+  resultBox.style.display = "none";
+
+  const amount = currency === "brl" ? 3700 : 990;
+  const payload = {
+    type: "checkout.session.completed",
+    data: {
+      object: {
+        id: "cs_manual_" + Date.now(),
+        customer_details: { email },
+        currency,
+        amount_total: amount
+      }
+    }
+  };
+
+  try {
+    const res = await fetch(WORKER + "/webhook", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+
+    resultBox.style.display = "block";
+
+    if (data.received && data.token) {
+      lastToken = data.token;
+      resultBox.className = "result success";
+      document.getElementById("resultTitle").textContent = "✅ Token gerado e e-mail enviado!";
+      document.getElementById("tokenBox").textContent = data.token;
+      document.getElementById("tokenBox").style.display = "block";
+      document.getElementById("copyBtn").style.display = "block";
+      document.getElementById("resultMsg").textContent =
+        "E-mail enviado para " + email + ". O cliente pode ativar em até 3 dispositivos.";
+
+      const entry = { email, currency: currency.toUpperCase(), token: data.token.slice(0,16) + "...", date: new Date().toLocaleString("pt-BR") };
+      history.unshift(entry);
+      history = history.slice(0, 10);
+      localStorage.setItem("admin_history", JSON.stringify(history));
+      renderHistory();
+      document.getElementById("emailInput").value = "";
+    } else {
+      resultBox.className = "result error";
+      document.getElementById("resultTitle").textContent = "❌ Erro ao gerar token";
+      document.getElementById("tokenBox").style.display = "none";
+      document.getElementById("copyBtn").style.display = "none";
+      document.getElementById("resultMsg").textContent = "Resposta: " + JSON.stringify(data);
+    }
+  } catch (err) {
+    resultBox.style.display = "block";
+    resultBox.className = "result error";
+    document.getElementById("resultTitle").textContent = "❌ Erro de conexão";
+    document.getElementById("tokenBox").style.display = "none";
+    document.getElementById("copyBtn").style.display = "none";
+    document.getElementById("resultMsg").textContent = err.message;
+  }
+
+  btn.disabled = false;
+  btn.innerHTML = "Gerar token e enviar e-mail";
+}
+
+function copyToken() {
+  navigator.clipboard.writeText(lastToken).then(() => {
+    document.getElementById("copyBtn").textContent = "✅ Copiado!";
+    setTimeout(() => { document.getElementById("copyBtn").textContent = "📋 Copiar token"; }, 2000);
+  });
+}
+
+function renderHistory() {
+  const list = document.getElementById("historyList");
+  if (!history.length) {
+    list.innerHTML = '<div style="font-size:12px;color:#94A3B8;">Nenhum token gerado ainda.</div>';
+    return;
+  }
+  list.innerHTML = history.map(h =>
+    `<div class="hist-item"><strong>${h.email}</strong> · ${h.currency}<br/>${h.token} · <span style="color:#94A3B8;">${h.date}</span></div>`
+  ).join("");
+}
+</script>
+
+</body>
+</html>
