@@ -3206,6 +3206,10 @@ function App() {
           }));
           setScr("main");
           setTab("missions");
+          // Limpar URL para evitar re-render no profile_setup
+          if (window.history && window.history.replaceState) {
+            window.history.replaceState({}, '', '/app');
+          }
           if (typeof fbq !== "undefined") fbq("track","CompleteRegistration",{ content_name:"AmigoLion Profile" });
           if (userData && userData.email) {
             authRegister(userData.email, userData.password, userData.name)
@@ -3232,6 +3236,7 @@ function App() {
 
   // ── TELA: LANDING (novo usuário) ──────────────────────────
   if (scr === "landing") {
+    if (st.onboarded) { setScr("main"); return null; }
     window.location.href = "/"; return null;
   }
 
