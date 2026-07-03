@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Admin Vendas · Lion School OS™</title>
+<meta name="theme-color" content="#16314f" />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{--navy:#16314f;--navy-deep:#0f2238;--gold:#c9a227;--gold-bright:#d9b94a;--ink:#16223a;--paper:#f5f7fa;--cream:#faf7f0;--card:#fff;--line:rgba(22,49,79,.1);--gold-line:rgba(201,162,39,.4);--shadow:0 14px 40px -18px rgba(15,34,56,.3);--green:#34c759;--red:#ff3b30;--purple:#8b5cf6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--paper);line-height:1.6}
+h1,h2,h3,h4{font-family:'Fraunces',serif}
+.wrap{max-width:1200px;margin:0 auto;padding:0 24px}
+
+/* LAYOUT */
+.admin{display:flex;min-height:100vh}
+aside{width:250px;background:linear-gradient(180deg,var(--navy),var(--navy-deep));color:#fff;padding:22px 16px;display:flex;flex-direction:column;position:fixed;top:0;bottom:0;left:0;z-index:30}
+aside .brand{display:flex;align-items:center;gap:10px;font-family:'Fraunces';font-weight:600;font-size:1.08rem;padding:0 6px 20px;border-bottom:1px solid rgba(255,255,255,.1)}
+aside .brand .bl{width:34px;height:34px;border-radius:50%;background:var(--gold);color:var(--navy-deep);display:grid;place-items:center;font-size:16px;font-weight:700}
+.anav{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:3px;flex:1}
+.anav button{width:100%;display:flex;align-items:center;gap:11px;padding:11px 12px;border-radius:10px;color:rgba(255,255,255,.76);background:none;border:none;font-family:inherit;font-size:.9rem;font-weight:500;cursor:pointer;transition:.16s;text-align:left}
+.anav button:hover{background:rgba(255,255,255,.06);color:#fff}
+.anav button.active{background:rgba(201,162,39,.18);color:#fff;box-shadow:inset 0 0 0 1px var(--gold-line)}
+.amain{flex:1;margin-left:250px;padding:28px 32px}
+.atop{display:flex;justify-content:space-between;align-items:center;margin-bottom:26px;flex-wrap:wrap;gap:12px}
+.atop h1{font-size:1.5rem;color:var(--navy)}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:10px;font-weight:600;font-size:.88rem;border:none;cursor:pointer;transition:.2s;font-family:inherit;text-decoration:none}
+.btn-primary{background:var(--navy);color:#fff}.btn-gold{background:var(--gold);color:var(--navy-deep)}
+.btn-green{background:var(--green);color:#fff}.btn-sm{padding:7px 14px;font-size:.8rem}
+.badge{font-size:.68rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:20px}
+.badge-green{background:rgba(52,199,89,.14);color:var(--green)}.badge-gold{background:rgba(201,162,39,.14);color:#9a7d1e}
+.badge-red{background:rgba(255,59,48,.12);color:var(--red)}
+
+/* KPI */
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:28px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;transition:.2s}
+.kpi:hover{border-color:var(--gold-line)}
+.kpi .kl{font-size:.74rem;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);margin-bottom:8px}
+.kpi .kn{font-family:'Fraunces';font-size:1.9rem;color:var(--navy);font-weight:600}
+.kpi .kd{font-size:.82rem;opacity:.6;margin-top:4px}
+
+/* CHART */
+.chart-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;margin-bottom:24px}
+.chart-box h3{font-size:1.05rem;color:var(--navy);margin-bottom:16px}
+.bar-chart{display:flex;align-items:flex-end;gap:10px;height:180px;padding-bottom:30px;position:relative}
+.bar-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.bar{flex:1;width:100%;background:linear-gradient(180deg,var(--gold),rgba(201,162,39,.4));border-radius:8px 8px 0 0;min-height:10px;transition:.3s;position:relative}
+.bar:hover{filter:brightness(1.1)}
+.bar-val{position:absolute;top:-22px;font-size:.72rem;font-weight:700;color:var(--navy);white-space:nowrap}
+.bar-label{font-size:.72rem;opacity:.6}
+
+/* TABLE */
+.table-box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;overflow-x:auto}
+.table-box h3{font-size:1.05rem;color:var(--navy);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+th{text-align:left;padding:10px 12px;font-size:.76rem;text-transform:uppercase;letter-spacing:.06em;color:var(--gold);font-weight:600;border-bottom:2px solid var(--line)}
+td{padding:10px 12px;border-bottom:1px solid var(--line)}
+tr:hover td{background:var(--cream)}
+td .ticon{width:28px;height:28px;border-radius:6px;background:var(--navy);display:grid;place-items:center;font-size:.9rem;color:var(--gold-bright)}
+
+/* TABS */
+.vtabs{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.vtab{padding:9px 18px;border-radius:24px;border:1.5px solid var(--line);background:#fff;font-size:.86rem;font-weight:600;cursor:pointer;transition:.2s;font-family:inherit}
+.vtab:hover{border-color:var(--gold-line)}
+.vtab.active{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  aside{transform:translateX(-100%);transition:.3s}
+  aside.open{transform:translateX(0)}
+  .amain{margin-left:0}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){.kpis{grid-template-columns:1fr}}
+
+footer{background:var(--navy-deep);color:rgba(255,255,255,.65);padding:20px 0;text-align:center;font-size:.78rem;margin-top:40px}
+</style>
+</head>
+<body>
+
+<div class="admin">
+  <aside id="sidebar">
+    <div class="brand"><span class="bl">🦁</span>Lion School OS</div>
+    <ul class="anav">
+      <li><button class="active" onclick="showView('vendas')">📊 Vendas</button></li>
+      <li><button onclick="showView('produtos')">📦 Produtos</button></li>
+      <li><button onclick="showView('clientes')">👥 Clientes</button></li>
+      <li><button onclick="showView('relatorios')">📈 Relatórios</button></li>
+      <li><button onclick="showView('config')">⚙ Config</button></li>
+    </ul>
+    <button style="margin-top:auto;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.08);border:none;color:#fff;font-family:inherit;cursor:pointer;font-size:.88rem" onclick="location.href='loja.html'">← Sair do Admin</button>
+  </aside>
+
+  <main class="amain">
+    <div class="atop">
+      <h1>📊 Painel de Vendas</h1>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="badge badge-green">● Online</span>
+        <span style="font-size:.88rem;opacity:.6">Atualizado: agora</span>
+      </div>
+    </div>
+
+    <!-- VIEW: VENDAS -->
+    <div id="view-vendas">
+      <div class="kpis">
+        <div class="kpi"><div class="kl">Faturamento (mês)</div><div class="kn" id="kpiFat">R$ 12.450</div><div class="kd">+23% vs mês anterior</div></div>
+        <div class="kpi"><div class="kl">Vendas Totais</div><div class="kn" id="kpiVendas">347</div><div class="kd">+18% vs mês anterior</div></div>
+        <div class="kpi"><div class="kl">Ticket Médio</div><div class="kn" id="kpiTicket">R$ 89</div><div class="kd">+5% vs mês anterior</div></div>
+        <div class="kpi"><div class="kl">Taxa Conversão</div><div class="kn" id="kpiConv">4.2%</div><div class="kd">+0.8% vs mês anterior</div></div>
+      </div>
+
+      <div class="chart-box">
+        <h3>Vendas por dia (últimos 7 dias)</h3>
+        <div class="bar-chart" id="salesChart"></div>
+      </div>
+
+      <div class="table-box">
+        <h3>🛒 Pedidos Recentes</h3>
+        <table>
+          <thead><tr><th>ID</th><th>Cliente</th><th>Produtos</th><th>Valor</th><th>Status</th><th>Data</th></tr></thead>
+          <tbody id="ordersTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW: PRODUTOS -->
+    <div id="view-produtos" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
+        <h2>📦 Catálogo de Produtos</h2>
+        <button class="btn btn-gold">+ Novo Produto</button>
+      </div>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Produto</th><th>Tipo</th><th>Preço</th><th>Vendas</th><th>Status</th><th>Ações</th></tr></thead>
+          <tbody id="productsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW: CLIENTES -->
+    <div id="view-clientes" style="display:none">
+      <h2 style="margin-bottom:20px">👥 Clientes</h2>
+      <div class="kpis">
+        <div class="kpi"><div class="kl">Total Clientes</div><div class="kn">1.247</div><div class="kd">+89 novos este mês</div></div>
+        <div class="kpi"><div class="kl">Clientes Ativos</div><div class="kn">892</div><div class="kd">71% do total</div></div>
+        <div class="kpi"><div class="kl">LTV Médio</div><div class="kn">R$ 340</div><div class="kd">Lifetime value</div></div>
+        <div class="kpi"><div class="kl">Churn Rate</div><div class="kn">2.1%</div><div class="kd">Meta: <3%</div></div>
+      </div>
+      <div class="table-box">
+        <table>
+          <thead><tr><th>Nome</th><th>Email</th><th>Compras</th><th>Gasto Total</th><th>Última Compra</th></tr></thead>
+          <tbody id="clientsTable"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW: RELATÓRIOS -->
+    <div id="view-relatorios" style="display:none">
+      <h2 style="margin-bottom:20px">📈 Relatórios</h2>
+      <div class="vtabs">
+        <button class="vtab active" onclick="showReport('mensal')">Mensal</button>
+        <button class="vtab" onclick="showReport('produtos')">Por Produto</button>
+        <button class="vtab" onclick="showReport('canal')">Por Canal</button>
+      </div>
+      <div class="chart-box">
+        <h3>Faturamento por Categoria</h3>
+        <div class="bar-chart" id="reportChart"></div>
+      </div>
+    </div>
+
+    <!-- VIEW: CONFIG -->
+    <div id="view-config" style="display:none">
+      <h2 style="margin-bottom:20px">⚙ Configurações da Loja</h2>
+      <div class="form-box" style="background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px;max-width:600px">
+        <label>Moeda</label>
+        <select style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);font-family:inherit"><option>BRL (R$)</option><option>CHF (Fr.)</option><option>EUR (€)</option><option>USD ($)</option></select>
+        <label style="margin-top:16px">Taxa de conversão de teste</label>
+        <input type="text" value="1 BRL = 0.16 CHF" readonly style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--cream);font-family:inherit" />
+        <label style="margin-top:16px">Stripe API Key (modo teste)</label>
+        <input type="password" value="sk_test_********************************" style="width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);font-family:inherit" />
+        <button class="btn btn-primary" style="margin-top:20px">Salvar Configurações</button>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// ============ DATA ============
+var orders=[
+  {id:'#LS-2847',cliente:'Maria Silva',email:'maria@email.com',produtos:['O Método Lion','Fundamentos de IA'],valor:244,status:'Pago',data:'2026-01-15'},
+  {id:'#LS-2846',cliente:'João Santos',email:'joao@email.com',produtos:['Marketing Digital com IA'],valor:247,status:'Pago',data:'2026-01-15'},
+  {id:'#LS-2845',cliente:'Ana Costa',email:'ana@email.com',produtos:['Pack Lion School Completo'],valor:497,status:'Pago',data:'2026-01-14'},
+  {id:'#LS-2844',cliente:'Pedro Lima',email:'pedro@email.com',produtos:['Neurociência do Hábito','Agenda Kids IA'],valor:84,status:'Pendente',data:'2026-01-14'},
+  {id:'#LS-2843',cliente:'Carla Dias',email:'carla@email.com',produtos:['Empreender com IA','Tutor IA'],valor:154,status:'Pago',data:'2026-01-13'},
+  {id:'#LS-2842',cliente:'Ricardo Souza',email:'ricardo@email.com',produtos:['IA na Rotina Familiar'],valor:27,status:'Pago',data:'2026-01-13'},
+  {id:'#LS-2841',cliente:'Fernanda Oliveira',email:'fernanda@email.com',produtos:['Atendimento IA 24/7'],valor:147,status:'Pago',data:'2026-01-12'},
+  {id:'#LS-2840',cliente:'Lucas Mendes',email:'lucas@email.com',produtos:['Programação com IA para Jovens','Gamificação'],valor:344,status:'Pago',data:'2026-01-12'},
+];
+var products=[
+  {nome:'O Método Lion',tipo:'Ebook',preco:47,vendas:234,status:'Ativo'},
+  {nome:'Marketing Digital com IA',tipo:'Curso',preco:247,vendas:189,status:'Ativo'},
+  {nome:'Pack Lion School Completo',tipo:'Assinatura',preco:497,vendas:67,status:'Ativo'},
+  {nome:'Atendimento IA 24/7',tipo:'App IA',preco:147,vendas:156,status:'Ativo'},
+  {nome:'Neurociência do Hábito',tipo:'Ebook',preco:37,vendas:89,status:'Ativo'},
+  {nome:'Tutor IA Personalizado',tipo:'App IA',preco:97,vendas:112,status:'Ativo'},
+];
+var clients=[
+  {nome:'Maria Silva',email:'maria@email.com',compras:4,total:589,ultima:'2026-01-15'},
+  {nome:'João Santos',email:'joao@email.com',compras:3,total:441,ultima:'2026-01-15'},
+  {nome:'Ana Costa',email:'ana@email.com',compras:2,total:544,ultima:'2026-01-14'},
+  {nome:'Pedro Lima',email:'pedro@email.com',compras:1,total:84,ultima:'2026-01-14'},
+  {nome:'Carla Dias',email:'carla@email.com',compras:5,total:723,ultima:'2026-01-13'},
+  {nome:'Ricardo Souza',email:'ricardo@email.com',compras:2,total:174,ultima:'2026-01-13'},
+];
+
+// ============ RENDER ============
+function renderSalesChart(){
+  var days=['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  var vals=[1240,890,1560,2340,1890,2670,1240];
+  var max=Math.max.apply(null,vals);
+  document.getElementById('salesChart').innerHTML=days.map(function(d,i){
+    var h=Math.max(20,(vals[i]/max)*140);
+    return'<div class="bar-item"><div class="bar" style="height:'+h+'px"><span class="bar-val">R$ '+vals[i].toLocaleString()+'</span></div><span class="bar-label">'+d+'</span></div>';
+  }).join('');
+}
+function renderOrders(){
+  document.getElementById('ordersTable').innerHTML=orders.map(function(o){
+    var stClass=o.status==='Pago'?'badge-green':o.status==='Pendente'?'badge-gold':'badge-red';
+    return'<tr><td><b>'+o.id+'</b></td><td>'+o.cliente+'</td><td>'+o.produtos.join(', ')+'</td><td><b>R$ '+o.valor+'</b></td><td><span class="badge '+stClass+'">'+o.status+'</span></td><td>'+o.data+'</td></tr>';
+  }).join('');
+}
+function renderProducts(){
+  document.getElementById('productsTable').innerHTML=products.map(function(p){
+    return'<tr><td><b>'+p.nome+'</b></td><td>'+p.tipo+'</td><td>R$ '+p.preco+'</td><td>'+p.vendas+'</td><td><span class="badge badge-green">'+p.status+'</span></td><td><button class="btn btn-sm btn-ghost">Editar</button></td></tr>';
+  }).join('');
+}
+function renderClients(){
+  document.getElementById('clientsTable').innerHTML=clients.map(function(c){
+    return'<tr><td><b>'+c.nome+'</b></td><td>'+c.email+'</td><td>'+c.compras+'</td><td><b>R$ '+c.total+'</b></td><td>'+c.ultima+'</td></tr>';
+  }).join('');
+}
+function renderReportChart(){
+  var cats=['Ebooks','Cursos','Apps IA','Assinaturas'];
+  var vals=[3450,5230,2890,8900];
+  var max=Math.max.apply(null,vals);
+  document.getElementById('reportChart').innerHTML=cats.map(function(d,i){
+    var h=Math.max(20,(vals[i]/max)*140);
+    return'<div class="bar-item"><div class="bar" style="height:'+h+'px;background:linear-gradient(180deg,'+['var(--green)','var(--gold)','var(--purple)','var(--navy)'][i]+',rgba(0,0,0,.2))"><span class="bar-val">R$ '+vals[i].toLocaleString()+'</span></div><span class="bar-label">'+d+'</span></div>';
+  }).join('');
+}
+
+// ============ NAVIGATION ============
+function showView(v){
+  ['vendas','produtos','clientes','relatorios','config'].forEach(function(x){document.getElementById('view-'+x).style.display='none'});
+  document.getElementById('view-'+v).style.display='block';
+  document.querySelectorAll('.anav button').forEach(function(b){b.classList.toggle('active',b.textContent.toLowerCase().indexOf(v)>=0)});
+}
+function showReport(r){
+  document.querySelectorAll('.vtab').forEach(function(t){t.classList.remove('active')});
+  event.target.classList.add('active');
+}
+
+// ============ INIT ============
+renderSalesChart();
+renderOrders();
+renderProducts();
+renderClients();
+renderReportChart();
+</script>
+</body>
+</html>
