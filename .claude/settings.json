@@ -1,0 +1,13 @@
+{
+  "extraKnownMarketplaces": {
+    "marketingskills": {
+      "source": {
+        "source": "directory",
+        "path": ".agents/marketingskills"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "marketing-skills@marketingskills": true
+  }
+}
