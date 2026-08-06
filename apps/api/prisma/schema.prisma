@@ -1,0 +1,324 @@
+// 7MARKET Growth Office — data model.
+// Source of truth for entities/roles/rules: design_handoff_7market_app/backend_contract.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  public
+  client
+  rep
+  admin
+}
+
+enum DiagnosticStatus {
+  partial
+  complete
+}
+
+enum StepStatus {
+  done
+  doing
+  next
+  locked
+}
+
+enum SubscriptionStatus {
+  trialing
+  active
+  past_due
+  canceled
+}
+
+enum EventType {
+  comunit
+  connect
+  round
+  summit
+}
+
+enum EventStatus {
+  scheduled
+  open
+  closed
+}
+
+enum AgentRiskLevel {
+  low
+  high
+}
+
+enum AgentRunStatus {
+  queued
+  processing
+  completed
+  needs_review
+}
+
+enum AuditQueueStatus {
+  pending
+  signed
+  rejected
+}
+
+enum TaskPriority {
+  high
+  medium
+}
+
+/// users — id, email, role, created_at
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(public)
+  name         String?
+  createdAt    DateTime @default(now())
+
+  ownedCompanies Company[]       @relation("CompanyOwner")
+  rep            Rep?
+  auditSignoffs  AuditQueueItem[] @relation("AuditSpecialist")
+  agentRuns      AgentRun[]
+
+  @@map("users")
+}
+
+/// companies (tenant) — id, owner_user_id, cnpj, nome, setor, faturamento_anual, growth_score, nivel_7m, created_at
+model Company {
+  id                String   @id @default(cuid())
+  ownerUserId       String
+  owner             User     @relation("CompanyOwner", fields: [ownerUserId], references: [id])
+  cnpj              String?  @unique
+  nome              String
+  setor             String?
+  moeda             String   @default("BRL")
+  faturamentoAnual  Decimal? @db.Decimal(14, 2)
+  growthScore       Int      @default(0) // 0-1000, banking-credit-style score
+  nivel7m           Int      @default(1) // 1-7, current 7M Method rung
+  createdAt         DateTime @default(now())
+
+  diagnostics   Diagnostic[]
+  stepProgress  CompanyStepProgress[]
+  memberships   Membership[]
+  subscriptions Subscription[]
+  tasks         Task[]
+  agentRuns     AgentRun[]
+
+  @@map("companies")
+}
+
+/// diagnostics — id, company_id, gargalo, respostas(jsonb), growth_score, status, created_at
+/// companyId is nullable: the public flow runs the diagnostic before a tenant exists
+/// (POST /diagnostics is anonymous); it's linked once the visitor becomes a `client`.
+model Diagnostic {
+  id          String            @id @default(cuid())
+  companyId   String?
+  company     Company?          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  gargalo     String?
+  respostas   Json              @default("{}")
+  growthScore Int
+  status      DiagnosticStatus  @default(partial)
+  createdAt   DateTime          @default(now())
+
+  leads Lead[]
+
+  @@map("diagnostics")
+}
+
+/// leads — WhatsApp/email contact captured off the free public diagnostic
+model Lead {
+  id           String      @id @default(cuid())
+  diagnosticId String?
+  diagnostic   Diagnostic? @relation(fields: [diagnosticId], references: [id], onDelete: SetNull)
+  nome         String
+  email        String?
+  whatsapp     String?
+  createdAt    DateTime    @default(now())
+
+  @@map("leads")
+}
+
+/// method_steps — 7 fixed steps (Diagnosticar…Valorizar), seeded reference data
+model MethodStep {
+  n                Int     @id // 1..7
+  code             String  @unique // 7M1..7M7
+  verbPt           String
+  verbEn           String
+  specialistRolePt String
+  specialistRoleEn String
+
+  progress CompanyStepProgress[]
+
+  @@map("method_steps")
+}
+
+/// company_step_progress (company_id, step_n, pct, status)
+model CompanyStepProgress {
+  id              String     @id @default(cuid())
+  companyId       String
+  company         Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stepN           Int
+  step            MethodStep @relation(fields: [stepN], references: [n])
+  pct             Int        @default(0)
+  status          StepStatus @default(locked)
+  specialistName  String?
+  deadlinePt      String?
+  deadlineEn      String?
+  checklist       Json       @default("[]") // [{ txtPt, txtEn, done }]
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([companyId, stepN])
+  @@map("company_step_progress")
+}
+
+/// reps — id, user_id, nivel (1-7), faixa_faturamento, upline_rep_id, city
+model Rep {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  nivel           Int // 1 (Comunit) .. 7 (Internacional)
+  faixaFaturamento String?
+  city            String?
+  uplineRepId     String?
+  upline          Rep?     @relation("RepUpline", fields: [uplineRepId], references: [id])
+  downline        Rep[]    @relation("RepUpline")
+  createdAt       DateTime @default(now())
+
+  memberships Membership[]
+  commissions Commission[]
+  events      Event[]
+
+  @@map("reps")
+}
+
+/// memberships — company_id <-> rep_id (who brought the client), base of stacked override
+model Membership {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  repId     String
+  rep       Rep      @relation(fields: [repId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, repId])
+  @@map("memberships")
+}
+
+/// subscriptions — id, company_id, plano, valor_mensal, status, started_at
+model Subscription {
+  id           String              @id @default(cuid())
+  companyId    String
+  company      Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plano        String
+  valorMensal  Decimal             @db.Decimal(10, 2)
+  status       SubscriptionStatus  @default(trialing)
+  startedAt    DateTime            @default(now())
+
+  commissions Commission[]
+
+  @@map("subscriptions")
+}
+
+/// commissions — id, subscription_id, rep_id, nivel, pct, valor, mes_referencia
+model Commission {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  repId          String
+  rep            Rep          @relation(fields: [repId], references: [id])
+  nivel          Int // 1..7, rep's rung when this slice was earned
+  pct            Decimal      @db.Decimal(5, 2) // e.g. 1.00 .. 7.00
+  valor          Decimal      @db.Decimal(10, 2)
+  mesReferencia  String // "2026-08"
+  createdAt      DateTime     @default(now())
+
+  @@unique([subscriptionId, repId, mesReferencia])
+  @@map("commissions")
+}
+
+/// events — id, rep_id, tipo, data, faixa, status
+model Event {
+  id        String      @id @default(cuid())
+  repId     String
+  rep       Rep         @relation(fields: [repId], references: [id])
+  tipo      EventType
+  data      DateTime
+  faixa     String?
+  status    EventStatus @default(scheduled)
+  createdAt DateTime    @default(now())
+
+  @@map("events")
+}
+
+/// tasks — 7M AI-generated tasks per company (GET/POST /tasks)
+model Task {
+  id          String       @id @default(cuid())
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  titlePt     String
+  titleEn     String
+  priority    TaskPriority @default(medium)
+  prazoPt     String
+  prazoEn     String
+  tempo       String?
+  impactoPt   String?
+  impactoEn   String?
+  specialist  String?
+  done        Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  @@map("tasks")
+}
+
+/// agents / agent_runs — AI executions (see AgentProvider abstraction)
+model Agent {
+  id          String @id @default(cuid())
+  key         String @unique // e.g. "7m-ai", "growth-analyst"
+  name        String
+  description String?
+
+  runs AgentRun[]
+
+  @@map("agents")
+}
+
+model AgentRun {
+  id         String          @id @default(cuid())
+  agentId    String
+  agent      Agent           @relation(fields: [agentId], references: [id])
+  companyId  String
+  company    Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User            @relation(fields: [userId], references: [id])
+  input      Json
+  output     Json?
+  riskLevel  AgentRiskLevel  @default(low)
+  status     AgentRunStatus  @default(queued)
+  createdAt  DateTime        @default(now())
+  completedAt DateTime?
+
+  auditItem AuditQueueItem?
+
+  @@map("agent_runs")
+}
+
+/// audit_queue — high-risk agent runs awaiting human validation + digital signature
+model AuditQueueItem {
+  id            String            @id @default(cuid())
+  agentRunId    String            @unique
+  agentRun      AgentRun          @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  status        AuditQueueStatus  @default(pending)
+  specialistId  String?
+  specialist    User?             @relation("AuditSpecialist", fields: [specialistId], references: [id])
+  signatureHash String?
+  signedAt      DateTime?
+  createdAt     DateTime          @default(now())
+
+  @@map("audit_queue")
+}

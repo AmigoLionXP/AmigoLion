@@ -1,0 +1,19 @@
+{
+  "name": "7MARKET Growth Office",
+  "short_name": "7MARKET",
+  "description": "O sistema operacional do crescimento diário do empreendedor. Growth Score, Método 7M, Cabine do CEO e 7M AI.",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#070f22",
+  "theme_color": "#0B2149",
+  "categories": ["business", "productivity", "finance"],
+  "icons": [
+    { "src": "/icons/pwa-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/pwa-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/apple-touch.png", "sizes": "180x180", "type": "image/png", "purpose": "any" }
+  ]
+}
