@@ -18,6 +18,11 @@ export class CompanyController {
     return this.company.getMySteps(user.sub, user.companyId);
   }
 
+  @Get('health')
+  getHealth(@CurrentUser() user: AuthUser) {
+    return this.company.getHealth(user.sub, user.companyId);
+  }
+
   @Get('steps/:n')
   getStep(@CurrentUser() user: AuthUser, @Param('n', ParseIntPipe) n: number) {
     return this.company.getStep(user.sub, user.companyId, n);

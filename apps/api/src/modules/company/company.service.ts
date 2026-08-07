@@ -3,6 +3,7 @@ import { MethodStep, CompanyStepProgress } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TenantScopeService } from '../../common/tenant-scope.service';
 import { MethodEngineService } from '../method-engine/method-engine.service';
+import { BusinessHealthService } from '../business-health/business-health.service';
 
 export interface MethodStepDto {
   n: number;
@@ -47,6 +48,7 @@ export class CompanyService {
     private prisma: PrismaService,
     private tenant: TenantScopeService,
     private methodEngine: MethodEngineService,
+    private businessHealth: BusinessHealthService,
   ) {}
 
   async getMyCompany(userId: string, companyId?: string) {
@@ -67,8 +69,17 @@ export class CompanyService {
       }),
     ]);
 
+    // Business Health Engine is the source of truth for growthScore once a diagnostic
+    // exists — company.growthScore is only a cache refreshed at recompute events, so a
+    // reader between those events would otherwise see a stale number here vs /health.
+    const growthScore =
+      latestDiagnostic?.status === 'complete'
+        ? await this.businessHealth.getLiveScore(company.id)
+        : company.growthScore;
+
     return {
       ...company,
+      growthScore,
       diagnosticStatus: latestDiagnostic?.status ?? null,
       gargalo: latestDiagnostic?.gargalo ?? null,
       subscription: activeSubscription,
@@ -117,6 +128,24 @@ export class CompanyService {
       itemIndex,
     );
     const methodStep = await this.prisma.methodStep.findUniqueOrThrow({ where: { n: stepN } });
-    return { step: toStepDto(methodStep, progress), unlockedStepN };
+
+    // Business Health Engine: execution moved, so the score should visibly react —
+    // every checklist tick is a real, small trend point, not just full-step completions.
+    const reason = progress.status === 'done' ? `step_completed:${stepN}` : `checklist_toggle:${stepN}.${itemIndex}`;
+    const { score } = await this.businessHealth.recomputeAndPersist(company.id, reason);
+
+    return { step: toStepDto(methodStep, progress), unlockedStepN, growthScore: score };
+  }
+
+  async getHealth(userId: string, companyId?: string) {
+    const company = await this.tenant.requireOwnCompany(userId, companyId);
+    const completedDiagnostic = await this.prisma.diagnostic.findFirst({
+      where: { companyId: company.id, status: 'complete' },
+    });
+    if (!completedDiagnostic) {
+      return { gated: true as const, reason: 'diagnostics.status must be complete' };
+    }
+    const report = await this.businessHealth.getReport(company.id);
+    return { gated: false as const, ...report };
   }
 }

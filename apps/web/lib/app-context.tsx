@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { api, ApiError, CompanyDto, MethodStepDto, TaskDto, clearToken, getToken, setToken } from './api';
+import { api, ApiError, CompanyDto, HealthReportDto, MethodStepDto, TaskDto, clearToken, getToken, setToken } from './api';
 import { Lang } from './i18n';
 import {
   MOCK_CHAT_INTRO,
@@ -46,6 +46,8 @@ interface AppContextValue {
 
   toggleChecklistItem: (stepN: number, itemIndex: number) => void;
 
+  health: HealthReportDto | null;
+
   chat: ChatMessage[];
   chatChips: typeof MOCK_CHIPS;
   sendChat: (text: string) => void;
@@ -72,6 +74,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [steps, setSteps] = useState<MethodStepDto[]>(MOCK_STEPS);
   const [stepsGated, setStepsGated] = useState(false);
   const [tasks, setTasks] = useState<TaskDto[]>(MOCK_TASKS);
+  const [health, setHealth] = useState<HealthReportDto | null>(null);
 
   const [chat, setChat] = useState<ChatMessage[]>([{ role: 'ai', pt: MOCK_CHAT_INTRO.pt, en: MOCK_CHAT_INTRO.en }]);
   const [chatBusy, setChatBusy] = useState(false);
@@ -137,6 +140,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {});
 
+    api
+      .getHealth()
+      .then((res) => {
+        if (!cancelled && !res.gated) setHealth(res);
+      })
+      .catch(() => {});
+
     return () => {
       cancelled = true;
     };
@@ -170,7 +180,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       if (!companyIsLive) return;
       api
         .toggleChecklistItem(stepN, itemIndex)
-        .then(({ step, unlockedStepN }) => {
+        .then(({ step, unlockedStepN, growthScore }) => {
           setSteps((prev) =>
             prev.map((s) => {
               if (s.n === step.n) return step;
@@ -180,6 +190,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
               return s;
             }),
           );
+          // Business Health Engine: execution just moved, so the score/CEO cockpit should too.
+          setCompany((prev) => ('id' in prev ? { ...prev, growthScore } : prev));
+          api
+            .getHealth()
+            .then((res) => !res.gated && setHealth(res))
+            .catch(() => {});
         })
         .catch(() => {});
     },
@@ -232,12 +248,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       tasks,
       toggleTask,
       toggleChecklistItem,
+      health,
       chat,
       chatChips: MOCK_CHIPS,
       sendChat,
       chatBusy,
     }),
-    [lang, toggleLang, tab, openStep, more, screen, authReady, authenticated, company, companyIsLive, steps, stepsGated, tasks, toggleTask, toggleChecklistItem, chat, sendChat, chatBusy],
+    [lang, toggleLang, tab, openStep, more, screen, authReady, authenticated, company, companyIsLive, steps, stepsGated, tasks, toggleTask, toggleChecklistItem, health, chat, sendChat, chatBusy],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

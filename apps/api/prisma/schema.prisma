@@ -107,6 +107,7 @@ model Company {
   stepProgress  CompanyStepProgress[]
   memberships   Membership[]
   subscriptions Subscription[]
+  scoreSnapshots GrowthScoreSnapshot[]
   tasks         Task[]
   agentRuns     AgentRun[]
 
@@ -142,6 +143,22 @@ model Lead {
   createdAt    DateTime    @default(now())
 
   @@map("leads")
+}
+
+/// growth_score_snapshots — Business Health Engine's history, one row per recompute.
+/// Diagnostic captures the intake questionnaire; this captures the score over time
+/// (diagnostic factors blended with live 7M-method execution and task engagement).
+model GrowthScoreSnapshot {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  score     Int
+  factors   Json // { saudeFinanceira, previsibilidadeReceita, riscoOperacional, capacidadeCrescimento, governanca, execucaoMetodo, engajamentoTarefas }
+  reason    String // what triggered this recompute, e.g. "step_completed:4"
+  createdAt DateTime @default(now())
+
+  @@index([companyId, createdAt])
+  @@map("growth_score_snapshots")
 }
 
 /// method_steps — 7 fixed steps (Diagnosticar…Valorizar), seeded reference data

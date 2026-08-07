@@ -42,7 +42,8 @@ src/
     audit-queue/   PATCH /audit-queue/:id/sign (admin)
     admin/         GET /admin/companies, /admin/metrics, /admin/audit-queue
     subscriptions/ CommissionService — stacked override calculation
-    method-engine/ MethodEngineService — the 7M Engine (see below)
+    method-engine/    MethodEngineService — the 7M Engine (see below)
+    business-health/  BusinessHealthService — the Business Health Engine (see below)
 prisma/
   schema.prisma    Full data model
   migrations/      Committed migrations — run with `prisma migrate deploy`
@@ -65,6 +66,21 @@ stamps `completedAt`, auto-unlocks the next step (`locked` → `next`), and reco
 `company.nivel7m` as the highest completed rung + 1. Locked steps reject the call (403). This is the
 first of the roadmap's "invisible" engines — the others (Business Health, Next Best Action,
 Matching, Growth Intelligence) build on the journey data this one produces.
+
+## Business Health Engine
+
+`BusinessHealthService` (`GET /me/company/health`) replaces the old "compute once at diagnostic
+time" growth score with a living one: `computeHealthScore` (`business-health/health-score.ts`)
+blends the intake diagnostic's five sub-factors (financial health 25%, revenue predictability 20%,
+risk 15%, growth capacity 15%, governance 10%) with two signals the diagnostic can't see —
+average progress across the 7 method steps (10%) and the % of 7M AI-generated tasks completed
+(5%) — into a 0-1000 score. `recomputeAndPersist` is called whenever the 7M Engine's checklist
+toggles (every tick, not just full-step completions), updating `company.growthScore` and appending
+a `GrowthScoreSnapshot` row; `GET /me/company` and `GET /me/company/health` both read the same live
+computation so they never disagree. `trend` compares the current live score against the oldest
+snapshot in the last 10, so it reflects real movement instead of trivially reading 0 right after a
+write. Second of the roadmap's five engines — Next Best Action, Matching and Growth Intelligence
+are still ahead.
 
 ## Commission engine
 

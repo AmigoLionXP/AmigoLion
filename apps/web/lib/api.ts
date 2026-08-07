@@ -52,10 +52,11 @@ export const api = {
   toggleTask: (id: string, done: boolean) =>
     apiFetch<TaskDto>(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify({ done }) }),
   toggleChecklistItem: (stepN: number, itemIndex: number) =>
-    apiFetch<{ step: MethodStepDto; unlockedStepN: number | null }>(
+    apiFetch<{ step: MethodStepDto; unlockedStepN: number | null; growthScore: number }>(
       `/me/company/steps/${stepN}/checklist/${itemIndex}`,
       { method: 'PATCH' },
     ),
+  getHealth: () => apiFetch<HealthResponseDto>('/me/company/health'),
   runAgent: (message: string, lang: 'pt' | 'en', context: Record<string, unknown> = {}) =>
     apiFetch<AgentRunDto>('/agent-runs', {
       method: 'POST',
@@ -111,6 +112,25 @@ export interface TaskDto {
   specialist: string | null;
   done: boolean;
 }
+
+export interface HealthReportDto {
+  score: number;
+  band: 'critico' | 'fraco' | 'regular' | 'bom' | 'excelente';
+  bandLabel: { pt: string; en: string };
+  factors: {
+    saudeFinanceira: number;
+    previsibilidadeReceita: number;
+    riscoOperacional: number;
+    capacidadeCrescimento: number;
+    governanca: number;
+    execucaoMetodo: number;
+    engajamentoTarefas: number;
+  };
+  trend: { deltaPct: number; direction: 'up' | 'down' | 'flat' };
+  history: { score: number; createdAt: string }[];
+}
+
+export type HealthResponseDto = { gated: true; reason: string } | ({ gated: false } & HealthReportDto);
 
 export interface AgentRunDto {
   id: string;
