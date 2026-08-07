@@ -1,3 +1,5 @@
+import { IntegrationProvider, StepKey } from './business-scan-schema';
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001/api';
 const TOKEN_KEY = '7market_token';
 
@@ -40,6 +42,35 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   return res.json() as Promise<T>;
 }
 
+async function apiUpload<T>(path: string, formData: FormData): Promise<T> {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}${path}`, {
+    method: 'POST',
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) }, // no Content-Type — browser sets the multipart boundary
+    body: formData,
+  });
+  if (!res.ok) {
+    const body = await res.text().catch(() => '');
+    throw new ApiError(res.status, body || res.statusText);
+  }
+  return res.json() as Promise<T>;
+}
+
+export async function downloadBusinessScanFile(fileId: string, fileName: string) {
+  const token = getToken();
+  const res = await fetch(`${API_BASE}/me/business-scan/files/${fileId}`, {
+    headers: { ...(token ? { Authorization: `Bearer ${token}` } : {}) },
+  });
+  if (!res.ok) throw new ApiError(res.status, res.statusText);
+  const blob = await res.blob();
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = fileName;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 export const api = {
   login: (email: string, password: string) =>
     apiFetch<{ accessToken: string }>('/auth/login', {
@@ -62,6 +93,26 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ message, lang, context }),
     }),
+
+  // 7MARKET Business Scan™
+  getBusinessScan: () => apiFetch<BusinessScanDto>('/me/business-scan'),
+  saveScanSection: (stepKey: StepKey, data: Record<string, unknown>, skippedFields: string[]) =>
+    apiFetch<ScanSectionDto>(`/me/business-scan/sections/${stepKey}`, {
+      method: 'PATCH',
+      body: JSON.stringify({ data, skippedFields }),
+    }),
+  completeScanSection: (stepKey: StepKey) =>
+    apiFetch<ScanSectionDto>(`/me/business-scan/sections/${stepKey}/complete`, { method: 'POST' }),
+  completeBusinessScan: () => apiFetch<BusinessScanDto & { growthScore: number }>('/me/business-scan/complete', { method: 'POST' }),
+  connectScanIntegration: (provider: IntegrationProvider) =>
+    apiFetch<ScanIntegrationDto>(`/me/business-scan/integrations/${provider}/connect`, { method: 'POST' }),
+  uploadScanFile: (stepKey: StepKey, fieldKey: string, file: File) => {
+    const form = new FormData();
+    form.append('fieldKey', fieldKey);
+    form.append('file', file);
+    return apiUpload<ScanFileDto>(`/me/business-scan/sections/${stepKey}/files`, form);
+  },
+  deleteScanFile: (fileId: string) => apiFetch<{ deleted: boolean }>(`/me/business-scan/files/${fileId}`, { method: 'DELETE' }),
 };
 
 export interface CompanyDto {
@@ -138,4 +189,42 @@ export interface AgentRunDto {
   riskLevel: 'low' | 'high';
   status: string;
   note: string | null;
+}
+
+export type ScanStatus = 'not_started' | 'in_progress' | 'completed';
+
+export interface ScanSectionDto {
+  stepKey: StepKey;
+  status: ScanStatus;
+  data: Record<string, unknown>;
+  skippedFields: string[];
+  updatedAt: string;
+}
+
+export interface ScanFileDto {
+  id: string;
+  stepKey: StepKey;
+  fieldKey: string;
+  fileName: string;
+  mimeType: string;
+  size: number;
+  uploadedAt: string;
+}
+
+export interface ScanIntegrationDto {
+  provider: IntegrationProvider;
+  status: 'not_connected' | 'pending' | 'connected';
+  connectedAt: string | null;
+}
+
+export interface BusinessScanDto {
+  id: string;
+  status: ScanStatus;
+  currentStep: StepKey;
+  startedAt: string | null;
+  completedAt: string | null;
+  progressPct: number;
+  sections: ScanSectionDto[];
+  files: ScanFileDto[];
+  integrations: ScanIntegrationDto[];
 }

@@ -23,7 +23,7 @@ cd apps/api
 cp .env.example .env
 docker compose up -d          # local Postgres on :5432
 npm install
-npx prisma migrate dev --name init
+npx prisma migrate deploy     # applies the committed migrations in prisma/migrations
 npm run prisma:seed           # demo client/rep/admin logins, password: demo1234
 npm run start:dev             # http://localhost:3001/api
 
@@ -52,5 +52,13 @@ the UI never renders empty.
   auto-processes, high risk lands in `audit_queue` for a human signature) behind a provider-agnostic
   `AgentProvider` interface (`MockAgentProvider` ships by default; swap in a Claude/OpenAI-backed
   provider without touching callers).
+
+- **The "invisible" engines** — the roadmap calls for five: **7M Engine** (auto-unlocks Método 7M
+  steps as checklists complete, tracks the journey), **Business Health Engine** (a living,
+  multi-factor Growth Score with real trend history, not a one-time diagnostic snapshot), and the
+  **7MARKET Business Scan™** (the official 8-step onboarding wizard that builds the company's
+  "Digital DNA" — mobile-first, autosaved, resumable, document uploads, and on completion actually
+  creates the Diagnostic that unlocks the Método 7M and computes the first real Growth Score, not
+  just a promise screen). Next Best Action and Matching are still ahead.
 
 See `apps/web/README.md` and `apps/api/README.md` for details on each half.

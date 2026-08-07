@@ -1,7 +1,7 @@
 'use client';
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
-import { api, ApiError, CompanyDto, HealthReportDto, MethodStepDto, TaskDto, clearToken, getToken, setToken } from './api';
+import { api, ApiError, CompanyDto, HealthReportDto, MethodStepDto, ScanStatus, TaskDto, clearToken, getToken, setToken } from './api';
 import { Lang } from './i18n';
 import {
   MOCK_CHAT_INTRO,
@@ -48,6 +48,11 @@ interface AppContextValue {
 
   health: HealthReportDto | null;
 
+  businessScanOpen: boolean;
+  setBusinessScanOpen: (v: boolean) => void;
+  businessScanSummary: { status: ScanStatus; progressPct: number } | null;
+  refreshAfterBusinessScan: () => void;
+
   chat: ChatMessage[];
   chatChips: typeof MOCK_CHIPS;
   sendChat: (text: string) => void;
@@ -75,6 +80,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [stepsGated, setStepsGated] = useState(false);
   const [tasks, setTasks] = useState<TaskDto[]>(MOCK_TASKS);
   const [health, setHealth] = useState<HealthReportDto | null>(null);
+  const [businessScanOpen, setBusinessScanOpen] = useState(false);
+  const [businessScanSummary, setBusinessScanSummary] = useState<{ status: ScanStatus; progressPct: number } | null>(
+    null,
+  );
 
   const [chat, setChat] = useState<ChatMessage[]>([{ role: 'ai', pt: MOCK_CHAT_INTRO.pt, en: MOCK_CHAT_INTRO.en }]);
   const [chatBusy, setChatBusy] = useState(false);
@@ -105,14 +114,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (!authReady || !authenticated) return;
-    let cancelled = false;
-
+  const loadCompanyData = useCallback((cancelledRef: { current: boolean }) => {
     api
       .getCompany()
       .then((c) => {
-        if (!cancelled) {
+        if (!cancelledRef.current) {
           setCompany(c);
           setCompanyIsLive(true);
         }
@@ -127,7 +133,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     api
       .getSteps()
       .then((res) => {
-        if (cancelled) return;
+        if (cancelledRef.current) return;
         setStepsGated(res.gated);
         if (!res.gated && res.steps.length) setSteps(res.steps);
       })
@@ -136,21 +142,42 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     api
       .getTasks()
       .then((list) => {
-        if (!cancelled && list.length) setTasks(list);
+        if (!cancelledRef.current && list.length) setTasks(list);
       })
       .catch(() => {});
 
     api
       .getHealth()
       .then((res) => {
-        if (!cancelled && !res.gated) setHealth(res);
+        if (!cancelledRef.current && !res.gated) setHealth(res);
       })
       .catch(() => {});
 
+    api
+      .getBusinessScan()
+      .then((scan) => {
+        if (cancelledRef.current) return;
+        setBusinessScanSummary({ status: scan.status, progressPct: scan.progressPct });
+        // Auto-prompt the official onboarding for a genuinely fresh company — never
+        // interrupts a company that's already mid-scan or done (only fires once per
+        // boot since businessScanSummary starts null and this only runs then).
+        if (scan.status === 'not_started') setBusinessScanOpen(true);
+      })
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (!authReady || !authenticated) return;
+    const cancelledRef = { current: false };
+    loadCompanyData(cancelledRef);
     return () => {
-      cancelled = true;
+      cancelledRef.current = true;
     };
-  }, [authReady, authenticated]);
+  }, [authReady, authenticated, loadCompanyData]);
+
+  const refreshAfterBusinessScan = useCallback(() => {
+    loadCompanyData({ current: false });
+  }, [loadCompanyData]);
 
   const toggleLang = useCallback(() => setLang((l) => (l === 'pt' ? 'en' : 'pt')), []);
 
@@ -249,12 +276,39 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       toggleTask,
       toggleChecklistItem,
       health,
+      businessScanOpen,
+      setBusinessScanOpen,
+      businessScanSummary,
+      refreshAfterBusinessScan,
       chat,
       chatChips: MOCK_CHIPS,
       sendChat,
       chatBusy,
     }),
-    [lang, toggleLang, tab, openStep, more, screen, authReady, authenticated, company, companyIsLive, steps, stepsGated, tasks, toggleTask, toggleChecklistItem, health, chat, sendChat, chatBusy],
+    [
+      lang,
+      toggleLang,
+      tab,
+      openStep,
+      more,
+      screen,
+      authReady,
+      authenticated,
+      company,
+      companyIsLive,
+      steps,
+      stepsGated,
+      tasks,
+      toggleTask,
+      toggleChecklistItem,
+      health,
+      businessScanOpen,
+      businessScanSummary,
+      refreshAfterBusinessScan,
+      chat,
+      sendChat,
+      chatBusy,
+    ],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

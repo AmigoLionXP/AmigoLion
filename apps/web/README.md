@@ -24,12 +24,14 @@ components/
   AppShell.tsx      Responsive shell: app bar, 5-tab nav (bottom bar <760px / sidebar ≥760px)
   screens/          Home, Painel, Metodo, Ai, Ceo — the 5 main tabs
   overlays/         StepDetailOverlay, MoreHubOverlay, ScreenOverlay (11 hub screens)
+  business-scan/    BusinessScanOverlay + ScanIntro/ScanField/ScanUpload/ScanComplete (see below)
 lib/
   app-context.tsx   Client state (tab/openStep/more/screen/lang) + API wiring + fallback
   api.ts            Typed fetch wrapper for the NestJS API
   i18n.ts           pt/en dictionary
   mock-data.ts      Offline fallback data mirroring the design prototype
   view-models.ts    Normalizes live API data vs. mock data into one shape for the UI
+  business-scan-schema.ts  8-step field/upload/integration defs — mirrors the API's copy 1:1
 public/
   manifest.webmanifest, sw.js, icons/   PWA assets (see design tokens below)
 ```
@@ -40,6 +42,29 @@ Colors, fonts (Space Grotesk / Manrope / JetBrains Mono) and radii are defined i
 `tailwind.config.ts`, transcribed from `design_handoff_7market_app/README.md`. The 760px
 breakpoint (`desktop:`) switches the bottom tab bar to a left sidebar and widens dashboard grids
 to 3 columns; `wide:` (1180px) widens the content column further.
+
+## 7MARKET Business Scan™
+
+The official onboarding wizard (`components/business-scan/BusinessScanOverlay.tsx`), gated at
+`businessScanOpen` in `app-context.tsx`. It auto-opens once, on boot, only for a genuinely fresh
+company (`GET /me/business-scan` status `not_started`) — it never re-interrupts a company that's
+mid-scan or done — and is always reachable afterwards from the "Mais" hub, which shows a live
+`X% do DNA Digital` progress badge.
+
+- `ScanField` is one generic renderer driven by `business-scan-schema.ts`'s `FieldDef.type`
+  (text/textarea/number/currency/percent/url/scale 1-10/boolean/select) — adding a field to the
+  schema is enough to render it correctly, no per-field JSX needed. Every field has a "Não sei
+  responder agora" skip toggle next to it.
+- Field edits are debounced (700ms) and autosaved via `PATCH /me/business-scan/sections/:stepKey`;
+  closing and reopening the wizard (or navigating away and back through the hub) resumes exactly
+  where you left off — verified end-to-end against a real Postgres instance, not just skimmed.
+  `ScanUpload` uploads/lists/deletes documents per upload slot.
+  "Conectar Sistema" buttons per step are wired to the integration stub endpoint and show an honest
+  "em breve" rather than pretending to connect.
+- Finishing the last step calls `POST /me/business-scan/complete`, which is the moment the score on
+  the Home header and the Cabine do CEO actually changes — the completion screen isn't just a
+  congratulations message, the numbers behind it are real (see the API README's Business Scan
+  section for what completion triggers server-side).
 
 ## PWA
 

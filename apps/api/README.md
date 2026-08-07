@@ -44,6 +44,7 @@ src/
     subscriptions/ CommissionService — stacked override calculation
     method-engine/    MethodEngineService — the 7M Engine (see below)
     business-health/  BusinessHealthService — the Business Health Engine (see below)
+    business-scan/    BusinessScanService — the 7MARKET Business Scan™ (see below)
 prisma/
   schema.prisma    Full data model
   migrations/      Committed migrations — run with `prisma migrate deploy`
@@ -81,6 +82,42 @@ computation so they never disagree. `trend` compares the current live score agai
 snapshot in the last 10, so it reflects real movement instead of trivially reading 0 right after a
 write. Second of the roadmap's five engines — Next Best Action, Matching and Growth Intelligence
 are still ahead.
+
+## 7MARKET Business Scan™
+
+The official onboarding — an 8-step wizard (Identificação, Diagnosticar, Qualificar, Organizar,
+Crescer, Capitalizar, Escalar, Valorizar) that builds the company's "Digital DNA". Field/upload
+definitions per step live in `business-scan/business-scan-schema.ts` (mirrored in
+`apps/web/lib/business-scan-schema.ts` — keep both in sync); `business-scan-validation.ts`
+whitelists and type-checks incoming section data server-side (unknown keys are dropped, not
+errored, so the API stays forward-compatible).
+
+- `GET /me/business-scan` — full scan (auto-created on first call): sections, uploaded files,
+  integration stub statuses, and a field-level `progressPct`.
+- `PATCH /me/business-scan/sections/:stepKey` — autosaves `{ data, skippedFields }`; every field is
+  optional and skippable ("Não sei responder agora").
+- `POST /me/business-scan/sections/:stepKey/complete` and `POST /me/business-scan/complete` —
+  advance the wizard / finalize it.
+- `POST /me/business-scan/sections/:stepKey/files` (multipart), `GET|DELETE
+  /me/business-scan/files/:fileId` — documents accepted: PDF, Word, Excel, CSV, images (15MB cap).
+  Stored on local disk under `UPLOADS_DIR` for now; swap for S3/GCS without changing the API shape.
+  `mimeType`/`fieldKey` are captured on each file so a future job can do the "IA lê os documentos"
+  step the spec asks for, without a schema change.
+- `POST /me/business-scan/integrations/:provider/connect` — placeholder architecture for ERP, CRM,
+  Contabilidade, Marketing, Open Banking, Google, Meta, Stripe, WhatsApp. No real OAuth flow exists
+  yet for any of them; connecting marks the integration `pending` so the UI can say "em breve"
+  honestly instead of faking a connection.
+
+**Completion is where this stops being a form and starts being the product's onboarding**:
+`completeScan` maps the Diagnosticar step's seven 1-10 ratings (Gestão, Marketing, Comercial,
+Financeiro, Operação, Tecnologia, Liderança) into the existing Diagnostic factors
+(`mapDiagnosticarToRespostas`), creates a `Diagnostic` with `status=complete` — which is what
+unlocks the Método 7M gate — calls `MethodEngineService.initializeJourney` to create the company's
+7 `company_step_progress` rows from scratch (step 1 auto-marked done, referencing the scan itself),
+and calls `BusinessHealthService.recomputeAndPersist` so the Growth Score reflects the company's own
+self-assessment immediately. Before this, only the seeded demo company had a journey at all — a real
+signup had no `company_step_progress` rows and no way to get any; this closes that gap for every
+company, not just the demo.
 
 ## Commission engine
 

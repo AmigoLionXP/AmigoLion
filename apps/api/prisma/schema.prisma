@@ -72,6 +72,41 @@ enum TaskPriority {
   medium
 }
 
+enum BusinessScanStatus {
+  not_started
+  in_progress
+  completed
+}
+
+enum BusinessScanStepKey {
+  identificacao
+  diagnosticar
+  qualificar
+  organizar
+  crescer
+  capitalizar
+  escalar
+  valorizar
+}
+
+enum IntegrationProvider {
+  erp
+  crm
+  contabilidade
+  marketing
+  open_banking
+  google
+  meta
+  stripe
+  whatsapp
+}
+
+enum IntegrationStatus {
+  not_connected
+  pending
+  connected
+}
+
 /// users — id, email, role, created_at
 model User {
   id           String   @id @default(cuid())
@@ -110,6 +145,7 @@ model Company {
   scoreSnapshots GrowthScoreSnapshot[]
   tasks         Task[]
   agentRuns     AgentRun[]
+  businessScan  BusinessScan?
 
   @@map("companies")
 }
@@ -340,4 +376,84 @@ model AuditQueueItem {
   createdAt     DateTime          @default(now())
 
   @@map("audit_queue")
+}
+
+// =====================================================================
+// 7MARKET BUSINESS SCAN™ — the official onboarding. Builds the company's
+// "Digital DNA": 8 sections of structured answers + uploaded documents
+// that feed the Método 7M gate, the Growth Score (via a bridged
+// Diagnostic + Business Health recompute on completion), the 7M AI and
+// the Growth Manager. See business-scan/business-scan-schema.ts for the
+// canonical field list per section.
+// =====================================================================
+
+/// business_scans — one per company, tracks overall wizard progress.
+model BusinessScan {
+  id          String             @id @default(cuid())
+  companyId   String             @unique
+  company     Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  status      BusinessScanStatus @default(not_started)
+  currentStep BusinessScanStepKey @default(identificacao)
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  sections     BusinessScanSection[]
+  files        BusinessScanFile[]
+  integrations BusinessScanIntegration[]
+
+  @@map("business_scans")
+}
+
+/// business_scan_sections — one row per step; autosaved as the user types,
+/// so "salvar e continuar depois" is just closing and reopening the wizard.
+model BusinessScanSection {
+  id             String              @id @default(cuid())
+  businessScanId String
+  businessScan   BusinessScan        @relation(fields: [businessScanId], references: [id], onDelete: Cascade)
+  stepKey        BusinessScanStepKey
+  status         BusinessScanStatus  @default(not_started)
+  data           Json                @default("{}") // { [fieldKey]: value }
+  skippedFields  Json                @default("[]") // fieldKey[] — "Não sei responder agora"
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([businessScanId, stepKey])
+  @@map("business_scan_sections")
+}
+
+/// business_scan_files — uploaded documents (contrato social, DRE, valuation, ...).
+/// Stored on local disk for now (storagePath); swap for S3/GCS in production
+/// without changing the API shape. IA interpretation of these is a future step —
+/// mimeType/fieldKey are already captured so a future job can pick them up.
+model BusinessScanFile {
+  id             String              @id @default(cuid())
+  businessScanId String
+  businessScan   BusinessScan        @relation(fields: [businessScanId], references: [id], onDelete: Cascade)
+  stepKey        BusinessScanStepKey
+  fieldKey       String // e.g. "contratoSocial", "dre"
+  fileName       String
+  mimeType       String
+  size           Int
+  storagePath    String
+  uploadedAt     DateTime            @default(now())
+
+  @@map("business_scan_files")
+}
+
+/// business_scan_integrations — "Conectar Sistema" placeholders. No real OAuth
+/// flow exists yet for any provider; connect() marks `pending` so the UI can
+/// show "conectando..." and the architecture is ready to swap in a real
+/// provider-specific flow per integration without touching the schema.
+model BusinessScanIntegration {
+  id             String              @id @default(cuid())
+  businessScanId String
+  businessScan   BusinessScan        @relation(fields: [businessScanId], references: [id], onDelete: Cascade)
+  provider       IntegrationProvider
+  status         IntegrationStatus   @default(not_connected)
+  connectedAt    DateTime?
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([businessScanId, provider])
+  @@map("business_scan_integrations")
 }

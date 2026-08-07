@@ -21,6 +21,61 @@ const TOTAL_STEPS = 7;
 export class MethodEngineService {
   constructor(private prisma: PrismaService) {}
 
+  /**
+   * Creates the 7 company_step_progress rows for a company that just unlocked the
+   * Método 7M (diagnostics.status became complete — normally via the 7MARKET
+   * Business Scan™). Without this, a real signup has no journey at all: only the
+   * seeded demo company had these rows, hand-placed by prisma/seed.ts. Idempotent —
+   * safe to call again (does nothing if rows already exist).
+   */
+  async initializeJourney(companyId: string, diagnosisSummaryPt?: string, diagnosisSummaryEn?: string) {
+    const existing = await this.prisma.companyStepProgress.count({ where: { companyId } });
+    if (existing > 0) return;
+
+    const now = new Date();
+    await this.prisma.companyStepProgress.createMany({
+      data: [
+        {
+          companyId,
+          stepN: 1,
+          pct: 100,
+          status: 'done',
+          startedAt: now,
+          completedAt: now,
+          deadlinePt: 'Concluído',
+          deadlineEn: 'Done',
+          checklist: [
+            {
+              txtPt: diagnosisSummaryPt ?? 'Business Scan concluído',
+              txtEn: diagnosisSummaryEn ?? 'Business Scan completed',
+              done: true,
+            },
+          ] as unknown as Prisma.InputJsonValue,
+        },
+        {
+          companyId,
+          stepN: 2,
+          pct: 0,
+          status: 'next',
+          deadlinePt: 'pronto p/ iniciar',
+          deadlineEn: 'ready to start',
+          checklist: [] as unknown as Prisma.InputJsonValue,
+        },
+        ...[3, 4, 5, 6, 7].map((stepN) => ({
+          companyId,
+          stepN,
+          pct: 0,
+          status: 'locked' as StepStatus,
+          deadlinePt: 'bloqueado',
+          deadlineEn: 'locked',
+          checklist: [] as unknown as Prisma.InputJsonValue,
+        })),
+      ],
+    });
+
+    await this.recomputeCompanyRung(companyId);
+  }
+
   async toggleChecklistItem(companyId: string, stepN: number, itemIndex: number) {
     const progress = await this.prisma.companyStepProgress.findUnique({
       where: { companyId_stepN: { companyId, stepN } },

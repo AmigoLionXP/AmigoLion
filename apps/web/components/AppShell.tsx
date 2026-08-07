@@ -11,9 +11,10 @@ import { CeoScreen } from './screens/Ceo';
 import { StepDetailOverlay } from './overlays/StepDetailOverlay';
 import { MoreHubOverlay } from './overlays/MoreHubOverlay';
 import { ScreenOverlay } from './overlays/ScreenOverlay';
+import { BusinessScanOverlay } from './business-scan/BusinessScanOverlay';
 
 function Shell() {
-  const { tab, openStep, more, screen } = useApp();
+  const { tab, openStep, more, screen, businessScanOpen } = useApp();
 
   return (
     <div className="om-frame">
@@ -38,6 +39,7 @@ function Shell() {
         {openStep !== null && <StepDetailOverlay />}
         {more && <MoreHubOverlay />}
         {screen !== null && <ScreenOverlay />}
+        {businessScanOpen && <BusinessScanOverlay />}
       </div>
     </div>
   );

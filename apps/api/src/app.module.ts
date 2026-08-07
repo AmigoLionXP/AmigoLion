@@ -12,6 +12,7 @@ import { AgentsModule } from './modules/agents/agents.module';
 import { AuditQueueModule } from './modules/audit-queue/audit-queue.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { SubscriptionsModule } from './modules/subscriptions/subscriptions.module';
+import { BusinessScanModule } from './modules/business-scan/business-scan.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SubscriptionsModule } from './modules/subscriptions/subscriptions.modul
     AgentsModule,
     AuditQueueModule,
     AdminModule,
+    BusinessScanModule,
   ],
 })
 export class AppModule {}
