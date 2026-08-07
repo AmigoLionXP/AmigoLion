@@ -7,12 +7,15 @@ roles and API sketched in `design_handoff_7market_app/backend_contract.md`.
 
 ```bash
 cp .env.example .env
-docker compose up -d              # local Postgres
+docker compose up -d              # local Postgres (or point DATABASE_URL at your own)
 npm install
-npx prisma migrate dev --name init
+npx prisma migrate deploy         # applies the committed migrations in prisma/migrations
 npm run prisma:seed
 npm run start:dev                 # http://localhost:3001/api
 ```
+
+Schema changed after this? Use `npx prisma migrate dev --name <change>` instead — it generates a
+new migration file (commit it) and applies it in one step.
 
 Seeded logins (password `demo1234`):
 
@@ -39,8 +42,10 @@ src/
     audit-queue/   PATCH /audit-queue/:id/sign (admin)
     admin/         GET /admin/companies, /admin/metrics, /admin/audit-queue
     subscriptions/ CommissionService — stacked override calculation
+    method-engine/ MethodEngineService — the 7M Engine (see below)
 prisma/
   schema.prisma    Full data model
+  migrations/      Committed migrations — run with `prisma migrate deploy`
   seed.ts          Demo data matching the design mock (Growth Score 612, 7M3 in progress, etc.)
 ```
 
@@ -51,6 +56,15 @@ anything else. `TenantScopeService` re-derives the caller's own company (for `cl
 downline (for `rep`, walked recursively via `uplineRepId`) on every request — isolation is
 enforced in the service layer, not left to the frontend, per the contract's "isolation is
 critical" rule.
+
+## 7M Engine
+
+`MethodEngineService` (`PATCH /me/company/steps/:n/checklist/:i`) owns the client's journey through
+the Método 7M: toggling a checklist item recomputes that step's `pct`; hitting 100% marks it `done`,
+stamps `completedAt`, auto-unlocks the next step (`locked` → `next`), and recomputes
+`company.nivel7m` as the highest completed rung + 1. Locked steps reject the call (403). This is the
+first of the roadmap's "invisible" engines — the others (Business Health, Next Best Action,
+Matching, Growth Intelligence) build on the journey data this one produces.
 
 ## Commission engine
 

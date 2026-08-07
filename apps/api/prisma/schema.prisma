@@ -171,6 +171,8 @@ model CompanyStepProgress {
   deadlinePt      String?
   deadlineEn      String?
   checklist       Json       @default("[]") // [{ txtPt, txtEn, done }]
+  startedAt       DateTime?  // set by Method7MEngineService on first checklist interaction
+  completedAt     DateTime?  // set when pct reaches 100
   updatedAt       DateTime   @updatedAt
 
   @@unique([companyId, stepN])

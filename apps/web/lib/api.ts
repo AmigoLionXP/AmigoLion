@@ -51,6 +51,11 @@ export const api = {
   getTasks: () => apiFetch<TaskDto[]>('/tasks'),
   toggleTask: (id: string, done: boolean) =>
     apiFetch<TaskDto>(`/tasks/${id}`, { method: 'PATCH', body: JSON.stringify({ done }) }),
+  toggleChecklistItem: (stepN: number, itemIndex: number) =>
+    apiFetch<{ step: MethodStepDto; unlockedStepN: number | null }>(
+      `/me/company/steps/${stepN}/checklist/${itemIndex}`,
+      { method: 'PATCH' },
+    ),
   runAgent: (message: string, lang: 'pt' | 'en', context: Record<string, unknown> = {}) =>
     apiFetch<AgentRunDto>('/agent-runs', {
       method: 'POST',
@@ -83,6 +88,8 @@ export interface MethodStepDto {
   deadlinePt: string | null;
   deadlineEn: string | null;
   checklist: { txtPt: string; txtEn: string; done: boolean }[];
+  startedAt?: string | null;
+  completedAt?: string | null;
 }
 
 export interface StepsResponseDto {

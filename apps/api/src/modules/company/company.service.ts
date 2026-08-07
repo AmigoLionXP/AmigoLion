@@ -1,6 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { MethodStep, CompanyStepProgress } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TenantScopeService } from '../../common/tenant-scope.service';
+import { MethodEngineService } from '../method-engine/method-engine.service';
 
 export interface MethodStepDto {
   n: number;
@@ -15,11 +17,37 @@ export interface MethodStepDto {
   deadlinePt: string | null;
   deadlineEn: string | null;
   checklist: unknown;
+  startedAt: Date | null;
+  completedAt: Date | null;
+}
+
+/** Joins the static step definition with a company's progress row into the DTO the frontend expects. */
+function toStepDto(step: MethodStep, p: CompanyStepProgress | null): MethodStepDto {
+  return {
+    n: step.n,
+    code: step.code,
+    verbPt: step.verbPt,
+    verbEn: step.verbEn,
+    specialistRolePt: step.specialistRolePt,
+    specialistRoleEn: step.specialistRoleEn,
+    pct: p?.pct ?? 0,
+    status: p?.status ?? 'locked',
+    specialistName: p?.specialistName ?? null,
+    deadlinePt: p?.deadlinePt ?? null,
+    deadlineEn: p?.deadlineEn ?? null,
+    checklist: p?.checklist ?? [],
+    startedAt: p?.startedAt ?? null,
+    completedAt: p?.completedAt ?? null,
+  };
 }
 
 @Injectable()
 export class CompanyService {
-  constructor(private prisma: PrismaService, private tenant: TenantScopeService) {}
+  constructor(
+    private prisma: PrismaService,
+    private tenant: TenantScopeService,
+    private methodEngine: MethodEngineService,
+  ) {}
 
   async getMyCompany(userId: string, companyId?: string) {
     const company = await this.tenant.requireOwnCompany(userId, companyId);
@@ -69,23 +97,7 @@ export class CompanyService {
 
     return {
       gated: false as const,
-      steps: steps.map((s): MethodStepDto => {
-        const p = s.progress[0];
-        return {
-          n: s.n,
-          code: s.code,
-          verbPt: s.verbPt,
-          verbEn: s.verbEn,
-          specialistRolePt: s.specialistRolePt,
-          specialistRoleEn: s.specialistRoleEn,
-          pct: p?.pct ?? 0,
-          status: p?.status ?? 'locked',
-          specialistName: p?.specialistName ?? null,
-          deadlinePt: p?.deadlinePt ?? null,
-          deadlineEn: p?.deadlineEn ?? null,
-          checklist: p?.checklist ?? [],
-        };
-      }),
+      steps: steps.map((s) => toStepDto(s, s.progress[0] ?? null)),
     };
   }
 
@@ -95,5 +107,16 @@ export class CompanyService {
     const step = result.steps.find((s) => s.n === n);
     if (!step) throw new NotFoundException('Etapa não encontrada.');
     return { gated: false, step };
+  }
+
+  async toggleChecklistItem(userId: string, companyId: string | undefined, stepN: number, itemIndex: number) {
+    const company = await this.tenant.requireOwnCompany(userId, companyId);
+    const { step: progress, unlockedStepN } = await this.methodEngine.toggleChecklistItem(
+      company.id,
+      stepN,
+      itemIndex,
+    );
+    const methodStep = await this.prisma.methodStep.findUniqueOrThrow({ where: { n: stepN } });
+    return { step: toStepDto(methodStep, progress), unlockedStepN };
   }
 }

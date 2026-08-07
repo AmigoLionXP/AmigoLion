@@ -44,6 +44,8 @@ interface AppContextValue {
   tasks: TaskDto[];
   toggleTask: (id: string) => void;
 
+  toggleChecklistItem: (stepN: number, itemIndex: number) => void;
+
   chat: ChatMessage[];
   chatChips: typeof MOCK_CHIPS;
   sendChat: (text: string) => void;
@@ -153,6 +155,37 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [companyIsLive, tasks],
   );
 
+  // 7M Engine: toggling a checklist item recomputes step %/status server-side
+  // and can auto-unlock the next step — always trust the server's response
+  // over an optimistic guess once it's live.
+  const toggleChecklistItem = useCallback(
+    (stepN: number, itemIndex: number) => {
+      setSteps((prev) =>
+        prev.map((s) =>
+          s.n === stepN
+            ? { ...s, checklist: s.checklist.map((c, i) => (i === itemIndex ? { ...c, done: !c.done } : c)) }
+            : s,
+        ),
+      );
+      if (!companyIsLive) return;
+      api
+        .toggleChecklistItem(stepN, itemIndex)
+        .then(({ step, unlockedStepN }) => {
+          setSteps((prev) =>
+            prev.map((s) => {
+              if (s.n === step.n) return step;
+              if (unlockedStepN !== null && s.n === unlockedStepN) {
+                return { ...s, status: 'next', deadlinePt: 'pronto p/ iniciar', deadlineEn: 'ready to start' };
+              }
+              return s;
+            }),
+          );
+        })
+        .catch(() => {});
+    },
+    [companyIsLive],
+  );
+
   const sendChat = useCallback(
     async (text: string) => {
       if (!text.trim()) return;
@@ -198,12 +231,13 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       stepsGated,
       tasks,
       toggleTask,
+      toggleChecklistItem,
       chat,
       chatChips: MOCK_CHIPS,
       sendChat,
       chatBusy,
     }),
-    [lang, toggleLang, tab, openStep, more, screen, authReady, authenticated, company, companyIsLive, steps, stepsGated, tasks, toggleTask, chat, sendChat, chatBusy],
+    [lang, toggleLang, tab, openStep, more, screen, authReady, authenticated, company, companyIsLive, steps, stepsGated, tasks, toggleTask, toggleChecklistItem, chat, sendChat, chatBusy],
   );
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

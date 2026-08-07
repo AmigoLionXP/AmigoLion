@@ -13,8 +13,11 @@ const METHOD_STEPS = [
   { n: 7, code: '7M7', verbPt: 'Valorizar', verbEn: 'Value', specialistRolePt: 'Jurídico Tributário', specialistRoleEn: 'Tax & Legal' },
 ];
 
+const daysAgo = (n: number) => new Date(Date.now() - n * 24 * 3600 * 1000);
+
 const STEP_PROGRESS = [
   { n: 1, pct: 100, status: 'done' as const, specialistName: '7M AI', deadlinePt: 'Concluído', deadlineEn: 'Done',
+    startedAt: daysAgo(75), completedAt: daysAgo(70),
     checklist: [
       { txtPt: 'Conectar dados financeiros', txtEn: 'Connect financial data', done: true },
       { txtPt: 'Questionário de maturidade', txtEn: 'Maturity questionnaire', done: true },
@@ -22,12 +25,14 @@ const STEP_PROGRESS = [
       { txtPt: 'Relatório de diagnóstico', txtEn: 'Diagnosis report', done: true },
     ] },
   { n: 2, pct: 100, status: 'done' as const, specialistName: 'Alexandre Nunes', deadlinePt: 'Concluído', deadlineEn: 'Done',
+    startedAt: daysAgo(70), completedAt: daysAgo(45),
     checklist: [
       { txtPt: 'Revisão de enquadramento fiscal', txtEn: 'Tax framing review', done: true },
       { txtPt: 'Organização do plano de contas', txtEn: 'Chart of accounts setup', done: true },
       { txtPt: 'Conciliação dos últimos 12 meses', txtEn: '12-month reconciliation', done: true },
     ] },
   { n: 3, pct: 70, status: 'doing' as const, specialistName: 'Paloma Freitas', deadlinePt: 'faltam 12 dias', deadlineEn: '12 days left',
+    startedAt: daysAgo(45), completedAt: null,
     checklist: [
       { txtPt: 'Fluxo de caixa semanal', txtEn: 'Weekly cash flow', done: true },
       { txtPt: 'Padrão de atendimento', txtEn: 'Service standard', done: true },
@@ -151,11 +156,11 @@ async function main() {
     },
   });
 
-  for (const p of STEP_PROGRESS) {
+  for (const { n, ...rest } of STEP_PROGRESS) {
     await prisma.companyStepProgress.upsert({
-      where: { companyId_stepN: { companyId: company.id, stepN: p.n } },
-      update: p,
-      create: { ...p, companyId: company.id, stepN: p.n },
+      where: { companyId_stepN: { companyId: company.id, stepN: n } },
+      update: rest,
+      create: { ...rest, companyId: company.id, stepN: n },
     });
   }
 

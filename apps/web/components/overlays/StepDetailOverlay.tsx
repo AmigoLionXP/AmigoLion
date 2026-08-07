@@ -13,7 +13,7 @@ const STATUS_META = {
 } as const;
 
 export function StepDetailOverlay() {
-  const { lang, steps, openStep, setOpenStep } = useApp();
+  const { lang, steps, openStep, setOpenStep, toggleChecklistItem } = useApp();
   const step = steps.find((s) => s.n === openStep);
   if (!step) return null;
 
@@ -76,7 +76,12 @@ export function StepDetailOverlay() {
         <div className="mt-5 font-display text-[15px] font-bold text-white">{t('checklist', lang)}</div>
         <div className="mt-[11px] flex flex-col gap-2">
           {step.checklist.map((ck, i) => (
-            <div key={i} className="flex items-center gap-3 rounded-xl border border-white/[.07] bg-white/[.03] p-[12px_14px]">
+            <button
+              key={i}
+              onClick={() => toggleChecklistItem(step.n, i)}
+              disabled={step.status === 'locked'}
+              className="flex w-full items-center gap-3 rounded-xl border border-white/[.07] bg-white/[.03] p-[12px_14px] text-left disabled:cursor-not-allowed"
+            >
               <div
                 className="flex h-[22px] w-[22px] flex-shrink-0 items-center justify-center rounded-[7px] text-xs text-navy"
                 style={{
@@ -89,7 +94,7 @@ export function StepDetailOverlay() {
               <div className="flex-1 text-[13.5px]" style={{ color: ck.done ? '#8ea0bc' : '#e8eef7' }}>
                 {lang === 'pt' ? ck.txtPt : ck.txtEn}
               </div>
-            </div>
+            </button>
           ))}
         </div>
 
