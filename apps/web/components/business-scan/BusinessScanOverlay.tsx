@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useApp } from '@/lib/app-context';
 import { api, ApiError, BusinessScanDto, ScanFileDto } from '@/lib/api';
-import { BUSINESS_SCAN_STEPS, INTEGRATION_LABELS, IntegrationProvider, StepKey } from '@/lib/business-scan-schema';
+import { BUSINESS_SCAN_STEPS, FieldDef, INTEGRATION_LABELS, IntegrationProvider, StepKey } from '@/lib/business-scan-schema';
 import { ScanField } from './ScanField';
 import { ScanUpload } from './ScanUpload';
 import { ScanIntro } from './ScanIntro';
 import { ScanComplete } from './ScanComplete';
+import { CopilotPanel } from './CopilotPanel';
 
 type Screen = 'loading' | 'error' | 'intro' | 'wizard' | 'complete';
 type DataByStep = Record<StepKey, Record<string, unknown>>;
@@ -53,6 +54,11 @@ export function BusinessScanOverlay() {
   const [finalScore, setFinalScore] = useState<number | undefined>(undefined);
   const [completing, setCompleting] = useState(false);
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const [copilotOpen, setCopilotOpen] = useState(false);
+  const [copilotFocusField, setCopilotFocusField] = useState<FieldDef | null>(null);
+  const [pendingMissing, setPendingMissing] = useState<string[] | null>(null);
+  const bypassedSteps = useRef<Set<StepKey>>(new Set());
 
   const step = BUSINESS_SCAN_STEPS[stepIndex];
   const stepFiles = useMemo(() => files.filter((f) => f.stepKey === step.key), [files, step.key]);
@@ -103,6 +109,21 @@ export function BusinessScanOverlay() {
     });
   }
 
+  // 7M Copilot™.AI — applies suggestions from field-help examples, document extraction or
+  // voice dictation. Unlike a keystroke, this is a single confirmed action, so it saves
+  // immediately instead of going through the 700ms typing debounce.
+  function applySuggestions(patch: Record<string, unknown>) {
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+      saveTimer.current = null;
+    }
+    const nextData = { ...data[step.key], ...patch };
+    const nextSkipped = skipped[step.key].filter((k) => !(k in patch));
+    setData((prev) => ({ ...prev, [step.key]: nextData }));
+    setSkipped((prev) => ({ ...prev, [step.key]: nextSkipped }));
+    api.saveScanSection(step.key, nextData, nextSkipped).catch(() => {});
+  }
+
   function toggleSkip(fieldKey: string) {
     setSkipped((prev) => {
       const cur = prev[step.key];
@@ -151,7 +172,7 @@ export function BusinessScanOverlay() {
     return Promise.resolve();
   }
 
-  async function goNext() {
+  async function doAdvance() {
     await flushSave();
     api.completeScanSection(step.key).catch(() => {});
     if (stepIndex < BUSINESS_SCAN_STEPS.length - 1) {
@@ -169,6 +190,40 @@ export function BusinessScanOverlay() {
         setCompleting(false);
       }
     }
+  }
+
+  // 7M Copilot™.AI — validates what's still missing before leaving a step, once per step
+  // per visit; choosing "Fazer depois" marks the step bypassed so it doesn't nag again.
+  async function goNext() {
+    await flushSave();
+    if (!bypassedSteps.current.has(step.key)) {
+      try {
+        const { missing } = await api.getCopilotMissing(step.key, lang);
+        if (missing.length > 0) {
+          setPendingMissing(missing);
+          return;
+        }
+      } catch {
+        // best-effort — if the check fails, don't block the user from advancing
+      }
+    }
+    await doAdvance();
+  }
+
+  function missingFillNow() {
+    setPendingMissing(null);
+    setCopilotOpen(true);
+  }
+
+  function missingConnectSystem() {
+    setPendingMissing(null);
+    setCopilotOpen(true);
+  }
+
+  async function missingLater() {
+    bypassedSteps.current.add(step.key);
+    setPendingMissing(null);
+    await doAdvance();
   }
 
   function goBack() {
@@ -260,6 +315,10 @@ export function BusinessScanOverlay() {
                   lang={lang}
                   onChange={(v) => updateField(f.key, v)}
                   onToggleSkip={() => toggleSkip(f.key)}
+                  onHelp={() => {
+                    setCopilotFocusField(f);
+                    setCopilotOpen(true);
+                  }}
                 />
               ))}
 
@@ -344,6 +403,71 @@ export function BusinessScanOverlay() {
                     : 'Next'}
             </button>
           </div>
+
+          <CopilotPanel
+            lang={lang}
+            step={step}
+            stepFiles={stepFiles}
+            integrations={integrations}
+            focusField={copilotFocusField}
+            onConsumeFocusField={() => setCopilotFocusField(null)}
+            onApplySuggestions={applySuggestions}
+            onConnectIntegration={handleConnect}
+            onUploadedFile={(f) => setFiles((prev) => [f, ...prev])}
+            open={copilotOpen}
+            onOpenChange={(v) => {
+              setCopilotOpen(v);
+              if (!v) setCopilotFocusField(null);
+            }}
+          />
+
+          {pendingMissing && (
+            <div className="fixed inset-0 z-[80] flex items-center justify-center bg-black/55 p-6">
+              <div className="w-full max-w-[360px] rounded-2xl border border-white/10 bg-[#0c1c3e] p-5">
+                <div className="mb-1 font-display text-[15px] font-bold text-white">
+                  {lang === 'pt' ? 'Antes de continuar…' : 'Before you continue…'}
+                </div>
+                <div className="mb-3 text-[12.5px] text-text-secondary">
+                  {lang === 'pt'
+                    ? 'A IA notou que algumas informações desta etapa ainda estão em aberto:'
+                    : 'The AI noticed a few things in this step are still open:'}
+                </div>
+                <div className="mb-4 flex max-h-[160px] flex-col gap-1 overflow-y-auto">
+                  {pendingMissing.map((m) => (
+                    <div key={m} className="text-[12.5px] text-text-tertiary">
+                      • {m}
+                    </div>
+                  ))}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <button
+                    type="button"
+                    onClick={missingFillNow}
+                    className="w-full rounded-[12px] p-3 text-center font-display text-[14px] font-bold text-navy"
+                    style={{ background: 'linear-gradient(140deg,#C99A2E,#F4D48A)' }}
+                  >
+                    {lang === 'pt' ? 'Enviar agora' : 'Send now'}
+                  </button>
+                  {step.integrations.length > 0 && (
+                    <button
+                      type="button"
+                      onClick={missingConnectSystem}
+                      className="w-full rounded-[12px] border border-ai-blue/25 bg-ai-blue/10 p-3 text-center text-[13px] font-semibold text-ai-blue"
+                    >
+                      {lang === 'pt' ? 'Conectar um sistema' : 'Connect a system'}
+                    </button>
+                  )}
+                  <button
+                    type="button"
+                    onClick={missingLater}
+                    className="w-full rounded-[12px] border border-white/10 bg-white/[.05] p-3 text-center text-[13px] font-semibold text-text"
+                  >
+                    {lang === 'pt' ? 'Fazer depois' : 'Do it later'}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </>
       )}
     </div>

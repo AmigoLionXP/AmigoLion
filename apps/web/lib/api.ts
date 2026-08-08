@@ -113,6 +113,32 @@ export const api = {
     return apiUpload<ScanFileDto>(`/me/business-scan/sections/${stepKey}/files`, form);
   },
   deleteScanFile: (fileId: string) => apiFetch<{ deleted: boolean }>(`/me/business-scan/files/${fileId}`, { method: 'DELETE' }),
+
+  // 7M Copilot™.AI
+  getCopilotIntro: (stepKey: StepKey, lang: 'pt' | 'en') =>
+    apiFetch<{ message: string }>(`/me/business-scan/copilot/intro/${stepKey}?lang=${lang}`),
+  getCopilotFieldHelp: (stepKey: StepKey, fieldKey: string, lang: 'pt' | 'en') =>
+    apiFetch<CopilotFieldHelpDto>(`/me/business-scan/copilot/field-help/${stepKey}/${fieldKey}?lang=${lang}`),
+  getCopilotMissing: (stepKey: StepKey, lang: 'pt' | 'en') =>
+    apiFetch<{ missing: string[] }>(`/me/business-scan/copilot/missing/${stepKey}?lang=${lang}`),
+  getCopilotExecutiveSummary: (lang: 'pt' | 'en') =>
+    apiFetch<CopilotExecutiveSummaryDto>(`/me/business-scan/copilot/executive-summary?lang=${lang}`),
+  postGuidedChallenge: (answers: boolean[], lang: 'pt' | 'en') =>
+    apiFetch<CopilotGuidedChallengeDto>(`/me/business-scan/copilot/guided-challenge?lang=${lang}`, {
+      method: 'POST',
+      body: JSON.stringify({ answers }),
+    }),
+  postVoiceTranscript: (stepKey: StepKey, text: string, fieldKey: string | undefined) =>
+    apiFetch<{ suggestions: Record<string, string | number | boolean> }>(`/me/business-scan/copilot/sections/${stepKey}/voice`, {
+      method: 'POST',
+      body: JSON.stringify({ text, fieldKey }),
+    }),
+  extractScanFile: (stepKey: StepKey, fieldKey: string, file: File, lang: 'pt' | 'en') => {
+    const form = new FormData();
+    form.append('fieldKey', fieldKey);
+    form.append('file', file);
+    return apiUpload<CopilotExtractDto>(`/me/business-scan/copilot/sections/${stepKey}/extract?lang=${lang}`, form);
+  },
 };
 
 export interface CompanyDto {
@@ -215,6 +241,36 @@ export interface ScanIntegrationDto {
   provider: IntegrationProvider;
   status: 'not_connected' | 'pending' | 'connected';
   connectedAt: string | null;
+}
+
+export interface CopilotFieldHelpDto {
+  label: string;
+  help: string;
+  examples: string[];
+}
+
+export interface CopilotExecutiveSummaryDto {
+  strengthsCount: number;
+  opportunitiesCount: number;
+  risksCount: number;
+  strengths: string[];
+  opportunities: string[];
+  risks: string[];
+  avgMaturity: number | null;
+  growthScore: number;
+  priority: string;
+  maiorDesafio: string | null;
+}
+
+export type CopilotGuidedChallengeDto =
+  | { done: false; question: string; questionIndex: number }
+  | { done: true; suggestion: string };
+
+export interface CopilotExtractDto {
+  file: ScanFileDto;
+  supported: boolean;
+  message: string | null;
+  suggestions: Record<string, string | number | boolean>;
 }
 
 export interface BusinessScanDto {

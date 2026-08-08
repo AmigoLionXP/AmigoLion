@@ -10,12 +10,13 @@ interface Props {
   lang: Lang;
   onChange: (value: unknown) => void;
   onToggleSkip: () => void;
+  onHelp?: () => void;
 }
 
 const inputBase =
   'w-full rounded-[12px] border border-white/10 bg-white/[.05] px-3.5 py-3 text-sm text-text placeholder:text-[#6b7f9e] focus:outline-none focus:border-gold/50 disabled:opacity-40';
 
-export function ScanField({ field, value, skipped, lang, onChange, onToggleSkip }: Props) {
+export function ScanField({ field, value, skipped, lang, onChange, onToggleSkip, onHelp }: Props) {
   const label = lang === 'pt' ? field.labelPt : field.labelEn;
   const skipLabel = lang === 'pt' ? 'Não sei responder agora' : "I don't know yet";
   const skippedBadge = lang === 'pt' ? 'Pulado' : 'Skipped';
@@ -23,8 +24,21 @@ export function ScanField({ field, value, skipped, lang, onChange, onToggleSkip 
 
   return (
     <div>
-      <div className="mb-1.5 flex items-center justify-between">
-        <label className="text-[13px] font-semibold text-text-tertiary">{label}</label>
+      <div className="mb-1.5 flex items-center justify-between gap-2">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <label className="text-[13px] font-semibold text-text-tertiary">{label}</label>
+          {onHelp && (
+            <button
+              type="button"
+              onClick={onHelp}
+              aria-label={lang === 'pt' ? 'Como responder?' : 'How to answer?'}
+              title={lang === 'pt' ? 'Como responder?' : 'How to answer?'}
+              className="flex h-[18px] w-[18px] flex-shrink-0 items-center justify-center rounded-full border border-gold/30 text-[10px] font-bold text-gold"
+            >
+              ?
+            </button>
+          )}
+        </div>
         {skipped && (
           <span className="rounded-md bg-white/[.06] px-2 py-0.5 text-[10px] font-semibold text-text-secondary">
             {skippedBadge}

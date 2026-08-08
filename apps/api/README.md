@@ -108,6 +108,38 @@ errored, so the API stays forward-compatible).
   yet for any of them; connecting marks the integration `pending` so the UI can say "em breve"
   honestly instead of faking a connection.
 
+### 7M Copilot™.AI
+
+A contextual guide layered on top of the Business Scan (`business-scan-copilot.service.ts` +
+`business-scan-copilot.controller.ts`, routes under `/me/business-scan/copilot/*`) — deterministic
+and content-driven, not a live LLM call:
+
+- `GET copilot/intro/:stepKey` — the bilingual welcome message shown when a step opens
+  (`copilot-content.ts#STEP_INTROS`).
+- `GET copilot/field-help/:stepKey/:fieldKey` — "Como responder?": a curated explanation for the
+  handful of fields that need one (e.g. `diagnosticar.faturamentoAnual`), and a type-driven generic
+  explanation (scale/boolean/currency/percent/select/url/text) for the rest.
+- `GET copilot/challenge-examples` + `POST copilot/guided-challenge` — the "Não sei identificar"
+  flow behind `diagnosticar.maiorDesafio`: a fixed yes/no decision tree
+  (`answerGuidedChallenge`) that lands on one of the 7 example challenges from the spec.
+- `GET copilot/missing/:stepKey` — lists a step's still-open fields/uploads (skips skipped ones);
+  used both by the copilot panel's "Ver o que falta" and by the wizard's before-you-advance gate.
+- `GET copilot/executive-summary` — the end-of-scan report: real counts of strengths/opportunities/
+  risks derived from the Diagnosticar ratings and the Organizar/Crescer booleans, the average
+  maturity, and a recommended priority naming the lowest-rated of the 7 categories — computed from
+  the company's actual answers, not canned copy.
+- `POST copilot/sections/:stepKey/voice` — "🎤 Responder por voz": the browser does the actual
+  speech-to-text (Web Speech API); this endpoint runs the same deterministic keyword/regex
+  extraction (`document-extraction.ts#suggestFieldsFromText`) over the transcript, and — since
+  word-form numbers like "quatro milhões" aren't parsed, only digit patterns are — falls back to
+  using the raw transcript as the answer for whichever open text field the user was on.
+- `POST copilot/sections/:stepKey/extract` — "📄 Tenho esse documento": saves the upload exactly
+  like the plain upload endpoint, then reads its real text layer. PDF (via `pdf-parse`) and plain
+  text/CSV are genuinely parsed; Word, Excel and scanned images are honestly reported as
+  unsupported ("em breve") rather than faked. A document's mere presence in an `organizar` upload
+  slot (DRE, Fluxo de Caixa, KPIs) also answers the matching "Existe X?" boolean directly — no text
+  analysis needed for that part.
+
 **Completion is where this stops being a form and starts being the product's onboarding**:
 `completeScan` maps the Diagnosticar step's seven 1-10 ratings (Gestão, Marketing, Comercial,
 Financeiro, Operação, Tecnologia, Liderança) into the existing Diagnostic factors

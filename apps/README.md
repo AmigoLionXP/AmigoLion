@@ -61,4 +61,12 @@ the UI never renders empty.
   creates the Diagnostic that unlocks the Método 7M and computes the first real Growth Score, not
   just a promise screen). Next Best Action and Matching are still ahead.
 
+- **7M Copilot™.AI** — a contextual guide layered inside the Business Scan: per-step welcome
+  messages, "Como responder?" field help with examples, a guided yes/no flow for the one open-ended
+  question ("maior desafio"), real document text extraction (PDF/CSV, via `pdf-parse` plus
+  keyword/regex matching — Word/Excel/scanned images are honestly reported as not-yet-supported),
+  real voice dictation via the browser's native Web Speech API, a before-you-advance check for
+  what's still missing, and an end-of-scan executive summary computed from the company's actual
+  answers (not canned copy). Deterministic and content-driven throughout — no live LLM call.
+
 See `apps/web/README.md` and `apps/api/README.md` for details on each half.
