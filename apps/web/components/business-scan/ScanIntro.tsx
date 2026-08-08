@@ -1,16 +1,12 @@
 'use client';
 
 import { Lang } from '@/lib/i18n';
+import { LogoMark } from '../Logo';
 
 export function ScanIntro({ lang, onStart, onClose }: { lang: Lang; onStart: () => void; onClose: () => void }) {
   return (
     <div className="flex min-h-full flex-col items-center justify-center px-6 py-10 text-center">
-      <div
-        className="flex h-16 w-16 items-center justify-center rounded-2xl text-2xl"
-        style={{ background: 'linear-gradient(140deg,#C99A2E,#F4D48A)' }}
-      >
-        🧬
-      </div>
+      <LogoMark size={64} radius={18} />
       <div className="mt-5 font-mono text-[11px] uppercase tracking-[.16em] text-gold">7MARKET BUSINESS SCAN™</div>
       <div className="mt-2 font-display text-[24px] font-bold leading-[1.2] text-white">
         {lang === 'pt' ? 'Vamos conhecer sua empresa' : "Let's get to know your company"}

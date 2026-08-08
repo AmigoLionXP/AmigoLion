@@ -3,6 +3,7 @@
 import { useApp } from '@/lib/app-context';
 import { EMPRESA_HERO, FINANCE_HERO, MANAGER_HERO, MOCK_HUB_SCREENS } from '@/lib/mock-data';
 import { BackIcon, OverlayHeader } from './OverlayHeader';
+import { LogoMark } from '../Logo';
 
 export function ScreenOverlay() {
   const { lang, screen, setScreen, tasks, toggleTask } = useApp();
@@ -68,7 +69,9 @@ export function ScreenOverlay() {
 
         {active.key === 'empresa' && (
           <div className="flex items-center gap-3.5 rounded-[20px] border border-white/[.08] bg-white/[.035] p-[18px]">
-            <div className="h-14 w-14 flex-shrink-0 rounded-2xl bg-gradient-to-br from-gold to-gold-light" />
+            <div className="flex-shrink-0">
+              <LogoMark size={56} radius={16} />
+            </div>
             <div className="min-w-0 flex-1">
               <div className="font-display text-[19px] font-bold text-white">{EMPRESA_HERO.name}</div>
               <div className="mt-0.5 text-xs text-text-secondary">{EMPRESA_HERO.sub[lang]}</div>

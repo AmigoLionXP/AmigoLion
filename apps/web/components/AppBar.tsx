@@ -2,6 +2,7 @@
 
 import { useApp } from '@/lib/app-context';
 import { companyView } from '@/lib/view-models';
+import { LogoMark } from './Logo';
 
 function GridIcon() {
   return (
@@ -32,9 +33,7 @@ export function AppBar() {
       className="relative z-[6] flex flex-shrink-0 items-center justify-between border-b border-white/[.06] bg-[rgba(8,19,44,.55)] px-5 pb-3 pt-[58px] backdrop-blur-[14px] desktop:col-start-2 desktop:row-start-1 desktop:px-8 desktop:py-5"
     >
       <div className="flex items-center gap-[11px]">
-        <div className="flex h-[30px] w-[30px] items-center justify-center rounded-[7px] bg-gradient-to-br from-gold to-gold-light text-sm font-bold text-navy">
-          7M
-        </div>
+        <LogoMark size={30} radius={7} />
         <div>
           <div className="font-display text-[15px] font-bold leading-none text-white">{view.nome}</div>
           <div className="mt-[3px] font-mono text-[9.5px] uppercase tracking-[.12em] text-[#7f93b5]">{view.sectorLabel}</div>
