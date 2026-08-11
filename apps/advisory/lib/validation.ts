@@ -12,6 +12,17 @@ export const wizardSubmitSchema = z.object({
   scheduledFormat: z.enum(['Vídeo-chamada', 'WhatsApp', 'Presencial · BH']).optional(),
 });
 
+export const companyCreateSchema = z.object({
+  legalName: z.string().trim().min(1).max(200),
+  tradeName: z.string().trim().max(200).optional(),
+  cnpj: z
+    .string()
+    .trim()
+    .regex(/^\d{14}$/, 'CNPJ deve ter 14 dígitos')
+    .optional(),
+  sector: z.string().trim().max(120).optional(),
+});
+
 export const companyUpdateSchema = z.object({
   legalName: z.string().trim().min(1).max(200).optional(),
   tradeName: z.string().trim().max(200).nullable().optional(),
