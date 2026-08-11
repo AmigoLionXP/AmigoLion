@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ECF0F6">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="7M Advisory">
+<link rel="apple-touch-icon" href="assets/icons/apple-touch.png">
+<link rel="icon" type="image/png" sizes="192x192" href="assets/icons/pwa-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:#ECF0F6;font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  a{color:#A9791A;text-decoration:none}a:hover{color:#9A7419}
+  .appscroll::-webkit-scrollbar{width:0;display:none}
+  .appscroll{scrollbar-width:none}
+  @keyframes msgin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  @keyframes ovin{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:none}}
+  @keyframes pop{0%{transform:scale(.6);opacity:0}60%{transform:scale(1.08)}100%{transform:scale(1);opacity:1}}
+  @keyframes pulse{0%,100%{box-shadow:0 12px 30px rgba(201,154,46,.35)}50%{box-shadow:0 14px 44px rgba(201,154,46,.62)}}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes confetti{0%{transform:translateY(-12px) rotate(0);opacity:1}100%{transform:translateY(440px) rotate(560deg);opacity:0}}
+  @keyframes floatUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+
+  /* ---- Responsive shell: fills the viewport on every device ---- */
+  .om-stage{min-height:100vh;min-height:100dvh;display:flex;align-items:stretch;justify-content:center;padding:0;background:#ECF0F6}
+  .om-frame{position:relative;width:100%;height:100vh;height:100dvh;overflow:hidden;background:#ECF0F6}
+  .om-app{height:100%;width:100%}
+
+  /* ---- Desktop / notebook: web-app layout, side nav + wide content ---- */
+  @media (min-width:760px){
+    .om-app{display:grid !important;grid-template-columns:236px 1fr;grid-template-rows:auto 1fr}
+    .om-bar{grid-column:2;grid-row:1;padding:20px 32px !important}
+    .om-scroll{grid-column:2;grid-row:2;padding:30px 40px 60px !important}
+    .om-scroll > *{max-width:920px;margin:0 auto}
+    /* bottom nav becomes a left sidebar */
+    .om-nav{grid-column:1;grid-row:1/3;flex-direction:column !important;justify-content:flex-start !important;gap:6px;padding:26px 16px !important;border-top:none !important;border-right:1px solid rgba(15,23,42,.09);background:rgba(255,255,255,.85) !important}
+    .om-nav button{flex-direction:row !important;justify-content:flex-start !important;gap:14px;width:100% !important;padding:13px 15px !important;border-radius:13px;font-size:15px !important}
+    .om-nav button svg{width:21px !important;height:21px !important}
+    .om-nav button span{font-size:14px !important}
+    /* dashboard breathes into more columns */
+    .om-scroll .om-grid{grid-template-columns:repeat(3,1fr) !important}
+  }
+  @media (min-width:1180px){
+    .om-scroll > *{max-width:1040px}
+    .om-scroll .om-grid{grid-template-columns:repeat(3,1fr) !important}
+  }
+</style>
+<script>
+(function(){
+  if(!('serviceWorker' in navigator)) return;
+  var standalone = (window.top === window.self) &&
+                   (location.protocol === 'https:' || location.protocol === 'http:');
+  if(standalone){
+    window.addEventListener('load',function(){
+      navigator.serviceWorker.register('sw.js').catch(function(){});
+    });
+  } else {
+    // inside the editor preview: never cache — unregister and clear stale caches
+    navigator.serviceWorker.getRegistrations().then(function(rs){
+      rs.forEach(function(r){ r.unregister(); });
+    }).catch(function(){});
+    if(window.caches && caches.keys){
+      caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k); }); }).catch(function(){});
+    }
+  }
+})();
+</script>
+</helmet>
+
+<div class="om-stage">
+<div class="om-frame">
+
+<div class="om-app" style="display:flex;flex-direction:column;position:relative;background:#ECF0F6;font-family:'Manrope',sans-serif;color:#0B0E14;overflow:hidden">
+
+  <!-- APP BAR -->
+  <div class="om-bar" style="flex-shrink:0;padding:58px 20px 12px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid #EEF1F6;position:relative;z-index:6">
+    <div style="display:flex;align-items:center;gap:11px">
+      <img src="assets/7m-logo-icon.png" alt="7M" style="height:30px;width:auto;border-radius:7px">
+      <div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#0B0E14;line-height:1">{{ company.name }}</div>
+        <div style="font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6B7280;margin-top:3px">{{ company.sector }}</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:9px">
+      <button onclick="{{ openMore }}" style="width:36px;height:36px;border-radius:10px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center;cursor:pointer">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      </button>
+      <button onclick="{{ toggleLang }}" style="font-family:'JetBrains Mono';font-weight:600;font-size:11px;letter-spacing:.06em;color:#A9791A;background:rgba(201,154,46,.12);border:1px solid rgba(201,154,46,.32);border-radius:9px;padding:7px 9px;cursor:pointer">{{ langLabel }}</button>
+      <div style="position:relative;width:36px;height:36px;border-radius:10px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#334155" stroke-width="1.8"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+        <div style="position:absolute;top:6px;right:7px;width:7px;height:7px;border-radius:50%;background:#F7DC85;border:1.5px solid #FFFFFF"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN SCROLL -->
+  <div class="appscroll om-scroll" style="flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:18px 18px 108px">
+
+    <!-- ============ HOME ============ -->
+    <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+    <div>
+      <!-- company header card (ink-blue anchor) -->
+      <div style="background:linear-gradient(150deg,#0B2149,#12336e);border:1px solid rgba(11,33,73,.6);border-radius:22px;padding:20px;display:flex;gap:18px;align-items:center;box-shadow:0 18px 40px rgba(11,33,73,.22)">
+        <div style="position:relative;flex-shrink:0;width:104px;height:104px">
+          <svg width="104" height="104" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,.14)" stroke-width="9"/>
+            <circle cx="60" cy="60" r="54" fill="none" stroke="url(#gg)" stroke-width="9" stroke-linecap="round" stroke-dasharray="{{ scoreDash }}"/>
+            <defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#C99A2E"/><stop offset="1" stop-color="#F7DC85"/></linearGradient></defs>
+          </svg>
+          <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#fff;line-height:1">{{ company.score }}</div>
+            <div style="font-family:'JetBrains Mono';font-size:9px;letter-spacing:.1em;color:rgba(255,255,255,.6)">/ 1000</div>
+          </div>
+        </div>
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#F7DC85">{{ t.growthScore }}</div>
+          <div style="margin-top:5px;font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;line-height:1.15">{{ company.band }}</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px">
+            <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.82)"><span style="width:5px;height:5px;border-radius:50%;background:#0AA6FF"></span>{{ company.meta }}</div>
+            <div style="display:flex;align-items:center;gap:7px;font-size:12px;color:rgba(255,255,255,.82)"><span style="width:5px;height:5px;border-radius:50%;background:#F7DC85"></span>{{ company.revisao }}</div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="{{ startScanFromHome }}" style="margin-top:14px;width:100%;display:flex;align-items:center;gap:12px;background:rgba(143,180,255,.1);border:1px solid rgba(143,180,255,.28);border-radius:15px;padding:14px 16px;cursor:pointer;text-align:left">
+        <span style="flex-shrink:0;width:34px;height:34px;border-radius:10px;background:rgba(143,180,255,.18);display:flex;align-items:center;justify-content:center;font-size:16px;color:#0AA6FF">✦</span>
+        <span style="flex:1;min-width:0">
+          <span style="display:block;font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#0B0E14">{{ t.scanTitle }}</span>
+          <span style="display:block;font-size:11.5px;color:#6B7280;margin-top:2px">{{ t.scanSub }}</span>
+        </span>
+        <svg width="8" height="14" viewBox="0 0 8 14" style="flex-shrink:0"><path d="M1 1l6 6-6 6" stroke="rgba(15,23,42,.35)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <!-- NEXT BEST ACTION · seu próximo passo -->
+      <div style="margin-top:16px;position:relative;overflow:hidden;border-radius:22px;border:1px solid rgba(201,154,46,.4);background:linear-gradient(155deg,#12336e,#FFFFFF)">
+        <div style="position:absolute;top:-40px;right:-40px;width:160px;height:160px;border-radius:50%;background:radial-gradient(circle,rgba(244,212,138,.22),transparent 70%)"></div>
+        <div style="position:relative;padding:22px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="display:inline-flex;align-items:center;gap:6px;white-space:nowrap;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#0B2149;background:linear-gradient(140deg,#C99A2E,#F7DC85);padding:5px 10px;border-radius:7px;font-weight:700">★ {{ nba.tag }}</span>
+          </div>
+          <div style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:22px;line-height:1.2;color:#0B0E14;text-wrap:balance">{{ nba.title }}</div>
+          <div style="margin-top:12px;font-size:13.5px;line-height:1.55;color:#374151">{{ nba.why }}</div>
+          <div style="margin-top:14px;display:flex;gap:10px;align-items:flex-start;background:rgba(143,180,255,.1);border:1px solid rgba(143,180,255,.24);border-radius:13px;padding:13px 14px">
+            <div style="flex-shrink:0;width:26px;height:26px;border-radius:8px;background:rgba(143,180,255,.18);display:flex;align-items:center;justify-content:center;font-size:14px">✦</div>
+            <div style="font-size:12.5px;line-height:1.5;color:#374151"><span style="color:#0AA6FF;font-weight:700">7M AI · </span>{{ nba.rec }}</div>
+          </div>
+          <div style="margin-top:15px;display:flex;gap:10px">
+            <div style="flex:1;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);border-radius:13px;padding:12px 13px">
+              <div style="font-family:'JetBrains Mono';font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6B7280">{{ nba.roiLabel }}</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#12A150;margin-top:4px">{{ nba.roi }}</div>
+            </div>
+            <div style="flex:1;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);border-radius:13px;padding:12px 13px">
+              <div style="font-family:'JetBrains Mono';font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#6B7280">{{ nba.proofLabel }}</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#A9791A;margin-top:4px">{{ nba.proof }}</div>
+            </div>
+          </div>
+          <button onclick="{{ nbaAction }}" style="margin-top:14px;width:100%;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;border:none;padding:15px;border-radius:13px;font-family:'Space Grotesk';font-weight:700;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px">{{ nba.cta }} →</button>
+        </div>
+      </div>
+
+      <!-- METODO 7M EVOLUTION -->
+      <div style="margin-top:22px;display:flex;align-items:center;justify-content:space-between">
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#0B0E14">{{ t.myEvolution }}</div>
+        <button onclick="{{ goMetodo }}" style="font-family:'JetBrains Mono';font-size:11px;color:#6B7280;background:none;border:none;cursor:pointer">{{ t.seeAll }} →</button>
+      </div>
+      <div style="margin-top:12px;display:flex;flex-direction:column;gap:9px">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="7">
+          <button onclick="{{ s.open }}" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:#FFFFFF;border:1px solid rgba(15,23,42,.08);border-left:3px solid {{ s.accent }};border-radius:14px;padding:13px 15px;cursor:pointer">
+            <div style="flex-shrink:0;width:34px;height:34px;border-radius:10px;background:{{ s.chipBg }};display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:12px;color:{{ s.accent }}">{{ s.n }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:14.5px;color:#0B0E14">{{ s.verb }}</div>
+              <div style="font-size:11.5px;color:#6B7280;margin-top:1px">{{ s.statusLabel }} · {{ s.specialistRole }}</div>
+            </div>
+            <div style="flex-shrink:0;text-align:right">
+              <div style="font-family:'JetBrains Mono';font-weight:600;font-size:14px;color:{{ s.accent }}">{{ s.pctLabel }}</div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ PAINEL (dashboard 6 cards) ============ -->
+    <sc-if value="{{ isPainel }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#0B0E14;letter-spacing:-.02em">{{ t.dashboard }}</div>
+      <div style="font-size:13px;color:#6B7280;margin-top:4px">{{ t.dashboardSub }}</div>
+      <div style="margin-top:16px;position:relative;overflow:hidden;border-radius:20px;border:1px solid rgba(201,154,46,.35);background:linear-gradient(150deg,rgba(201,154,46,.12),#FFFFFF);padding:17px">
+        <div style="position:absolute;top:-30px;right:-30px;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(244,212,138,.24),transparent 70%)"></div>
+        <div style="position:relative;display:flex;align-items:center;justify-content:space-between;gap:14px">
+          <div style="min-width:0">
+            <div style="font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.12em;line-height:1.4;text-transform:uppercase;color:#9A7419">{{ painelPlanKick }}</div>
+            <div style="margin-top:8px;font-family:'Space Grotesk';font-weight:700;font-size:28px;color:#0B0E14;line-height:1;letter-spacing:-.02em">{{ reco.planName }}</div>
+          </div>
+          <div style="flex-shrink:0;text-align:right">
+            <div style="font-family:'JetBrains Mono';font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:#6B7280">{{ painelPorteKick }}</div>
+            <div style="margin-top:6px;font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#A9791A;line-height:1.2">{{ reco.porteTag }}</div>
+          </div>
+        </div>
+      </div>
+      <div class="om-grid" style="margin-top:18px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <sc-for list="{{ cards }}" as="c" hint-placeholder-count="6">
+          <div style="background:#FFFFFF;border:1px solid rgba(15,23,42,.09);border-radius:18px;padding:16px;min-height:132px;display:flex;flex-direction:column;justify-content:space-between">
+            <div style="display:flex;align-items:center;justify-content:space-between">
+              <div style="width:30px;height:30px;border-radius:9px;background:{{ c.iconBg }};display:flex;align-items:center;justify-content:center;font-size:15px">{{ c.icon }}</div>
+              <sc-if value="{{ c.delta }}" hint-placeholder-val="{{ false }}"><span style="font-family:'JetBrains Mono';font-size:11px;font-weight:600;color:{{ c.deltaColor }}">{{ c.delta }}</span></sc-if>
+            </div>
+            <div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#0B0E14;line-height:1">{{ c.value }}</div>
+              <div style="font-size:11.5px;color:#6B7280;margin-top:5px;line-height:1.3">{{ c.label }}</div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ METODO 7M ============ -->
+    <sc-if value="{{ isMetodo }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-family:'JetBrains Mono';font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9A7419">{{ t.method }}</div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#0B0E14;letter-spacing:-.02em;margin-top:6px">{{ t.methodTitle }}</div>
+      <div style="margin-top:8px;font-size:13px;color:#6B7280;line-height:1.5;max-width:340px">{{ t.methodSub }}</div>
+      <div style="margin-top:16px;height:6px;border-radius:99px;background:rgba(15,23,42,.08);overflow:hidden">
+        <div style="height:100%;width:{{ overallPct }};background:linear-gradient(90deg,#C99A2E,#F7DC85);border-radius:99px"></div>
+      </div>
+      <div style="margin-top:7px;font-family:'JetBrains Mono';font-size:11px;color:#6B7280">{{ overallLabel }}</div>
+
+      <div style="margin-top:20px;display:flex;flex-direction:column;gap:11px">
+        <sc-for list="{{ steps }}" as="s" hint-placeholder-count="7">
+          <button onclick="{{ s.open }}" style="display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:{{ s.rowBg }};border:1px solid {{ s.rowBorder }};border-radius:16px;padding:15px;cursor:pointer">
+            <div style="flex-shrink:0;width:44px;height:44px;border-radius:13px;background:{{ s.chipBg }};display:flex;flex-direction:column;align-items:center;justify-content:center;color:{{ s.accent }}">
+              <span style="font-family:'JetBrains Mono';font-size:8px;letter-spacing:.06em">{{ s.n }}</span>
+              <span style="font-size:15px">{{ s.statusIcon }}</span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#0B0E14">{{ s.verb }}</div>
+              <div style="font-size:12px;color:#6B7280;margin-top:2px;line-height:1.35">{{ s.short }}</div>
+              <div style="margin-top:9px;height:4px;border-radius:99px;background:rgba(15,23,42,.08);overflow:hidden"><div style="height:100%;width:{{ s.pctLabel }};background:{{ s.accent }};border-radius:99px"></div></div>
+            </div>
+            <svg width="8" height="14" viewBox="0 0 8 14" style="flex-shrink:0"><path d="M1 1l6 6-6 6" stroke="rgba(15,23,42,.28)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ 7M AI ============ -->
+    <sc-if value="{{ isAI }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;min-height:560px">
+      <div style="display:flex;align-items:center;gap:12px;padding-bottom:14px;border-bottom:1px solid rgba(15,23,42,.08)">
+        <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(140deg,#12336e,#0AA6FF);display:flex;align-items:center;justify-content:center;font-size:20px">✦</div>
+        <div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#0B0E14">7M AI</div>
+          <div style="font-size:11.5px;color:#0AA6FF;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#5ee08a"></span>{{ t.aiSub }}</div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:12px;padding:16px 0">
+        <sc-for list="{{ chat }}" as="m" hint-placeholder-count="1">
+          <div style="{{ m.wrap }}">
+            <div style="{{ m.bubble }}">{{ m.text }}</div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">
+        <sc-for list="{{ chips }}" as="c" hint-placeholder-count="3">
+          <button onclick="{{ c.send }}" style="font-size:12.5px;color:#374151;background:rgba(143,180,255,.1);border:1px solid rgba(143,180,255,.28);border-radius:99px;padding:9px 14px;cursor:pointer">{{ c.label }}</button>
+        </sc-for>
+      </div>
+      <div style="display:flex;gap:10px;align-items:center;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);border-radius:15px;padding:6px 6px 6px 16px">
+        <div style="flex:1;font-size:14px;color:#9AA3B2">{{ t.aiPlaceholder }}</div>
+        <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,#C99A2E,#F7DC85);display:flex;align-items:center;justify-content:center">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B2149" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <!-- ============ CABINE DO CEO ============ -->
+    <sc-if value="{{ isCEO }}" hint-placeholder-val="{{ false }}">
+    <div>
+      <div style="font-family:'JetBrains Mono';font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#9A7419">{{ t.ceoKick }}</div>
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#0B0E14;letter-spacing:-.02em;margin-top:6px">{{ t.ceoTitle }}</div>
+      <div style="font-size:12.5px;color:#6B7280;margin-top:5px;line-height:1.4">{{ t.ceoSub }}</div>
+
+      <div style="margin-top:18px;display:flex;flex-direction:column;gap:11px">
+        <sc-for list="{{ ceo }}" as="k" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:16px;background:#FFFFFF;border:1px solid rgba(15,23,42,.09);border-radius:16px;padding:16px 18px">
+            <div style="flex-shrink:0;font-family:'JetBrains Mono';font-size:11px;color:#6b82a6;width:16px">{{ k.n }}</div>
+            <div style="flex:1;min-width:0">
+              <div style="font-size:12.5px;color:#6B7280">{{ k.label }}</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#0B0E14;margin-top:2px;line-height:1">{{ k.value }}</div>
+            </div>
+            <div style="flex-shrink:0;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:{{ k.tagColor }};background:{{ k.tagBg }};padding:6px 11px;border-radius:9px">{{ k.tag }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <div class="om-nav" style="flex-shrink:0;background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-top:1px solid rgba(15,23,42,.09);padding:11px 8px 26px;display:flex;justify-content:space-around;position:relative;z-index:6">
+    <button onclick="{{ goHome }}" style="{{ navHome }}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 10.5L12 3l9 7.5"/><path d="M5 9.5V20h14V9.5"/></svg>
+      <span style="font-size:9.5px;font-weight:600">{{ t.tabHome }}</span>
+    </button>
+    <button onclick="{{ goPainel }}" style="{{ navPainel }}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      <span style="font-size:9.5px;font-weight:600">{{ t.tabPainel }}</span>
+    </button>
+    <button onclick="{{ goMetodo }}" style="{{ navMetodo }}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 20l4-4M4 20V9l4-2M4 20h4M12 16l4-4M12 16V6l4-2M12 16h4M20 12V4"/></svg>
+      <span style="font-size:9.5px;font-weight:600">{{ t.tabMethod }}</span>
+    </button>
+    <button onclick="{{ goAI }}" style="{{ navAI }}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+      <span style="font-size:9.5px;font-weight:600">{{ t.tabAI }}</span>
+    </button>
+    <button onclick="{{ goCEO }}" style="{{ navCEO }}">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M3 13a9 9 0 0 1 18 0"/><path d="M12 13l4-3"/><circle cx="12" cy="13" r="1.6" fill="currentColor" stroke="none"/></svg>
+      <span style="font-size:9.5px;font-weight:600">{{ t.tabCEO }}</span>
+    </button>
+  </div>
+
+  <!-- ============ STEP DETAIL OVERLAY ============ -->
+  <sc-if value="{{ stepOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;z-index:40;background:#ECF0F6;display:flex;flex-direction:column;animation:ovin .28s ease">
+    <div style="flex-shrink:0;padding:58px 18px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(15,23,42,.08);background:rgba(255,255,255,.82);backdrop-filter:blur(14px)">
+      <button onclick="{{ closeStep }}" style="width:38px;height:38px;border-radius:11px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center;cursor:pointer">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10l8 8" stroke="#334155" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div>
+        <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;color:#9A7419">{{ sd.n }} · {{ sd.statusLabel }}</div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#0B0E14;line-height:1.1;margin-top:2px">{{ sd.verb }}</div>
+      </div>
+    </div>
+    <div class="appscroll" style="flex:1;min-height:0;overflow-y:auto;padding:18px 18px 40px">
+      <div style="font-size:14px;line-height:1.6;color:#374151">{{ sd.objetivo }}</div>
+
+      <!-- specialist -->
+      <div style="margin-top:18px;display:flex;align-items:center;gap:13px;background:rgba(201,154,46,.08);border:1px solid rgba(201,154,46,.24);border-radius:16px;padding:14px">
+        {{ sd.avatarEl }}
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#9A7419">{{ t.specialist }}</div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#0B0E14;margin-top:2px">{{ sd.specialistName }}</div>
+          <div style="font-size:12px;color:#6B7280">{{ sd.specialistRole }}</div>
+        </div>
+        <button style="flex-shrink:0;background:rgba(15,23,42,.08);border:1px solid rgba(15,23,42,.12);border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600;color:#0B0E14;cursor:pointer">{{ t.talk }}</button>
+      </div>
+
+      <!-- meta row -->
+      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div style="background:#FFFFFF;border:1px solid rgba(15,23,42,.09);border-radius:14px;padding:13px 15px"><div style="font-size:11px;color:#6B7280">{{ t.progress }}</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:19px;color:{{ sd.accent }};margin-top:3px">{{ sd.pctLabel }}</div></div>
+        <div style="background:#FFFFFF;border:1px solid rgba(15,23,42,.09);border-radius:14px;padding:13px 15px"><div style="font-size:11px;color:#6B7280">{{ t.deadline }}</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#0B0E14;margin-top:3px">{{ sd.deadline }}</div></div>
+      </div>
+
+      <!-- checklist -->
+      <div style="margin-top:20px;font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#0B0E14">{{ t.checklist }}</div>
+      <div style="margin-top:11px;display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ sd.checklist }}" as="ck" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid rgba(15,23,42,.08);border-radius:12px;padding:12px 14px">
+            <div style="flex-shrink:0;width:22px;height:22px;border-radius:7px;background:{{ ck.boxBg }};border:1.5px solid {{ ck.boxBorder }};display:flex;align-items:center;justify-content:center;font-size:12px;color:#0B2149">{{ ck.check }}</div>
+            <div style="flex:1;font-size:13.5px;color:{{ ck.txtColor }}">{{ ck.txt }}</div>
+          </div>
+        </sc-for>
+      </div>
+
+      <!-- resources -->
+      <div style="margin-top:20px;font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#0B0E14">{{ t.resources }}</div>
+      <div style="margin-top:11px;display:flex;flex-direction:column;gap:8px">
+        <sc-for list="{{ sd.resources }}" as="r" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:12px;background:#FFFFFF;border:1px solid rgba(15,23,42,.08);border-radius:12px;padding:12px 14px">
+            <div style="flex-shrink:0;width:30px;height:30px;border-radius:9px;background:rgba(143,180,255,.14);display:flex;align-items:center;justify-content:center;font-size:14px">{{ r.icon }}</div>
+            <div style="flex:1;font-size:13.5px;color:#0B0E14">{{ r.label }}</div>
+            <svg width="7" height="12" viewBox="0 0 8 14" style="flex-shrink:0"><path d="M1 1l6 6-6 6" stroke="rgba(15,23,42,.28)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </sc-for>
+      </div>
+
+      <button onclick="{{ closeStep }}" style="margin-top:24px;width:100%;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;border:none;padding:15px;border-radius:13px;font-family:'Space Grotesk';font-weight:700;font-size:15px;cursor:pointer">{{ sd.ctaLabel }}</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ MORE HUB OVERLAY ============ -->
+  <sc-if value="{{ moreOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;z-index:45;background:#ECF0F6;display:flex;flex-direction:column;animation:ovin .28s ease">
+    <div style="flex-shrink:0;padding:58px 18px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(15,23,42,.08);background:rgba(255,255,255,.82);backdrop-filter:blur(14px)">
+      <button onclick="{{ closeMore }}" style="width:38px;height:38px;border-radius:11px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center;cursor:pointer">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="#334155" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#0B0E14;line-height:1.1">{{ t.more }}</div>
+        <div style="font-size:11.5px;color:#6B7280;margin-top:2px">{{ t.moreSub }}</div>
+      </div>
+    </div>
+    <div class="appscroll" style="flex:1;min-height:0;overflow-y:auto;padding:18px 18px 40px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <sc-for list="{{ moreItems }}" as="m" hint-placeholder-count="11">
+          <button onclick="{{ m.open }}" style="text-align:left;background:#FFFFFF;border:1px solid rgba(15,23,42,.09);border-radius:18px;padding:16px;cursor:pointer;min-height:104px;display:flex;flex-direction:column;justify-content:space-between">
+            <div style="width:38px;height:38px;border-radius:11px;background:rgba(201,154,46,.16);display:flex;align-items:center;justify-content:center;font-size:17px;color:#A9791A">{{ m.icon }}</div>
+            <div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#0B0E14">{{ m.label }}</div>
+              <div style="font-size:11.5px;color:#6B7280;margin-top:2px">{{ m.sub }}</div>
+            </div>
+          </button>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ SCREEN OVERLAY ============ -->
+  <sc-if value="{{ screenOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;z-index:46;background:#ECF0F6;display:flex;flex-direction:column;animation:ovin .28s ease">
+    <div style="flex-shrink:0;padding:58px 18px 14px;display:flex;align-items:center;gap:12px;border-bottom:1px solid rgba(15,23,42,.08);background:rgba(255,255,255,.82);backdrop-filter:blur(14px)">
+      <button onclick="{{ closeScreen }}" style="width:38px;height:38px;border-radius:11px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center;cursor:pointer">
+        <svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10l8 8" stroke="#334155" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#0B0E14;line-height:1.1">{{ screenTitle }}</div>
+        <div style="font-size:11.5px;color:#6B7280;margin-top:2px">{{ screenSub }}</div>
+      </div>
+    </div>
+    <div class="appscroll" style="flex:1;min-height:0;overflow-y:auto;padding:18px 18px 40px">
+
+      <!-- MANAGER hero -->
+      <sc-if value="{{ isManager }}" hint-placeholder-val="{{ false }}">
+      <div style="background:linear-gradient(150deg,rgba(201,154,46,.14),rgba(11,33,73,.2));border:1px solid rgba(201,154,46,.24);border-radius:20px;padding:18px">
+        <div style="display:flex;align-items:center;gap:14px">
+          {{ managerHero.photoEl }}
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#0B0E14">{{ managerHero.name }}</div>
+            <div style="font-size:12px;color:#374151;margin-top:2px">{{ managerHero.role }}</div>
+            <div style="font-size:11.5px;color:#12A150;display:flex;align-items:center;gap:6px;margin-top:4px"><span style="width:6px;height:6px;border-radius:50%;background:#5ee08a"></span>{{ managerHero.status }}</div>
+          </div>
+        </div>
+        <div style="margin-top:15px;display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px">
+          <sc-for list="{{ managerHero.actions }}" as="a" hint-placeholder-count="4">
+            <button style="display:flex;flex-direction:column;align-items:center;gap:5px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);border-radius:13px;padding:11px 4px;cursor:pointer">
+              <span style="font-size:16px">{{ a.icon }}</span>
+              <span style="font-size:10.5px;font-weight:600;color:#0B0E14">{{ a.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- FINANCEIRO hero -->
+      <sc-if value="{{ isFinanceiro }}" hint-placeholder-val="{{ false }}">
+      <div style="position:relative;overflow:hidden;border-radius:20px;border:1px solid rgba(201,154,46,.4);background:linear-gradient(155deg,#12336e,#FFFFFF);padding:20px">
+        <div style="position:absolute;top:-30px;right:-30px;width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,rgba(244,212,138,.2),transparent 70%)"></div>
+        <div style="position:relative">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#9A7419;white-space:nowrap">{{ financeHero.label }}</div>
+            <span style="font-size:11px;font-weight:700;color:#12A150;background:rgba(94,224,138,.14);padding:5px 10px;border-radius:8px">{{ financeHero.status }}</span>
+          </div>
+          <div style="margin-top:10px;font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#0B0E14">{{ financeHero.plan }}</div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#A9791A;margin-top:2px">{{ financeHero.price }}</div>
+          <div style="font-size:12px;color:#374151;margin-top:8px">{{ financeHero.next }}</div>
+          <button style="margin-top:15px;width:100%;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;border:none;padding:13px;border-radius:12px;font-family:'Space Grotesk';font-weight:700;font-size:14px;cursor:pointer">Upgrade → 7M Scale</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <!-- EMPRESA hero -->
+      <sc-if value="{{ isEmpresa }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;align-items:center;gap:14px;background:#FFFFFF;border:1px solid rgba(15,23,42,.09);border-radius:20px;padding:18px">
+        <img src="assets/7m-logo-icon.png" alt="" style="width:56px;height:56px;border-radius:14px;flex-shrink:0">
+        <div style="flex:1;min-width:0">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#0B0E14">{{ empresaHero.name }}</div>
+          <div style="font-size:12px;color:#6B7280;margin-top:2px">{{ empresaHero.sub }}</div>
+        </div>
+        <span style="flex-shrink:0;font-size:10.5px;font-weight:600;color:#A9791A;background:rgba(201,154,46,.12);border:1px solid rgba(201,154,46,.3);padding:6px 10px;border-radius:8px">{{ empresaHero.since }}</span>
+      </div>
+      </sc-if>
+
+      <!-- TAREFAS list -->
+      <sc-if value="{{ isTarefas }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <sc-for list="{{ tasks }}" as="t" hint-placeholder-count="5">
+          <div style="background:#FFFFFF;border:1px solid rgba(15,23,42,.08);border-radius:15px;padding:14px 15px">
+            <div style="display:flex;align-items:flex-start;gap:12px">
+              <button onclick="{{ t.toggle }}" style="flex-shrink:0;margin-top:1px;width:24px;height:24px;border-radius:8px;background:{{ t.boxBg }};border:1.8px solid {{ t.boxBorder }};display:flex;align-items:center;justify-content:center;font-size:13px;color:#0B2149;cursor:pointer">{{ t.check }}</button>
+              <div style="flex:1;min-width:0">
+                <div style="font-size:14.5px;font-weight:600;color:{{ t.titleColor }};line-height:1.35">{{ t.title }}</div>
+                <div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:7px;align-items:center">
+                  <span style="font-size:10.5px;font-weight:700;color:{{ t.prioColor }};background:{{ t.prioBg }};padding:4px 9px;border-radius:7px">{{ t.prio }}</span>
+                  <span style="font-size:11px;color:#6B7280">◷ {{ t.prazo }}</span>
+                  <sc-if value="{{ t.tempo }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px;color:#6B7280">· {{ t.tempo }}</span></sc-if>
+                  <sc-if value="{{ t.hasImpacto }}" hint-placeholder-val="{{ true }}"><span style="font-size:11px;color:#0AA6FF">↗ {{ t.impacto }}</span></sc-if>
+                </div>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      </sc-if>
+
+      <!-- GENERIC SECTIONS -->
+      <sc-if value="{{ showSections }}" hint-placeholder-val="{{ false }}">
+      <div>
+        <sc-for list="{{ screenSections }}" as="s" hint-placeholder-count="3">
+          <div style="margin-top:18px">
+            <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#6B7280;margin-bottom:9px">{{ s.header }}</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ s.rows }}" as="r" hint-placeholder-count="2">
+                <div style="display:flex;align-items:center;gap:13px;padding:13px 15px;background:#FFFFFF;border:1px solid rgba(15,23,42,.08);border-radius:14px">
+                  <div style="flex-shrink:0;width:38px;height:38px;border-radius:11px;background:{{ r.iconBg }};display:flex;align-items:center;justify-content:center;font-size:16px;color:#0B0E14">{{ r.icon }}</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14px;font-weight:600;color:#0B0E14">{{ r.title }}</div>
+                    <sc-if value="{{ r.sub }}" hint-placeholder-val="{{ true }}"><div style="font-size:11.5px;color:#6B7280;margin-top:2px">{{ r.sub }}</div></sc-if>
+                  </div>
+                  <sc-if value="{{ r.right }}" hint-placeholder-val="{{ true }}"><div style="flex-shrink:0;font-size:11.5px;font-weight:700;color:{{ r.rightColor }};background:{{ r.rightBg }};padding:5px 10px;border-radius:8px;white-space:nowrap">{{ r.right }}</div></sc-if>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      </sc-if>
+
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ============ BUSINESS SCAN ============ -->
+  <sc-if value="{{ scanOpen }}" hint-placeholder-val="{{ true }}">
+  <div style="position:absolute;inset:0;z-index:70;background:#ECF0F6;display:flex;flex-direction:column;animation:ovin .28s ease">
+
+    <sc-if value="{{ scanIntro }}" hint-placeholder-val="{{ true }}">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px">
+      <img src="assets/7m-advisory-lockup.jpeg" alt="7M Advisory" style="width:100%;max-width:230px;height:auto;border-radius:16px;animation:pop .5s ease">
+      <div style="margin-top:20px;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.18em;color:#A9791A">{{ sx.introTag }}</div>
+      <div style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:27px;color:#0B0E14;line-height:1.2;max-width:340px;text-wrap:balance">{{ sx.introTitle }}</div>
+      <div style="margin-top:16px;font-size:14px;color:#4B5563;line-height:1.6;max-width:330px">{{ sx.introText }}</div>
+      <div style="margin-top:22px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <span style="border:1px solid rgba(15,23,42,.12);background:#EEF1F6;border-radius:99px;padding:7px 14px;font-size:11.5px;color:#374151">◷ {{ sx.p1 }}</span>
+        <span style="border:1px solid rgba(15,23,42,.12);background:#EEF1F6;border-radius:99px;padding:7px 14px;font-size:11.5px;color:#374151">◆ {{ sx.p2 }}</span>
+        <span style="border:1px solid rgba(15,23,42,.12);background:#EEF1F6;border-radius:99px;padding:7px 14px;font-size:11.5px;color:#374151">✦ {{ sx.p3 }}</span>
+      </div>
+      <button onclick="{{ startScan }}" style="margin-top:30px;width:100%;max-width:340px;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;border:none;padding:16px;border-radius:14px;font-family:'Space Grotesk';font-weight:700;font-size:16px;cursor:pointer">{{ sx.introCta }} →</button>
+      <button onclick="{{ closeScan }}" style="margin-top:14px;background:none;border:none;color:#6B7280;font-size:13px;cursor:pointer;text-decoration:underline dotted;text-underline-offset:3px">{{ sx.introSkip }}</button>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ scanAsking }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;height:100%">
+      <div style="flex-shrink:0;padding:58px 20px 16px;background:rgba(255,255,255,.82);backdrop-filter:blur(14px);border-bottom:1px solid rgba(15,23,42,.08)">
+        <div style="display:flex;align-items:center;gap:12px">
+          <button onclick="{{ scanBack }}" style="width:38px;height:38px;border-radius:11px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="12" height="20" viewBox="0 0 12 20" fill="none"><path d="M10 2L2 10l8 8" stroke="#334155" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          <div style="flex:1">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#0B0E14">{{ sx.title }}</div>
+            <div style="font-family:'JetBrains Mono';font-size:10px;color:#6B7280;margin-top:2px">{{ scanQ.num }}</div>
+          </div>
+        </div>
+        <div style="margin-top:14px;height:6px;border-radius:99px;background:rgba(15,23,42,.09);overflow:hidden"><div style="height:100%;width:{{ scanQ.pct }};background:linear-gradient(90deg,#C99A2E,#F7DC85);border-radius:99px;transition:width .35s ease"></div></div>
+      </div>
+      <div class="appscroll" style="flex:1;min-height:0;overflow-y:auto;padding:30px 22px 40px">
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:23px;color:#0B0E14;line-height:1.3;text-wrap:balance">{{ scanQ.q }}</div>
+        <div style="margin-top:24px;display:flex;flex-direction:column;gap:11px">
+          <sc-for list="{{ scanQ.opts }}" as="o" hint-placeholder-count="4">
+            <button onclick="{{ o.pick }}" style="text-align:left;background:#FFFFFF;border:1px solid rgba(15,23,42,.1);border-radius:15px;padding:17px 18px;font-size:15px;font-weight:600;color:#0B0E14;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px">
+              <span>{{ o.label }}</span>
+              <svg width="8" height="14" viewBox="0 0 8 14" style="flex-shrink:0;opacity:.4"><path d="M1 1l6 6-6 6" stroke="#0B0E14" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ scanAnalyzing }}" hint-placeholder-val="{{ false }}">
+    <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px 28px">
+      <div style="width:56px;height:56px;border-radius:50%;border:3px solid rgba(244,212,138,.2);border-top-color:#A9791A;animation:spin .9s linear infinite"></div>
+      <div style="margin-top:26px;font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#0B0E14">{{ sx.analyzing }}</div>
+      <div style="margin-top:10px;font-size:13.5px;color:#6B7280;line-height:1.5;max-width:290px">{{ sx.analyzingSub }}</div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{ scanDone }}" hint-placeholder-val="{{ false }}">
+    <div class="appscroll" style="flex:1;min-height:0;overflow-y:auto;position:relative">
+      <div style="padding:46px 22px 40px;display:flex;flex-direction:column;align-items:stretch">
+        <div style="text-align:center;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#9A7419">{{ sx.doneTag }}</div>
+
+        <!-- STEP HERO -->
+        <div style="margin-top:18px;display:flex;align-items:center;gap:16px;border-radius:20px;border:1px solid rgba(11,33,73,.5);background:linear-gradient(150deg,#0B2149,#12336e);padding:20px;animation:floatUp .5s ease .05s both">
+          <div style="flex-shrink:0;width:66px;height:66px;border-radius:18px;background:linear-gradient(140deg,#C99A2E,#F7DC85);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#0B2149">
+            <span style="font-family:'JetBrains Mono';font-size:9px;letter-spacing:.1em">PASSO</span>
+            <span style="font-family:'Space Grotesk';font-weight:700;font-size:30px;line-height:1">{{ reco.stepN }}</span>
+          </div>
+          <div style="flex:1;min-width:0">
+            <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#F7DC85">{{ sx.stepKick }}</div>
+            <div style="margin-top:3px;font-family:'Space Grotesk';font-weight:700;font-size:23px;color:#fff;line-height:1.1">{{ reco.stepVerb }}</div>
+            <div style="margin-top:4px;font-size:12px;color:rgba(255,255,255,.7)">{{ sx.specKick }} {{ reco.spec }} {{ sx.aiSuffix }}</div>
+          </div>
+        </div>
+
+        <!-- MIRROR -->
+        <div style="margin-top:12px;border-radius:16px;border:1px solid rgba(15,23,42,.1);background:#FFFFFF;padding:16px;animation:floatUp .5s ease .12s both">
+          <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#6B7280">{{ sx.mirrorKick }}</div>
+          <div style="margin-top:6px;font-size:14px;color:#0B0E14;line-height:1.55">{{ reco.mirror }}</div>
+        </div>
+
+        <!-- WHAT WE DO -->
+        <div style="margin-top:12px;border-radius:16px;border:1px solid rgba(15,23,42,.1);background:#FFFFFF;padding:16px;animation:floatUp .5s ease .18s both">
+          <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9A7419">{{ sx.doesKick }}</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:9px">
+            <sc-for list="{{ reco.does }}" as="d" hint-placeholder-count="2">
+              <div style="display:flex;align-items:flex-start;gap:10px;font-size:13.5px;color:#0B0E14;line-height:1.45"><span style="flex-shrink:0;color:#0AA6FF;font-weight:700">✓</span>{{ d }}</div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- PROOF -->
+        <div style="margin-top:16px;animation:floatUp .5s ease .24s both">
+          <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#6B7280;text-align:center">{{ sx.proofKick }}</div>
+          <div style="margin-top:10px;display:flex;gap:9px">
+            <sc-for list="{{ proof }}" as="p" hint-placeholder-count="3">
+              <div style="flex:1;text-align:center;border-radius:14px;border:1px solid rgba(15,23,42,.1);background:#FFFFFF;padding:14px 8px">
+                <div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#0B0E14;line-height:1">{{ p.v }}</div>
+                <div style="margin-top:5px;font-size:10.5px;color:#6B7280;line-height:1.3">{{ p.t }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <!-- PLAN -->
+        <div style="margin-top:18px;border-radius:20px;border:1px solid rgba(201,154,46,.4);background:linear-gradient(150deg,rgba(201,154,46,.12),#FFFFFF);padding:20px;animation:floatUp .5s ease .3s both">
+          <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#9A7419">{{ sx.planKick }}</div>
+          <div style="margin-top:8px;display:flex;align-items:flex-end;justify-content:space-between;gap:12px">
+            <div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#0B0E14;line-height:1">{{ recoPlan.name }}</div>
+              <div style="margin-top:3px;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:#6B7280">{{ recoPlan.tag }}</div>
+            </div>
+            <div style="text-align:right;flex-shrink:0">
+              <span style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#0B0E14">{{ recoPlan.price }}</span>
+              <span style="font-size:12px;color:#6B7280">{{ recoPlan.per }}</span>
+            </div>
+          </div>
+          <div style="margin-top:10px;font-size:13px;color:#374151;line-height:1.5">{{ recoPlan.line }}</div>
+          <div style="margin-top:12px;font-family:'JetBrains Mono';font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6B7280">{{ sx.planIncKick }}</div>
+          <div style="margin-top:8px;display:flex;flex-direction:column;gap:7px">
+            <sc-for list="{{ recoPlan.inc }}" as="it" hint-placeholder-count="3">
+              <div style="display:flex;align-items:flex-start;gap:9px;font-size:13px;color:#0B0E14;line-height:1.4"><span style="flex-shrink:0;color:#9A7419;font-weight:700">◆</span>{{ it }}</div>
+            </sc-for>
+          </div>
+        </div>
+
+        <button onclick="{{ finishScan }}" style="margin-top:18px;width:100%;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;border:none;padding:16px;border-radius:14px;font-family:'Space Grotesk';font-weight:700;font-size:16px;cursor:pointer">{{ sx.doneCta }} {{ recoPlan.name }} →</button>
+        <button onclick="{{ finishScan }}" style="margin-top:12px;width:100%;background:#FFFFFF;border:1px solid rgba(15,23,42,.14);color:#0B0E14;padding:14px;border-radius:13px;font-family:'Space Grotesk';font-weight:700;font-size:14px;cursor:pointer">{{ sx.talkCta }}</button>
+      </div>
+    </div>
+    </sc-if>
+
+  </div>
+  </sc-if>
+
+  <!-- ============ COPILOT ============ -->
+  <sc-if value="{{ showCopilotBtn }}" hint-placeholder-val="{{ false }}">
+  <button onclick="{{ openCopilot }}" style="position:absolute;right:16px;bottom:104px;z-index:38;display:flex;align-items:center;gap:9px;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;border:none;border-radius:999px;padding:13px 17px;font-family:'Space Grotesk';font-weight:700;font-size:14px;cursor:pointer;animation:pulse 2.8s ease infinite">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0B2149" stroke-width="2"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg>
+    {{ t.copilot }}
+  </button>
+  </sc-if>
+
+  <sc-if value="{{ copilotOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:absolute;inset:0;z-index:65;display:flex;flex-direction:column;justify-content:flex-end;animation:ovin .2s ease">
+    <div onclick="{{ closeCopilot }}" style="position:absolute;inset:0;background:rgba(3,8,20,.55)"></div>
+    <div style="position:relative;background:#FFFFFF;border-top:1px solid rgba(15,23,42,.1);border-radius:24px 24px 0 0;max-height:84%;display:flex;flex-direction:column;box-shadow:0 -24px 60px rgba(0,0,0,.5)">
+      <div style="flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:18px 18px 14px;border-bottom:1px solid rgba(15,23,42,.09)">
+        <div style="display:flex;align-items:center;gap:11px">
+          <div style="width:40px;height:40px;border-radius:12px;background:linear-gradient(140deg,#C99A2E,#F7DC85);display:flex;align-items:center;justify-content:center"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="#0B2149" stroke-width="2"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z"/></svg></div>
+          <div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#0B0E14">7M Copilot</div>
+            <div style="font-size:11px;color:#0AA6FF;display:flex;align-items:center;gap:6px"><span style="width:6px;height:6px;border-radius:50%;background:#5ee08a"></span>{{ t.copilotSub }}</div>
+          </div>
+        </div>
+        <button onclick="{{ closeCopilot }}" style="width:34px;height:34px;border-radius:10px;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);display:flex;align-items:center;justify-content:center;cursor:pointer"><svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M5 5l14 14M19 5L5 19" stroke="#334155" stroke-width="2.2" stroke-linecap="round"/></svg></button>
+      </div>
+      <div class="appscroll" style="flex:1;min-height:0;overflow-y:auto;padding:16px 16px 8px;display:flex;flex-direction:column;gap:11px">
+        <div style="font-family:'JetBrains Mono';font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#6B7280">{{ t.copilotNow }}</div>
+        <sc-for list="{{ copilotCards }}" as="c" hint-placeholder-count="3">
+          <div style="border-radius:15px;border:1px solid rgba(15,23,42,.1);background:#FFFFFF;padding:15px;border-left:3px solid {{ c.accent }}">
+            <div style="display:flex;align-items:center;gap:9px"><span style="font-size:15px;color:{{ c.accent }}">{{ c.icon }}</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#0B0E14">{{ c.title }}</span></div>
+            <div style="margin-top:7px;font-size:12.5px;color:#4B5563;line-height:1.5">{{ c.text }}</div>
+          </div>
+        </sc-for>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ copilotActions }}" as="a" hint-placeholder-count="2">
+            <button onclick="{{ a.go }}" style="display:flex;align-items:center;gap:11px;background:rgba(201,154,46,.12);border:1px solid rgba(201,154,46,.3);border-radius:13px;padding:14px 15px;cursor:pointer;text-align:left">
+              <span style="font-size:15px;color:#A9791A">{{ a.icon }}</span>
+              <span style="flex:1;font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#0B0E14">{{ a.label }}</span>
+              <svg width="8" height="14" viewBox="0 0 8 14" style="flex-shrink:0"><path d="M1 1l6 6-6 6" stroke="rgba(15,23,42,.3)" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="flex-shrink:0;padding:12px 16px calc(16px + env(safe-area-inset-bottom));border-top:1px solid rgba(15,23,42,.09)">
+        <div style="display:flex;gap:9px;align-items:center;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);border-radius:14px;padding:6px 6px 6px 15px">
+          <div style="flex:1;font-size:13.5px;color:#9AA3B2">{{ t.copilotAsk }}</div>
+          <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,#C99A2E,#F7DC85);display:flex;align-items:center;justify-content:center"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="#0B2149" stroke-width="2.2"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:&quot;1280px&quot;,&quot;height&quot;:&quot;900px&quot;}}">
+class Component extends DCLogic {
+  state = { lang:'pt', tab:'home', openStep:null, more:false, screen:null,
+    scan:'intro', scanStep:0, scanAns:{}, reveal:0, score:612, copilot:false,
+    tasks:[
+      {pt:'Aprovar o mapa de público-alvo',en:'Approve the target-audience map',prio:0,przPt:'Hoje',przEn:'Today',tempo:'15 min',impPt:'+ Growth Score',impEn:'+ Growth Score',spec:'Marketing',done:false},
+      {pt:'Enviar faturamento do trimestre',en:'Send quarterly revenue data',prio:0,przPt:'Amanhã',przEn:'Tomorrow',tempo:'10 min',impPt:'Capitalizar',impEn:'Capitalise',spec:'Contador',done:false},
+      {pt:'Revisar script de conversão no WhatsApp',en:'Review WhatsApp conversion script',prio:1,przPt:'2 dias',przEn:'2 days',tempo:'20 min',impPt:'Vendas',impEn:'Sales',spec:'Marketing',done:false},
+      {pt:'Delegar a agenda operacional',en:'Delegate the operations schedule',prio:1,przPt:'Esta semana',przEn:'This week',tempo:'30 min',impPt:'Gestão',impEn:'Management',spec:'Operações',done:false},
+      {pt:'Concluir a conciliação contábil',en:'Finish accounting reconciliation',prio:1,przPt:'Concluído',przEn:'Done',tempo:'',impPt:'',impEn:'',spec:'Contador',done:true},
+    ],
+    chat:[ {role:'ai', pt:'Olá! Sou a 7M AI. Conheço o seu momento e o seu Método 7M — sei exatamente qual é o seu próximo passo e quem conduz. Por onde quer começar?', en:'Hi! I am 7M AI. I know your moment and your 7M Method — exactly what your next step is and who leads it. Where would you like to start?'} ] };
+
+  L(pt,en){ return this.state.lang==='pt'?pt:en; }
+
+  componentWillUnmount(){ cancelAnimationFrame(this._raf); clearTimeout(this._t); }
+  animateReveal(){
+    cancelAnimationFrame(this._raf);
+    const start=performance.now(), dur=1500;
+    const tick=(now)=>{ let p=Math.min(1,(now-start)/dur); p=1-Math.pow(1-p,3); this.setState({reveal:p}); if(p<1) this._raf=requestAnimationFrame(tick); };
+    this.setState({reveal:0}); this._raf=requestAnimationFrame(tick);
+  }
+  computeScore(){ const a=this.state.scanAns; const pts=Object.values(a).reduce((x,y)=>x+(y||0),0); return 480+Math.round(pts/12*260); }
+  startScan(){ this.setState({scan:'q',scanStep:0,scanAns:{}}); }
+  scanBack(){ this.setState(s=>({scanStep:Math.max(0,s.scanStep-1)})); }
+  pickScan(k,p){
+    this.setState(s=>({scanAns:{...s.scanAns,[k]:p}}));
+    if(this.state.scanStep>=1){
+      this.setState({scan:'analyzing'});
+      clearTimeout(this._t);
+      this._t=setTimeout(()=>{ const sc=this.computeScore(); this.setState({scan:'done',score:sc}); this.animateReveal(); },1700);
+    } else {
+      this.setState(s=>({scanStep:s.scanStep+1}));
+    }
+  }
+  closeScan(){ this.setState({scan:null,reveal:1}); }
+  finishScan(){ this.setState({scan:null,reveal:1,tab:'home',copilot:false}); }
+
+  renderVals(){
+    const lang=this.state.lang, tab=this.state.tab;
+    const L=(pt,en)=>lang==='pt'?pt:en;
+    const gold='#A9791A', blue='#0AA6FF';
+
+    // ---- SCORE + MONEY (driven by Business Scan) ----
+    const fmt=(n)=>'R$ '+Math.round(n).toLocaleString('pt-BR');
+    const score=this.state.score;
+    const bandInfo = score<560?{pt:'Frágil — alto risco',en:'Fragile — high risk',c:'#F4776A'}
+                   : score<650?{pt:'Regular — em evolução',en:'Fair — improving',c:'#A9791A'}
+                   : score<740?{pt:'Bom — acelerando',en:'Good — accelerating',c:'#5ee08a'}
+                   : {pt:'Forte — pronto p/ escalar',en:'Strong — ready to scale',c:'#5ee08a'};
+
+    // ---- BUSINESS SCAN ----
+    const scanPhase=this.state.scan;
+    const scanQsRaw=[
+      {k:'porte',q:L('Qual o porte da sua empresa hoje?','What size is your company today?'),opts:[
+        [L('Pequeno — MEI ou micro','Small — solo or micro'),0],
+        [L('Médio — em crescimento','Mid — growing'),1],
+        [L('Grande — consolidado','Large — established'),2]]},
+      {k:'dor',q:L('Qual é o seu maior obstáculo para crescer agora?','What is your biggest obstacle to growth right now?'),opts:[
+        [L('Faltam clientes novos e previsibilidade de vendas','Not enough new customers / predictable sales'),0],
+        [L('A empresa depende de mim para tudo','The business depends on me for everything'),1],
+        [L('Caixa apertado, não sei precificar','Tight cash, unsure how to price'),2],
+        [L('Não consigo crédito ou capital para crescer','Can’t access credit or capital to grow'),3],
+        [L('Quero escalar, abrir filial ou franquear','Want to scale, open branches or franchise'),4],
+        [L('Quero valorizar, vender ou captar sócio','Want to value up, sell or raise'),5]]},
+    ];
+    const sqi=this.state.scanStep;
+    const sq=scanQsRaw[sqi]||scanQsRaw[0];
+    const scanQ={ q:sq.q, num:L('Pergunta '+(sqi+1)+' de 2','Question '+(sqi+1)+' of 2'), pct:Math.round((sqi+1)/2*100)+'%',
+      opts:sq.opts.map(([label,p])=>({label, pick:()=>this.pickScan(sq.k,p)})) };
+
+    // ---- METHOD 7M steps (real data) ----
+    const stepData=[
+      {n:'1',verb:L('Diagnosticar','Diagnose'),phase:L('Estruturar','Structure'),spec:L('Administrador de Empresas','Business Manager'),does:[L('Raio-x do negócio e plano de 12 meses','Business x-ray and a 12-month plan'),L('Público-alvo, precificação e concorrência','Audience, pricing and competition')]},
+      {n:'2',verb:L('Qualificar','Qualify'),phase:L('Estruturar','Structure'),spec:L('Administrador de Empresas','Business Manager'),does:[L('Capacita dono e equipe em gestão','Trains owner and team in management'),L('Faz o negócio rodar sem depender de você','Makes the business run without you')]},
+      {n:'3',verb:L('Organizar','Organise'),phase:L('Estruturar','Structure'),spec:L('Contador','Accountant'),does:[L('Fluxo de caixa e formalização em ordem','Cash flow and formalisation in order'),L('Prepara a empresa para crédito com credibilidade','Gets you credit-ready with credibility')]},
+      {n:'4',verb:L('Crescer','Grow'),phase:L('Crescer','Grow'),spec:L('Especialista de Growth & Marketing','Growth & Marketing Specialist'),does:[L('Marketing, tráfego e funil de vendas','Marketing, paid traffic and sales funnel'),L('Constrói o motor de receita previsível','Builds a predictable revenue engine')]},
+      {n:'5',verb:L('Capitalizar','Capitalise'),phase:L('Crescer','Grow'),spec:L('Assessor Financeiro','Financial Advisor'),does:[L('Acesso a crédito e capital nas melhores condições','Access to credit and capital on best terms'),L('Uso planejado do dinheiro para crescer','Planned use of money to grow')]},
+      {n:'6',verb:L('Escalar','Scale'),phase:L('Escalar','Scale'),spec:L('Operações & Escala','Operations & Scale'),does:[L('Padronização para filiais e franquia','Standardisation for branches and franchise'),L('Um negócio que se replica','A business that replicates itself')]},
+      {n:'7',verb:L('Valorizar','Value'),phase:L('Topo','Peak'),spec:L('Especialista em Investimentos','Investment Specialist'),does:[L('Valuation, governança e captação','Valuation, governance and fundraising'),L('A empresa vira patrimônio que se vende','The company becomes sellable equity')]},
+    ];
+    const dorToStep=[4,2,3,5,6,7];              // dor index → step number
+    const dorMirror=[
+      L('Sem clientes novos previsíveis, todo mês recomeça do zero. O caminho é construir o motor de aquisição.','Without predictable new customers every month starts from zero. The path is building the acquisition engine.'),
+      L('Enquanto tudo passa por você, a empresa não cresce — ela te consome. Vamos tirar você do operacional.','While everything runs through you, the business can’t grow — it consumes you. Let’s get you out of operations.'),
+      L('Sem caixa e preço sob controle, crescer vira risco. Primeiro organizamos a base financeira.','Without cash and pricing under control, growing is risky. First we organise the financial base.'),
+      L('Sem capital, boas oportunidades passam. Com a casa em ordem, destravamos crédito nas melhores condições.','Without capital, good opportunities pass. With the house in order, we unlock credit on the best terms.'),
+      L('Escalar sem padrão quebra a operação. Estruturamos o negócio para replicar com segurança.','Scaling without a standard breaks operations. We structure the business to replicate safely.'),
+      L('Para valer mais e vender bem, falta governança e valuation. Preparamos a empresa como ativo.','To be worth more and sell well, you need governance and valuation. We prepare the company as an asset.'),
+    ];
+    const porteIdx=this.state.scanAns.porte ?? 0;
+    const dorIdx=this.state.scanAns.dor ?? 0;
+    const recoStep=stepData[dorToStep[dorIdx]-1];
+
+    // ---- PLANS by porte (real: Entrada R$497; a partir de R$1.000) ----
+    const plans=[
+      {name:'7M Start',tag:L('Pequeno · MEI e micro','Small · solo & micro'),price:'R$ 497',per:L('/mês','/mo'),
+        line:L('Organize o caixa, saia do operacional e monte seu primeiro funil.','Organise cash, exit operations, build your first funnel.'),
+        inc:[L('Diagnóstico + plano de 12 meses','Diagnosis + 12-month plan'),L('Passos 1 a 3 do Método 7M','Steps 1–3 of the 7M Method'),L('Growth Manager e agentes de IA','Growth Manager and AI agents')]},
+      {name:'7M Growth',tag:L('Médio · em crescimento','Mid · growing'),price:L('a partir de R$ 1.000','from R$ 1,000'),per:L('/mês','/mo'),
+        line:L('Profissionalize a gestão, escale marketing e destrave capital.','Professionalise management, scale marketing, unlock capital.'),
+        inc:[L('Método 7M completo (passos 1 a 5)','Full 7M Method (steps 1–5)'),L('Marketing e vendas com método','Marketing and sales with method'),L('Acesso a crédito e capital','Access to credit and capital')],best:true},
+      {name:'7M Elite',tag:L('Grande · consolidado','Large · established'),price:L('sob consulta','on request'),per:'',
+        line:L('Escale, franqueie e transforme a empresa em patrimônio.','Scale, franchise and turn the company into equity.'),
+        inc:[L('Método completo + escala e franquia','Full method + scale and franchise'),L('Valuation, governança e M&A','Valuation, governance and M&A'),L('Especialistas dedicados + rede 7M','Dedicated specialists + 7M network')]},
+    ];
+    const recoPlan=plans[porteIdx];
+
+    const proof=[
+      {v:'+38%',t:L('receita média em 12 meses','avg revenue in 12 months')},
+      {v:'12h',t:L('/semana liberadas do dono','/week freed for the owner')},
+      {v:'60%',t:L('das PMEs fecham em 5 anos — sem método','of SMBs close in 5 yrs — without method')},
+    ];
+
+    const sx={
+      introTag:'7M ADVISORY',
+      introTitle:L('O caminho mais rápido para escalar a sua empresa.','The fastest path to scale your business.'),
+      introText:L('Duas perguntas. Mostramos exatamente onde você está no Método 7M, quem conduz e o plano certo para o seu momento.','Two questions. We show exactly where you are in the 7M Method, who leads it, and the right plan for your moment.'),
+      introCta:L('Ver meu caminho','See my path'), introSkip:L('Agora não','Not now'),
+      p1:L('2 minutos','2 minutes'), p2:L('Método 7M','7M Method'), p3:L('Plano do seu porte','Plan for your size'),
+      title:L('Seu caminho 7M','Your 7M path'),
+      analyzing:L('Montando seu caminho no Método 7M…','Building your path in the 7M Method…'),
+      analyzingSub:L('Cruzando seu porte e seu obstáculo com os 7 passos.','Matching your size and obstacle to the 7 steps.'),
+      doneTag:L('Seu caminho no Método 7M','Your path in the 7M Method'),
+      stepKick:L('Sua prioridade agora','Your priority now'),
+      mirrorKick:L('Por que aqui','Why here'),
+      doesKick:L('O que fazemos por você','What we do for you'),
+      specKick:L('Conduzido por','Led by'),
+      aiSuffix:L('+ agente de IA','+ AI agent'),
+      proofKick:L('Por que funciona','Why it works'),
+      planKick:L('Plano recomendado para o seu porte','Recommended plan for your size'),
+      planIncKick:L('Inclui','Includes'),
+      doneCta:L('Assinar o','Subscribe to the'),
+      talkCta:L('Falar com um especialista','Talk to a specialist'),
+    };
+    const reco={
+      stepN:recoStep.n, stepVerb:recoStep.verb, stepPhase:recoStep.phase,
+      spec:recoStep.spec, mirror:dorMirror[dorIdx], does:recoStep.does,
+      porteTag:recoPlan.tag, planName:recoPlan.name,
+    };
+
+    // ---- COPILOT ----
+    const copilotCards=[
+      {icon:'★',accent:'#F7DC85',title:L('Passo '+recoStep.n+' · '+recoStep.verb,'Step '+recoStep.n+' · '+recoStep.verb),text:L('É o passo do Método 7M que destrava o seu momento agora. Conduzido pelo '+recoStep.spec+'.','This is the 7M Method step that unlocks your moment now. Led by the '+recoStep.spec+'.')},
+      {icon:'◆',accent:'#0AA6FF',title:recoPlan.name,text:L('Plano recomendado para o seu porte ('+recoPlan.tag+').','Recommended plan for your size ('+recoPlan.tag+').')},
+      {icon:'✦',accent:'#5ee08a',title:L('Faça o Business Scan','Take the Business Scan'),text:L('Duas perguntas para confirmar seu caminho e receber o plano detalhado.','Two questions to confirm your path and get your detailed plan.')},
+    ];
+    const copilotActions=[
+      {icon:'★',label:L('Ver meu caminho 7M','See my 7M path'),go:()=>this.setState({copilot:false,scan:'intro'})},
+      {icon:'✦',label:L('Falar com a 7M AI','Talk to 7M AI'),go:()=>this.setState({copilot:false,tab:'ai',screen:null,more:false})},
+    ];
+
+    // ---- STEPS ----
+    const rawSteps=[
+      {n:'7M1',verb:L('Diagnosticar','Diagnose'),role:L('7M AI · Growth Analyst','7M AI · Growth Analyst'),name:'7M AI',av:'assets/dir-marcelo.jpg',pct:100,status:'done',
+        short:L('Raio-x do negócio e Growth Score inicial.','Business x-ray and initial Growth Score.'),
+        obj:L('Mapeamos toda a sua operação e calculamos seu Growth Score com base em princípios de análise de crédito bancário — saúde financeira, previsibilidade, risco e capacidade de crescer.','We mapped your whole operation and computed your Growth Score using bank credit-analysis principles — financial health, predictability, risk and capacity to grow.'),
+        deadline:L('Concluído','Done'),
+        ck:[['Conectar dados financeiros',1],['Questionário de maturidade',1],['Cálculo do Growth Score',1],['Relatório de diagnóstico',1]]},
+      {n:'7M2',verb:L('Qualificar','Qualify'),role:L('Contador','Accountant'),name:'Alexandre Nunes',av:'assets/dir-alexandre.jpg',pct:100,status:'done',
+        short:L('Formalização, enquadramento e dados limpos.','Formalisation, tax framing and clean data.'),
+        obj:L('Regularizamos a estrutura fiscal e organizamos os dados contábeis para que toda decisão a partir daqui seja baseada em números confiáveis.','We regularised the tax structure and organised the accounting data so every decision from here is based on reliable numbers.'),
+        deadline:L('Concluído','Done'),
+        ck:[['Revisão de enquadramento fiscal',1],['Organização do plano de contas',1],['Conciliação dos últimos 12 meses',1]]},
+      {n:'7M3',verb:L('Organizar','Organise'),role:L('Administrativo','Operations'),name:'Paloma Freitas',av:'assets/dir-paloma.jpg',pct:70,status:'doing',
+        short:L('Processos, gestão e caixa sob controle.','Processes, management and cash under control.'),
+        obj:L('Estruturamos os processos-chave e o controle de caixa. Faltam dois itens para você deixar de depender de si mesmo no dia a dia.','We are structuring the key processes and cash control. Two items remain so the business stops depending on you day to day.'),
+        deadline:L('faltam 12 dias','12 days left'),
+        ck:[['Fluxo de caixa semanal',1],['Padrão de atendimento',1],['Delegação de agenda',0],['Indicadores operacionais',0]]},
+      {n:'7M4',verb:L('Crescer','Grow'),role:L('Marketing','Marketing'),name:'Brenda Correia',av:'assets/dir-brenda.jpg',pct:0,status:'next',
+        short:L('Funil de vendas e prospecção previsível.','Predictable sales funnel and prospecting.'),
+        obj:L('Aqui está o seu maior gargalo hoje. Vamos começar com uma análise detalhada do seu público e montar uma máquina de prospecção de leads previsível.','This is your biggest bottleneck today. We start with a detailed audience analysis and build a predictable lead-prospecting machine.'),
+        deadline:L('pronto p/ iniciar','ready to start'),
+        ck:[['Análise detalhada do público-alvo',0],['Mapa de canais de aquisição',0],['Campanha de prospecção de leads',0],['Funil e metas de conversão',0]]},
+      {n:'7M5',verb:L('Capitalizar','Capitalise'),role:L('Gestor de Capital','Capital Manager'),name:'Marcos Vidal',av:'assets/dir-marcos.jpg',pct:0,status:'locked',
+        short:L('Acesso a crédito, capital e investimento.','Access to credit, capital and investment.'),
+        obj:L('Com receita previsível, estruturamos acesso a crédito e investimento nas melhores condições.','With predictable revenue, we structure access to credit and investment on the best terms.'),
+        deadline:L('bloqueado','locked'),
+        ck:[['Dossiê de crédito',0],['Análise de linhas disponíveis',0],['Estratégia de capital',0]]},
+      {n:'7M6',verb:L('Escalar','Scale'),role:L('RH & Operações','HR & Operations'),name:'Marcelo Reis',av:'assets/dir-marcelo.jpg',pct:0,status:'locked',
+        short:L('Padronização para novas unidades.','Standardisation for new units.'),
+        obj:L('Transformamos o negócio em um sistema replicável — pronto para novas unidades ou franquia.','We turn the business into a replicable system — ready for new units or franchising.'),
+        deadline:L('bloqueado','locked'),
+        ck:[['Manual de operações',0],['Estrutura de time',0],['Playbook de expansão',0]]},
+      {n:'7M7',verb:L('Valorizar','Value'),role:L('Jurídico Tributário','Tax & Legal'),name:'Alexandre Nunes',av:'assets/dir-alexandre.jpg',pct:0,status:'locked',
+        short:L('Governança, valuation e captação.','Governance, valuation and fundraising.'),
+        obj:L('Preparamos governança e valuation para captação ou venda com o maior valor possível.','We prepare governance and valuation for fundraising or sale at the highest possible value.'),
+        deadline:L('bloqueado','locked'),
+        ck:[['Governança e compliance',0],['Cálculo de valuation',0],['Preparação para due diligence',0]]},
+    ];
+    const statusMeta={
+      done:{label:L('Concluído','Done'),icon:'✓',accent:gold,chip:'rgba(201,154,46,.16)'},
+      doing:{label:L('Em andamento','In progress'),icon:'◐',accent:gold,chip:'rgba(201,154,46,.16)'},
+      next:{label:L('Próximo passo','Next step'),icon:'▶',accent:blue,chip:'rgba(143,180,255,.18)'},
+      locked:{label:L('Bloqueado','Locked'),icon:'🔒',accent:'#6b82a6',chip:'#EEF1F6'},
+    };
+    const steps=rawSteps.map((s,i)=>{
+      const m=statusMeta[s.status];
+      return {
+        n:s.n, verb:s.verb, short:s.short, specialistRole:s.role, specialistName:s.name, avatar:s.av,
+        accent:m.accent, chipBg:m.chip, statusIcon:m.icon, statusLabel:m.label,
+        pctLabel:s.pct+'%',
+        rowBg: s.status==='next'?'rgba(143,180,255,.07)':'#FFFFFF',
+        rowBorder: s.status==='next'?'rgba(143,180,255,.35)':'rgba(15,23,42,.08)',
+        open:()=>this.setState({openStep:i}),
+      };
+    });
+    const doneCount=rawSteps.filter(s=>s.status==='done').length;
+    const overallPctNum=Math.round(rawSteps.reduce((a,s)=>a+s.pct,0)/rawSteps.length);
+
+    // step detail
+    const oi=this.state.openStep;
+    let sd=null;
+    if(oi!==null){
+      const s=rawSteps[oi], m=statusMeta[s.status];
+      sd={
+        n:s.n, verb:s.verb, statusLabel:m.label, accent:m.accent, objetivo:s.obj,
+        specialistName:s.name, specialistRole:s.role, avatar:s.av,
+        avatarEl:React.createElement('img',{src:s.av,alt:'',style:{width:48,height:48,borderRadius:12,objectFit:'cover',flexShrink:0}}),
+        pctLabel:s.pct+'%', deadline:s.deadline,
+        ctaLabel: s.status==='next'?L('Iniciar esta etapa','Start this step'):s.status==='done'?L('Ver relatório','View report'):L('Voltar','Back'),
+        checklist:s.ck.map(([txt,done])=>({txt,check:done?'✓':'',
+          boxBg:done?gold:'transparent', boxBorder:done?gold:'rgba(15,23,42,.18)',
+          txtColor:done?'#6B7280':'#0B0E14'})),
+        resources:[
+          {icon:'📄',label:L('Templates e planilhas','Templates & spreadsheets')},
+          {icon:'▶',label:L('Vídeos do método','Method videos')},
+          {icon:'✦',label:L('Assistente 7M AI desta etapa','7M AI assistant for this step')},
+        ],
+      };
+    }
+
+    // ---- CARDS ----
+    const cards=[
+      {icon:'◆',iconBg:'rgba(201,154,46,.18)',value:String(score),label:L('Growth Score','Growth Score'),delta:L(bandInfo.pt.split('—')[0].trim(),bandInfo.en.split('—')[0].trim()),deltaColor:bandInfo.c},
+      {icon:'€',iconBg:'rgba(94,224,138,.16)',value:'R$ 84,2k',label:L('Receita · mês','Revenue · month'),delta:'+6%',deltaColor:'#5ee08a'},
+      {icon:'♟',iconBg:'rgba(143,180,255,.16)',value:'312',label:L('Clientes ativos','Active customers'),delta:'+4',deltaColor:'#5ee08a'},
+      {icon:'▲',iconBg:'rgba(201,154,46,.18)',value:L('7M · Organizar','7M · Organise'),label:L('Etapa atual · 70%','Current step · 70%'),delta:'',deltaColor:gold},
+      {icon:'●',iconBg:'rgba(143,180,255,.16)',value:'Marcelo R.',label:L('Growth Manager · online','Growth Manager · online'),delta:'',deltaColor:'#5ee08a'},
+      {icon:'✦',iconBg:'rgba(143,180,255,.16)',value:L('3 insights','3 insights'),label:L('7M AI · novos','7M AI · new'),delta:L('novo','new'),deltaColor:blue},
+    ];
+
+    // ---- CEO ----
+    const ceo=[
+      {n:'01',label:L('Saúde da empresa','Company health'),value:'78/100',tag:L('Estável','Stable'),tagColor:'#5ee08a',tagBg:'rgba(94,224,138,.14)'},
+      {n:'02',label:L('Crescimento','Growth'),value:'+6%',tag:L('Desacelerando','Slowing'),tagColor:gold,tagBg:'rgba(201,154,46,.14)'},
+      {n:'03',label:L('Caixa','Cash runway'),value:L('41 dias','41 days'),tag:L('Atenção','Watch'),tagColor:'#F4A24A',tagBg:'rgba(244,162,74,.14)'},
+      {n:'04',label:L('Oportunidades','Opportunities'),value:'3',tag:L('Aguardando','Waiting'),tagColor:blue,tagBg:'rgba(143,180,255,.14)'},
+      {n:'05',label:L('Próxima prioridade','Next priority'),value:L('Prospecção','Prospecting'),tag:L('Agir','Act now'),tagColor:'#0B2149',tagBg:'#F7DC85'},
+    ];
+
+    // ---- CHAT ----
+    const cannedMap={
+      proximo:L('Seu próximo passo é o Passo '+recoStep.n+' · '+recoStep.verb+', conduzido pelo '+recoStep.spec+' com apoio da 7M AI. Na prática: '+recoStep.does[0].toLowerCase()+' e '+recoStep.does[1].toLowerCase()+'. É por aqui que o seu crescimento destrava agora. Quer que eu prepare o plano detalhado?','Your next step is Step '+recoStep.n+' · '+recoStep.verb+', led by the '+recoStep.spec+' with 7M AI support. In practice: '+recoStep.does[0].toLowerCase()+' and '+recoStep.does[1].toLowerCase()+'. This is where your growth unlocks now. Shall I prepare the detailed plan?'),
+      porque:L(reco.mirror+' Pular esse passo é seguir preso no mesmo problema — por isso ele vem primeiro no seu caminho 7M.',reco.mirror+' Skipping this step means staying stuck on the same problem — that is why it comes first on your 7M path.'),
+      plano:L('Para o seu porte, o plano é o '+recoPlan.name+' ('+recoPlan.tag+') — '+recoPlan.price+recoPlan.per+'. Ele inclui '+recoPlan.inc[0].toLowerCase()+' e coloca o especialista certo ao seu lado. É o caminho mais direto para começar — quer assinar agora?','For your size, the plan is '+recoPlan.name+' ('+recoPlan.tag+') — '+recoPlan.price+recoPlan.per+'. It includes '+recoPlan.inc[0].toLowerCase()+' and puts the right specialist by your side. It is the most direct way to start — want to subscribe now?'),
+    };
+    const chips=[
+      {label:L('Qual é o meu próximo passo?','What is my next step?'), key:'proximo'},
+      {label:L('Por que esse passo agora?','Why this step now?'), key:'porque'},
+      {label:L('Qual plano é o meu?','Which plan is mine?'), key:'plano'},
+    ].map(c=>({label:c.label, send:()=>{
+      const q=c.label, ans=cannedMap[c.key];
+      this.setState(s=>({chat:[...s.chat, {role:'user',pt:q,en:q}, {role:'ai',pt:ans,en:ans}]}));
+    }}));
+    const chat=this.state.chat.map(m=>{
+      const isU=m.role==='user';
+      return {text:L(m.pt,m.en),
+        wrap:`display:flex;${isU?'justify-content:flex-end':'justify-content:flex-start'};animation:msgin .3s ease`,
+        bubble:isU
+          ?'max-width:82%;background:linear-gradient(140deg,#C99A2E,#F7DC85);color:#0B2149;font-weight:600;font-size:13.5px;line-height:1.5;padding:12px 15px;border-radius:16px 16px 4px 16px'
+          :'max-width:88%;background:#EEF1F6;border:1px solid rgba(15,23,42,.1);color:#0B0E14;font-size:13.5px;line-height:1.55;padding:13px 15px;border-radius:16px 16px 16px 4px'};
+    });
+
+    // ---- NAV STYLES ----
+    const nav=(id)=>{
+      const on=tab===id;
+      return `display:flex;flex-direction:column;align-items:center;gap:4px;background:none;border:none;cursor:pointer;padding:4px 6px;color:${on?gold:'#6b82a6'};transition:color .15s`;
+    };
+
+    // ===== EXPANDED SCREENS =====
+    const scr=this.state.screen, ib='#EEF1F6';
+    const row=(icon,title,sub,right,rc,rb,iconBg)=>({icon,title,sub:sub||'',right:right||'',rightColor:rc||'#6B7280',rightBg:rb||'transparent',iconBg:iconBg||ib});
+    const sec=(header,rows)=>({header,rows});
+
+    const tasks=this.state.tasks.map((t,i)=>{ const alta=t.prio===0; return {
+      title:L(t.pt,t.en), prio:t.done?L('Feito','Done'):alta?L('Alta','High'):L('Média','Medium'),
+      prioColor:t.done?'#6B7280':alta?'#F4776A':gold, prioBg:t.done?'#EEF1F6':alta?'rgba(244,119,106,.14)':'rgba(201,154,46,.14)',
+      prazo:L(t.przPt,t.przEn), tempo:t.tempo, impacto:L(t.impPt,t.impEn), spec:t.spec, hasImpacto:!!t.impPt,
+      done:t.done, boxBg:t.done?gold:'transparent', boxBorder:t.done?gold:'rgba(255,255,255,.28)', check:t.done?'✓':'',
+      titleColor:t.done?'#6B7280':'#fff',
+      toggle:()=>this.setState(s=>({tasks:s.tasks.map((x,j)=>j===i?{...x,done:!x.done}:x)})),
+    };});
+    const openTasks=tasks.filter(t=>!t.done).length;
+
+    const managerHero={ name:'Marcelo Reis', role:L('Growth Manager · Estratégia & Finanças','Growth Manager · Strategy & Finance'),
+      photo:'assets/dir-marcelo.jpg', status:L('online agora','online now'),
+      photoEl:React.createElement('img',{src:'assets/dir-marcelo.jpg',alt:'',style:{width:60,height:60,borderRadius:16,objectFit:'cover',flexShrink:0}}),
+      actions:[{icon:'💬',label:'Chat'},{icon:'▶',label:L('Vídeo','Video')},{icon:'◉',label:'WhatsApp'},{icon:'▦',label:L('Agenda','Calendar')}] };
+    const financeHero={ label:L('Plano atual','Current plan'), plan:'7M Growth', price:L('R$ 990 /mês','$180 /mo'), status:L('Ativo','Active'), next:L('Próxima cobrança · 01 set','Next charge · Sep 1') };
+    const empresaHero={ name:'7M Advisory', sub:L('Growth Office · Global','Growth Office · Global'), since:L('Cliente desde 2025','Client since 2025') };
+
+    const SD={
+      tarefas:{ title:L('Tarefas','Tasks'), sub:L('Geradas pela 7M AI · '+openTasks+' pendentes','Generated by 7M AI · '+openTasks+' open'), sections:[] },
+      financeiro:{ title:L('Financeiro','Billing'), sub:L('Assinatura e pagamentos','Subscription and payments'), sections:[
+        sec(L('Faturas','Invoices'),[ row('€',L('Agosto 2026','August 2026'),'7M Growth',L('Pago','Paid'),'#5ee08a','rgba(94,224,138,.14)'), row('€',L('Julho 2026','July 2026'),'7M Growth',L('Pago','Paid'),'#5ee08a','rgba(94,224,138,.14)') ]),
+      ]},
+      manager:{ title:L('Growth Manager','Growth Manager'), sub:L('Seu especialista dedicado','Your dedicated specialist'), sections:[
+        sec(L('Próxima reunião','Next meeting'),[ row('▦',L('Revisão do Método 7M','7M Method review'),L('Ter 12 ago · 15:00 · Vídeo','Tue Aug 12 · 3pm · Video'),L('Confirmada','Confirmed'),'#5ee08a','rgba(94,224,138,.14)','rgba(143,180,255,.16)') ]),
+        sec(L('Arquivos','Files'),[ row('📄',L('Diagnóstico 7M.pdf','7M Diagnosis.pdf'),L('2,4 MB · há 3 dias','2.4 MB · 3d ago')), row('📊',L('Plano de prospecção.xlsx','Prospecting plan.xlsx'),L('há 1 dia','1d ago')) ]),
+        sec(L('Histórico','History'),[ row('◍',L('Ajuste do enquadramento fiscal','Tax framing adjustment'),L('Concluído · jul','Done · Jul')), row('◍',L('Meta de Score 750 definida','Score 750 goal set'),L('Concluído · jun','Done · Jun')) ]),
+      ]},
+      empresa:{ title:L('Minha empresa','My company'), sub:L('Perfil, negócio e estratégia','Profile, business and strategy'), sections:[
+        sec(L('Cadastro','Profile'),[ row('◈',L('Perfil da empresa','Company profile'),L('Dados, marca, mercados','Data, brand, markets'),L('Editar','Edit'),gold), row('◉',L('Equipe','Team'),'4 '+L('membros','members'),L('Ver','See'),gold) ]),
+        sec(L('Negócio','Business'),[ row('▦',L('Produtos & Serviços','Products & Services'),L('3 linhas','3 lines')), row('◍',L('Mercados & Segmentos','Markets & Segments'),L('Brasil · Europa','Brazil · Europe')) ]),
+        sec(L('Estratégia','Strategy'),[ row('◆',L('Objetivos & Metas','Goals & Targets'),L('Score 750 · dez/26','Score 750 · Dec/26')), row('▲',L('Indicadores','Indicators'),L('6 KPIs monitorados','6 KPIs tracked')) ]),
+      ]},
+      documentos:{ title:L('Documentos','Documents'), sub:L('Central documental','Document hub'), sections:[
+        sec(L('Diagnóstico','Diagnosis'),[ row('📄',L('Relatório de diagnóstico.pdf','Diagnosis report.pdf'),L('há 2 meses','2mo ago')), row('📄',L('Growth Score inicial.pdf','Initial Growth Score.pdf'),L('há 2 meses','2mo ago')) ]),
+        sec(L('Financeiro','Finance'),[ row('📊',L('Conciliação 12 meses.xlsx','12-month reconciliation.xlsx'),L('há 1 mês','1mo ago')), row('📄',L('Plano de contas.pdf','Chart of accounts.pdf'),L('há 1 mês','1mo ago')) ]),
+        sec(L('Marketing','Marketing'),[ row('📝',L('Mapa de público (rascunho).doc','Audience map (draft).doc'),L('editando','editing'),L('Novo','New'),'#0AA6FF','rgba(143,180,255,.14)') ]),
+      ]},
+      oportunidades:{ title:L('Oportunidades','Opportunities'), sub:L('Personalizadas para você','Tailored to you'), sections:[
+        sec(L('Leads','Leads'),[ row('◉',L('3 leads aguardando contato','3 leads waiting for contact'),L('via campanha de prospecção','from prospecting campaign'),'3','#0B2149',gold,'rgba(201,154,46,.16)') ]),
+        sec(L('Parcerias','Partnerships'),[ row('◍',L('Contador parceiro em Lisboa','Partner accountant in Lisbon'),L('para a expansão Europa','for Europe expansion'),L('Novo','New'),'#0AA6FF','rgba(143,180,255,.14)') ]),
+        sec(L('Editais & Eventos','Grants & Events'),[ row('▦',L('Edital de inovação PME','SME innovation grant'),L('inscrições até 30/09','apply by Sep 30')), row('◆',L('Rodada de negócios 7M Advisory','7M Advisory business round'),L('12 set · online','Sep 12 · online')) ]),
+      ]},
+      marketplace:{ title:'Marketplace', sub:L('Comprar · Vender · Conectar','Buy · Sell · Connect'), sections:[
+        sec(L('Especialistas','Specialists'),[ row('●',L('Consultoria de tráfego pago','Paid traffic consulting'),'7M Advisory Partners','R$ 1.200',gold), row('●',L('Mentoria de gestão','Management mentoring'),L('sob demanda','on demand'),'R$ 800',gold) ]),
+        sec(L('Ferramentas','Tools'),[ row('▦',L('CRM integrado 7M','7M integrated CRM'),L('automação de leads','lead automation'),L('Incluído','Included'),'#5ee08a','rgba(94,224,138,.14)') ]),
+        sec(L('Cursos','Courses'),[ row('▶',L('Máquina de prospecção','Prospecting machine'),L('6 aulas','6 lessons'),L('Grátis','Free'),'#0AA6FF','rgba(143,180,255,.14)') ]),
+      ]},
+      circle:{ title:'Business Circle', sub:L('Comunidade de empresários','Entrepreneurs community'), sections:[
+        sec(L('Eventos','Events'),[ row('▦',L('Encontro 7M Advisory · São Paulo','7M Advisory meetup · São Paulo'),L('28 ago · presencial','Aug 28 · in person'),L('Vagas','Spots'),gold) ]),
+        sec(L('Networking','Networking'),[ row('◉',L('12 empresários no seu setor','12 entrepreneurs in your sector'),L('conectar','connect')), row('◍',L('3 indicações recebidas','3 referrals received'),L('responder','reply'),'3','#0B2149',gold,'rgba(201,154,46,.16)') ]),
+        sec(L('Rodadas','Rounds'),[ row('◆',L('Rodada de investidores','Investor round'),L('para a etapa Capitalizar','for the Capitalise step'),L('Bloqueado','Locked'),'#6b82a6','#EEF1F6') ]),
+      ]},
+      relatorios:{ title:L('Relatórios','Reports'), sub:L('Mensal · Trimestral · Anual','Monthly · Quarterly · Annual'), sections:[
+        sec(L('Agosto 2026 · resumo','August 2026 · summary'),[ row('€',L('Receita','Revenue'),L('vs. jul +6%','vs Jul +6%'),'R$ 84,2k',gold), row('◉',L('Clientes','Customers'),L('+4 novos','+4 new'),'312',gold), row('◆','Growth Score',L('em evolução','improving'),'612',gold) ]),
+        sec(L('Atenção','Attention'),[ row('▲',L('Pendências','Open items'),L('2 tarefas em atraso','2 overdue tasks'),'2','#F4A24A','rgba(244,162,74,.14)'), row('★',L('Próximas ações','Next actions'),L('iniciar prospecção','start prospecting'),L('Ver','See'),'#0AA6FF','rgba(143,180,255,.14)') ]),
+      ]},
+      notificacoes:{ title:L('Notificações','Notifications'), sub:L('Inteligentes · sem spam','Smart · no spam'), sections:[
+        sec(L('Hoje','Today'),[ row('★',L('Nova prioridade da 7M AI','New 7M AI priority'),L('prospecção de clientes','customer prospecting'),L('agora','now'),'#0AA6FF','','rgba(201,154,46,.16)'), row('💬',L('Marcelo respondeu','Marcelo replied'),L('sobre o plano de prospecção','about the prospecting plan'),'2h') ]),
+        sec(L('Esta semana','This week'),[ row('◆',L('Seu Growth Score subiu','Your Growth Score rose'),'598 → 612','+14','#5ee08a'), row('◆',L('Nova oportunidade','New opportunity'),L('edital de inovação PME','SME innovation grant'),'1d') ]),
+      ]},
+      config:{ title:L('Configurações','Settings'), sub:L('Preferências da conta','Account preferences'), sections:[
+        sec(L('Empresa','Company'),[ row('◈',L('Dados da empresa','Company data'),'',L('Editar','Edit'),gold), row('◉',L('Equipe & permissões','Team & permissions'),L('4 membros · RBAC','4 members · RBAC'),L('Gerir','Manage'),gold) ]),
+        sec(L('Preferências','Preferences'),[ row('🌐',L('Idioma','Language'),lang==='pt'?'Português':'English',L('Trocar','Switch'),gold), row('🔔',L('Notificações','Notifications'),L('inteligentes','smart'),L('Ativo','On'),'#5ee08a','rgba(94,224,138,.14)') ]),
+        sec(L('Integrações','Integrations'),[ row('◉','WhatsApp Business',L('não conectado','not connected'),L('Conectar','Connect'),'#0AA6FF','rgba(143,180,255,.14)'), row('€','Stripe',L('pagamentos','payments'),L('Conectado','Connected'),'#5ee08a','rgba(94,224,138,.14)') ]),
+        sec(L('Segurança','Security'),[ row('🔒',L('Segurança & LGPD/GDPR','Security & GDPR'),L('2FA ativo · criptografia','2FA on · encryption'),L('Ver','See'),gold), row('◍',L('Logs & auditoria','Logs & audit'),'',L('Ver','See'),gold) ]),
+      ]},
+    };
+    const active=SD[scr]||{title:'',sub:'',sections:[]};
+
+    const moreItems=[
+      {key:'tarefas',icon:'✓',label:L('Tarefas','Tasks'),sub:L(openTasks+' pendentes',openTasks+' open')},
+      {key:'empresa',icon:'◈',label:L('Minha empresa','My company'),sub:L('perfil & metas','profile & goals')},
+      {key:'manager',icon:'●',label:'Growth Manager',sub:'Marcelo R.'},
+      {key:'documentos',icon:'📄',label:L('Documentos','Documents'),sub:L('central','hub')},
+      {key:'oportunidades',icon:'◉',label:L('Oportunidades','Opportunities'),sub:L('3 novas','3 new')},
+      {key:'marketplace',icon:'▦',label:'Marketplace',sub:L('comprar & vender','buy & sell')},
+      {key:'circle',icon:'◍',label:'Business Circle',sub:L('comunidade','community')},
+      {key:'relatorios',icon:'▲',label:L('Relatórios','Reports'),sub:L('mês · tri · ano','mo · qtr · yr')},
+      {key:'financeiro',icon:'€',label:L('Financeiro','Billing'),sub:'7M Growth'},
+      {key:'notificacoes',icon:'🔔',label:L('Notificações','Notifications'),sub:L('inteligentes','smart')},
+      {key:'config',icon:'⚙',label:L('Configurações','Settings'),sub:L('conta','account')},
+    ].map(m=>({...m,open:()=>this.setState({screen:m.key,more:false})}));
+
+    return {
+      moreOpen:this.state.more, screenOpen:scr!==null,
+      openMore:()=>this.setState({more:true}), closeMore:()=>this.setState({more:false}),
+      closeScreen:()=>this.setState({screen:null}),
+      moreItems, screenTitle:active.title, screenSub:active.sub, screenSections:active.sections,
+      isManager:scr==='manager', isFinanceiro:scr==='financeiro', isEmpresa:scr==='empresa', isTarefas:scr==='tarefas',
+      showSections: scr!==null && scr!=='tarefas',
+      managerHero, financeHero, empresaHero, tasks,
+      company:{ name:'7M Advisory', sector:L('Sua empresa · Growth Office','Your company · Growth Office'),
+        score:score, band:L(bandInfo.pt,bandInfo.en),
+        meta:L('Meta: Score 750 até dez/26','Goal: Score 750 by Dec/26'),
+        revisao:L('Revisão em 14 dias','Review in 14 days') },
+      scoreDash:`${Math.round(score/1000*339)} 339`,
+      langLabel: lang==='pt'?'EN':'PT',
+      toggleLang:()=>this.setState(s=>({lang:s.lang==='pt'?'en':'pt'})),
+
+      t:{
+        growthScore:'Growth Score', myEvolution:L('Minha evolução no Método 7M','My 7M Method journey'), seeAll:L('Ver tudo','See all'),
+        dashboard:L('Painel','Dashboard'), dashboardSub:L('Sua empresa em 6 números.','Your company in 6 numbers.'),
+        scanTitle:L('Refazer o Business Scan™','Redo the Business Scan™'), scanSub:L('Recalcule seu Growth Score em 2 minutos','Recompute your Growth Score in 2 min'),
+        copilot:L('Copilot','Copilot'), copilotSub:L('sabe tudo da sua empresa','knows your whole business'),
+        copilotNow:L('O que importa agora','What matters right now'), copilotAsk:L('Pergunte qualquer coisa…','Ask anything…'),
+        method:L('Método 7M','7M Method'), methodTitle:L('Do diagnóstico ao patrimônio','From diagnosis to wealth'),
+        methodSub:L('Sete passos, um de cada vez. Cada passo tem um especialista e um resultado — você sempre sabe onde está e qual é o próximo.','Seven steps, one at a time. Each has a specialist and an outcome — you always know where you are and what comes next.'),
+        aiSub:L('online · conhece sua empresa','online · knows your company'), aiPlaceholder:L('Pergunte à 7M AI…','Ask 7M AI…'),
+        ceoKick:L('Cabine do CEO','CEO Cockpit'), ceoTitle:L('Sua empresa em 30 segundos','Your company in 30 seconds'),
+        ceoSub:L('Cinco indicadores. Um olhar. Uma decisão.','Five indicators. One glance. One decision.'),
+        more:L('Mais','More'), moreSub:L('Todas as áreas do seu Growth Office','All areas of your Growth Office'),
+        tabHome:L('Início','Home'), tabPainel:L('Painel','Board'), tabMethod:L('Método','Method'), tabAI:'7M AI', tabCEO:'CEO',
+        specialist:L('Especialista','Specialist'), talk:L('Falar','Talk'),
+        progress:L('Progresso','Progress'), deadline:L('Prazo','Deadline'),
+        checklist:L('Checklist','Checklist'), resources:L('Recursos','Resources'),
+      },
+      nba:{
+        tag:L('Seu próximo passo','Your next step'),
+        title:L('Passo '+recoStep.n+' · '+recoStep.verb+' é a sua prioridade agora.','Step '+recoStep.n+' · '+recoStep.verb+' is your priority now.'),
+        why:dorMirror[dorIdx],
+        rec:L('esse é o passo do Método 7M que destrava o seu momento — conduzido pelo '+recoStep.spec+'. Faça o Business Scan para confirmar e receber o plano detalhado.','this is the 7M Method step that unlocks your moment — led by the '+recoStep.spec+'. Take the Business Scan to confirm and get your detailed plan.'),
+        cta:L('Ver meu caminho','See my path'),
+        roiLabel:L('Fase','Phase'), roi:recoStep.phase,
+        proofLabel:L('Plano recomendado','Recommended plan'), proof:recoPlan.name,
+      },
+      nbaAction:()=>this.setState({scan:'intro'}),
+
+      painelPlanKick:L('Plano recomendado','Recommended plan'), painelPorteKick:L('Seu porte','Your size'),
+      scanOpen: scanPhase!==null, scanIntro: scanPhase==='intro', scanAsking: scanPhase==='q',
+      scanAnalyzing: scanPhase==='analyzing', scanDone: scanPhase==='done',
+      scanQ, sx, reco, recoPlan, proof,
+      startScan:()=>this.startScan(), scanBack:()=>this.scanBack(), closeScan:()=>this.closeScan(), finishScan:()=>this.finishScan(),
+      startScanFromHome:()=>this.setState({scan:'intro'}),
+      showCopilotBtn: scanPhase===null && !this.state.copilot && !this.state.more && scr===null && oi===null,
+      copilotOpen: this.state.copilot, copilotCards, copilotActions,
+      openCopilot:()=>this.setState({copilot:true}), closeCopilot:()=>this.setState({copilot:false}),
+
+      steps, overallPct:overallPctNum+'%',
+      overallLabel:L(`${doneCount} de 7 etapas concluídas · ${overallPctNum}% do método`,`${doneCount} of 7 steps done · ${overallPctNum}% of the method`),
+      cards, ceo, chat, chips,
+      sd, stepOpen: oi!==null,
+      closeStep:()=>this.setState({openStep:null}),
+
+      isHome:tab==='home', isPainel:tab==='painel', isMetodo:tab==='metodo', isAI:tab==='ai', isCEO:tab==='ceo',
+      goHome:()=>this.setState({tab:'home',openStep:null}),
+      goPainel:()=>this.setState({tab:'painel',openStep:null}),
+      goMetodo:()=>this.setState({tab:'metodo',openStep:null}),
+      goAI:()=>this.setState({tab:'ai',openStep:null}),
+      goCEO:()=>this.setState({tab:'ceo',openStep:null}),
+      navHome:nav('home'), navPainel:nav('painel'), navMetodo:nav('metodo'), navAI:nav('ai'), navCEO:nav('ceo'),
+    };
+  }
+}
+</script>
+</body>
+</html>

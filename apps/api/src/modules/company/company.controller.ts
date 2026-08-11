@@ -1,0 +1,39 @@
+import { Controller, Get, Param, ParseIntPipe, Patch } from '@nestjs/common';
+import { Roles } from '../../common/roles.decorator';
+import { CurrentUser, AuthUser } from '../../common/current-user.decorator';
+import { CompanyService } from './company.service';
+
+@Controller('me/company')
+@Roles('client')
+export class CompanyController {
+  constructor(private company: CompanyService) {}
+
+  @Get()
+  getCompany(@CurrentUser() user: AuthUser) {
+    return this.company.getMyCompany(user.sub, user.companyId);
+  }
+
+  @Get('steps')
+  getSteps(@CurrentUser() user: AuthUser) {
+    return this.company.getMySteps(user.sub, user.companyId);
+  }
+
+  @Get('health')
+  getHealth(@CurrentUser() user: AuthUser) {
+    return this.company.getHealth(user.sub, user.companyId);
+  }
+
+  @Get('steps/:n')
+  getStep(@CurrentUser() user: AuthUser, @Param('n', ParseIntPipe) n: number) {
+    return this.company.getStep(user.sub, user.companyId, n);
+  }
+
+  @Patch('steps/:n/checklist/:i')
+  toggleChecklistItem(
+    @CurrentUser() user: AuthUser,
+    @Param('n', ParseIntPipe) n: number,
+    @Param('i', ParseIntPipe) i: number,
+  ) {
+    return this.company.toggleChecklistItem(user.sub, user.companyId, n, i);
+  }
+}

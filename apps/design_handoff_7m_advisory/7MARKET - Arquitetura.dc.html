@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#070f28;font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#e8eaf0}
+  a{color:#C99A2E;text-decoration:none}a:hover{color:#E7C871}
+  ::selection{background:rgba(201,154,46,.32)}
+  .mono{font-family:'JetBrains Mono',monospace}
+  .kick{font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E}
+  h2.sec{font-family:'Space Grotesk';font-weight:700;font-size:38px;letter-spacing:-.025em;color:#fff;margin-top:14px;text-wrap:balance}
+  @media(max-width:900px){
+    .wrap{padding-left:22px !important;padding-right:22px !important}
+    .g2,.g3,.g4,.g6{grid-template-columns:1fr !important}
+    .hero h1{font-size:44px !important}
+    .flow{flex-direction:column !important}
+    .flow .arrow{transform:rotate(90deg) !important}
+  }
+</style>
+</helmet>
+
+<div style="max-width:1180px;margin:0 auto">
+
+  <!-- HERO -->
+  <div class="wrap hero" style="padding:80px 40px 48px">
+    <div style="display:flex;align-items:baseline;gap:3px;margin-bottom:26px">
+      <span style="font-family:'Instrument Serif';font-style:italic;font-size:40px;background:linear-gradient(150deg,#B07E1C,#F4D48A 44%,#9A6E12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:.7">7</span>
+      <span style="font-family:'Space Grotesk';font-weight:700;font-size:24px;letter-spacing:-.03em;color:#fff">Advisory</span>
+      <span class="mono" style="margin-left:14px;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#5a6180">Blueprint · Arquitetura do negócio & plataforma</span>
+    </div>
+    <div class="kick">A tese</div>
+    <h1 style="margin-top:16px;font-family:'Space Grotesk';font-weight:700;font-size:60px;line-height:1.02;letter-spacing:-.035em;color:#fff;max-width:900px;text-wrap:balance">Uma rede de negócios com <span style="font-family:'Instrument Serif';font-style:italic;font-weight:400;background:linear-gradient(150deg,#B07E1C,#F4D48A 44%,#9A6E12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">método, confiança e capital</span>.</h1>
+    <p style="margin-top:22px;font-size:20px;line-height:1.55;color:#aab1c2;max-width:720px;font-weight:500">O 7M Advisory opera em três camadas que se reforçam. A marca cresce por <strong style="color:#fff">praça</strong>, a receita cresce por <strong style="color:#fff">nível</strong>, e a defensabilidade vem de dois ativos nomeados: <strong style="color:#E7C871">7M Seat</strong> (exclusividade) e <strong style="color:#E7C871">7M Verified</strong> (confiança).</p>
+
+    <!-- 3 camadas -->
+    <div class="g3" style="margin-top:40px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <sc-for list="{{ layers }}" as="l" hint-placeholder-count="3">
+        <div style="background:{{ l.bg }};border:1px solid {{ l.border }};border-top:4px solid {{ l.accent }};border-radius:18px;padding:26px">
+          <div class="mono" style="font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:{{ l.accent }}">Camada {{ l.n }}</div>
+          <div style="margin-top:8px;font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">{{ l.name }}</div>
+          <div style="margin-top:4px;font-size:14px;color:#8891a3;font-style:italic">{{ l.tag }}</div>
+          <div style="margin-top:14px;font-size:15px;color:#c2c8d6;line-height:1.5">{{ l.desc }}</div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#9aa2b4"><span style="color:{{ l.accent }};font-weight:700">Entrega:</span> {{ l.owns }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- BENCHMARK -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="kick">De quem herdamos o quê</div>
+    <h2 class="sec">Nada disso é novo — é a melhor combinação de modelos que já funcionam</h2>
+    <div class="g3" style="margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <sc-for list="{{ bench }}" as="b" hint-placeholder-count="6">
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ b.name }}</div>
+          <div style="font-size:13px;color:#8891a3;margin-top:2px">{{ b.what }}</div>
+          <div style="margin-top:14px;display:flex;flex-wrap:wrap;gap:7px">
+            <sc-for list="{{ b.take }}" as="t" hint-placeholder-count="2">
+              <span class="mono" style="font-size:11px;color:#E7C871;background:rgba(201,154,46,.1);border:1px solid rgba(201,154,46,.22);padding:5px 10px;border-radius:999px">{{ t }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- TAXONOMIA -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06);background:#0a1436">
+    <div class="kick">Taxonomia da marca</div>
+    <h2 class="sec">Do institucional ao ativo que o próprio membro divulga</h2>
+    <p style="margin-top:12px;font-size:17px;color:#aab1c2;max-width:720px">Uma marca-mãe, uma abreviação de produto e três eixos de extensão — vertical, geografia e comunidade. Quanto mais para baixo, mais concreto e mais "vendável" pelo membro.</p>
+    <div style="margin-top:32px;display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ tax }}" as="t" hint-placeholder-count="11">
+        <div style="display:flex;align-items:center;gap:20px;background:{{ t.bg }};border:1px solid rgba(255,255,255,.07);border-left:4px solid {{ t.accent }};border-radius:13px;padding:16px 22px">
+          <div class="mono" style="flex-shrink:0;width:150px;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:{{ t.accent }}">{{ t.level }}</div>
+          <div style="flex-shrink:0;width:200px;font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff">{{ t.token }}</div>
+          <div style="flex:1;font-size:14.5px;color:#aab1c2;line-height:1.45">{{ t.use }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ESTRUTURA ORGANIZACIONAL -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="kick">Estrutura organizacional</div>
+    <h2 class="sec">A praça é a unidade que se replica. O Seat é o que a torna defensável.</h2>
+    <div class="flow" style="margin-top:36px;display:flex;align-items:stretch;gap:12px">
+      <sc-for list="{{ units }}" as="u" hint-placeholder-count="4">
+        <div style="flex:1;display:flex;align-items:center;gap:12px">
+          <div style="flex:1;background:rgba(255,255,255,.03);border:1px solid {{ u.border }};border-radius:16px;padding:22px;min-height:200px;display:flex;flex-direction:column">
+            <div class="mono" style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:{{ u.accent }}">{{ u.scope }}</div>
+            <div style="margin-top:8px;font-family:'Space Grotesk';font-weight:700;font-size:21px;color:#fff">{{ u.name }}</div>
+            <div style="margin-top:10px;font-size:14px;color:#aab1c2;line-height:1.5;flex:1">{{ u.desc }}</div>
+            <div class="mono" style="margin-top:12px;font-size:11px;color:{{ u.accent }}">{{ u.metric }}</div>
+          </div>
+          <sc-if value="{{ u.hasArrow }}" hint-placeholder-val="{{ true }}"><div class="arrow" style="flex-shrink:0;font-size:24px;color:#5a6180">→</div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- PAPÉIS -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06);background:#0a1436">
+    <div class="kick">Papéis & governança</div>
+    <h2 class="sec">Quem faz o quê — e o que fica só na sede</h2>
+    <div class="g4" style="margin-top:36px;display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+      <sc-for list="{{ roles }}" as="r" hint-placeholder-count="4">
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;display:flex;flex-direction:column">
+          <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(140deg,{{ r.c1 }},{{ r.c2 }});display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#0a1233">{{ r.i }}</div>
+          <div style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ r.name }}</div>
+          <div style="margin-top:10px;display:flex;flex-direction:column;gap:7px">
+            <sc-for list="{{ r.duties }}" as="d" hint-placeholder-count="3">
+              <div style="display:flex;gap:9px;font-size:13.5px;color:#c2c8d6;line-height:1.4"><span style="color:{{ r.c2 }};flex-shrink:0">•</span>{{ d }}</div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- CADÊNCIA DE RITUAIS -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="kick">Cadência de rituais</div>
+    <h2 class="sec">O que mantém a rede viva — e alimenta o funil</h2>
+    <div class="g3" style="margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+      <sc-for list="{{ rituals }}" as="r" hint-placeholder-count="3">
+        <div style="background:{{ r.bg }};border:1px solid {{ r.border }};border-radius:18px;padding:26px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#fff">{{ r.name }}</div>
+            <span class="mono" style="font-size:11px;color:{{ r.accent }};background:rgba(255,255,255,.05);padding:5px 11px;border-radius:999px">{{ r.freq }}</span>
+          </div>
+          <div style="margin-top:12px;font-size:15px;color:#c2c8d6;line-height:1.5">{{ r.desc }}</div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08);font-size:13px;color:#9aa2b4"><span style="color:{{ r.accent }};font-weight:700">Serve para:</span> {{ r.role }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- CONFIANÇA: VERIFIED + SEAT -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06);background:#0a1436">
+    <div class="kick">Camada de confiança & escassez</div>
+    <h2 class="sec">Os dois ativos que sustentam o plano premium</h2>
+    <div class="g2" style="margin-top:36px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div style="background:radial-gradient(130% 120% at 15% 0%,#0d2136,#0a1436);border:1px solid rgba(143,180,255,.28);border-radius:18px;padding:30px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-size:26px">✓</span><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">7M Verified</div></div>
+        <div style="margin-top:12px;font-size:15px;color:#c2c8d6;line-height:1.55">Empresa com documentação validada. É <strong style="color:#8FB4FF">pré-requisito</strong> para ter Seat, aparecer no marketplace com selo, participar de deals e captar via 7M Capital.</div>
+        <div style="margin-top:16px;font-size:14px;color:#9aa2b4;line-height:1.5">Transforma "confiança" em algo auditável — reduz risco de fraude na rede e vira taxa recorrente de verificação.</div>
+      </div>
+      <div style="background:radial-gradient(130% 120% at 15% 0%,#1a1608,#0a1436);border:1px solid rgba(201,154,46,.32);border-radius:18px;padding:30px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font-size:26px">♟</span><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">7M Seat</div></div>
+        <div style="margin-top:12px;font-size:15px;color:#c2c8d6;line-height:1.55">A cadeira setorial exclusiva de um capítulo. <em style="color:#E7C871">"Tenho a cadeira de arquitetura do 7M São Paulo."</em> Uma frase que o membro repete no mercado — marketing gratuito que justifica o plano mais caro.</div>
+        <div style="margin-top:16px;font-size:14px;color:#9aa2b4;line-height:1.5">Dá nome à exclusividade: transforma um recurso abstrato em ativo concreto, escasso e revendável (lista de espera por setor).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODELO ECONÔMICO -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="kick">Modelo econômico</div>
+    <h2 class="sec">Seis fontes de receita, uma reforça a outra</h2>
+    <div class="g3" style="margin-top:36px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+      <sc-for list="{{ revenue }}" as="r" hint-placeholder-count="6">
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:8px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff">{{ r.name }}</div>
+            <span class="mono" style="font-size:10px;letter-spacing:.06em;color:{{ r.tagColor }};background:{{ r.tagBg }};padding:4px 9px;border-radius:6px">{{ r.type }}</span>
+          </div>
+          <div style="font-size:14px;color:#aab1c2;line-height:1.5">{{ r.desc }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ARQUITETURA DA PLATAFORMA -->
+  <div class="wrap" style="padding:56px 40px;border-top:1px solid rgba(255,255,255,.06);background:#0a1436">
+    <div class="kick">Arquitetura da plataforma</div>
+    <h2 class="sec">Quatro camadas de acesso — o negócio espelhado em software</h2>
+    <p style="margin-top:12px;font-size:17px;color:#aab1c2;max-width:760px">A plataforma que já construímos tem Público, Empreendedor e Admin. Esta arquitetura adiciona um papel intermediário: o <strong style="color:#E7C871">City Leader</strong>, que gerencia a própria praça sem ver a rede inteira.</p>
+    <div style="margin-top:32px;display:flex;flex-direction:column;gap:12px">
+      <sc-for list="{{ access }}" as="a" hint-placeholder-count="4">
+        <div style="display:flex;align-items:flex-start;gap:22px;background:rgba(255,255,255,.03);border:1px solid {{ a.border }};border-left:5px solid {{ a.accent }};border-radius:14px;padding:22px 26px">
+          <div style="flex-shrink:0;width:170px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#fff">{{ a.name }}</div><div class="mono" style="font-size:11px;color:{{ a.accent }};margin-top:3px">{{ a.who }}</div></div>
+          <div style="flex:1;font-size:14.5px;color:#c2c8d6;line-height:1.5">{{ a.sees }}</div>
+          <div style="flex-shrink:0;width:190px;font-size:13px;color:#8891a3;line-height:1.5"><span class="mono" style="font-size:10px;letter-spacing:.08em;color:#5a6180">NÃO VÊ</span><br>{{ a.hidden }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <!-- ROADMAP -->
+  <div class="wrap" style="padding:56px 40px 90px;border-top:1px solid rgba(255,255,255,.06)">
+    <div class="kick">Sequência de expansão</div>
+    <h2 class="sec">Provar numa praça, empacotar, replicar</h2>
+    <div class="flow" style="margin-top:36px;display:flex;align-items:stretch;gap:12px">
+      <sc-for list="{{ roadmap }}" as="r" hint-placeholder-count="4">
+        <div style="flex:1;display:flex;align-items:center;gap:12px">
+          <div style="flex:1;background:{{ r.bg }};border:1px solid {{ r.border }};border-radius:16px;padding:22px;min-height:180px">
+            <div class="mono" style="font-size:11px;color:{{ r.accent }}">FASE {{ r.n }}</div>
+            <div style="margin-top:8px;font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#fff">{{ r.name }}</div>
+            <div style="margin-top:10px;font-size:13.5px;color:#aab1c2;line-height:1.5">{{ r.desc }}</div>
+          </div>
+          <sc-if value="{{ r.hasArrow }}" hint-placeholder-val="{{ true }}"><div class="arrow" style="flex-shrink:0;font-size:24px;color:#5a6180">→</div></sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- decisões assumidas -->
+    <div style="margin-top:48px;background:rgba(201,154,46,.06);border:1px solid rgba(201,154,46,.24);border-radius:18px;padding:30px">
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#fff">Decisões que assumi — me confirme antes de eu levar para a plataforma</div>
+      <div style="margin-top:16px;display:flex;flex-direction:column;gap:11px">
+        <sc-for list="{{ decisions }}" as="d" hint-placeholder-count="4">
+          <div style="display:flex;gap:12px;font-size:15px;color:#e8eaf0;line-height:1.5"><span style="color:#E7C871;flex-shrink:0;font-weight:700">?</span>{{ d }}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:30px 40px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+    <div style="display:flex;align-items:baseline;gap:2px"><span style="font-family:'Instrument Serif';font-style:italic;font-size:28px;color:#C99A2E;line-height:.7">7</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">Advisory</span></div>
+    <div class="mono" style="font-size:12px;color:#6b7488">SEVEN STEPS TO THE TOP · ARQUITETURA v1</div>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  renderVals(){
+    return {
+      layers:[
+        {n:'1',name:'Rede',tag:'pertencimento',accent:'#8FB4FF',bg:'rgba(143,180,255,.05)',border:'rgba(143,180,255,.22)',
+          desc:'Capítulos por praça, exclusividade setorial e indicações. O motivo emocional de entrar e ficar.',owns:'Praças, capítulos, Rounds, Connect, Summit, Seat.'},
+        {n:'2',name:'Método',tag:'transformação',accent:'#E7C871',bg:'rgba(231,200,113,.06)',border:'rgba(231,200,113,.26)',
+          desc:'Os 7 passos, especialistas humanos + agentes de IA. Leva a empresa do diagnóstico ao patrimônio.',owns:'Diagnóstico, esteira 7M1–7M7, especialistas, agentes.'},
+        {n:'3',name:'Capital & Deals',tag:'valor',accent:'#E9611A',bg:'rgba(233,97,26,.07)',border:'rgba(233,97,26,.3)',
+          desc:'Marketplace e 7M Capital: onde os negócios circulam e o dinheiro entra. Monetiza a confiança da rede.',owns:'Marketplace, comissão, fundo, captações.'},
+      ],
+      bench:[
+        {name:'BNI',what:'Rede de indicações por capítulo',take:['Capítulo','Seat (1 por setor)','Give7-Get7','Round']},
+        {name:'EO / YPO',what:'Comunidade global de empreendedores',take:['Membros por porte','Fóruns','Expansão por capítulos']},
+        {name:'Vistage',what:'Conselho de pares com mentor',take:['Chair → City Leader','Peer advisory']},
+        {name:'WeWork / Regus',what:'Operação por geografia',take:['Praça / cidade','P&L local']},
+        {name:'YC / a16z',what:'Curadoria + braço de capital',take:['Verticais de entrega','7M Capital','Seleção']},
+        {name:'Salesforce AppExchange',what:'Marketplace de parceiros',take:['Marketplace','Níveis de parceiro','Verified']},
+      ],
+      tax:[
+        {level:'Marca-mãe',token:'7M Advisory',use:'Assinatura institucional, contratos, jurídico.',accent:'#E7C871',bg:'rgba(231,200,113,.05)'},
+        {level:'Abreviação',token:'7M',use:'Uso interno e dentro do produto.',accent:'#E7C871',bg:'rgba(231,200,113,.04)'},
+        {level:'Vertical',token:'7M <hub>',use:'7M Innova, 7M Agency, 7M Capital — os braços de entrega.',accent:'#8FB4FF',bg:'rgba(143,180,255,.05)'},
+        {level:'Geografia',token:'7M <cidade>',use:'7M São Paulo, 7M Belo Horizonte, 7M Genebra — a praça.',accent:'#8FB4FF',bg:'rgba(143,180,255,.05)'},
+        {level:'Responsável local',token:'7M City Leader',use:'Líder de praça: recruta, preside, garante exclusividade.',accent:'#8FB4FF',bg:'rgba(143,180,255,.04)'},
+        {level:'Empresa associada',token:'7M Member',use:'Membro 7M Advisory — o CNPJ que entra no método.',accent:'#8FB4FF',bg:'rgba(143,180,255,.04)'},
+        {level:'Encontro recorrente',token:'7M Round',use:'Rodada de negócios do capítulo (semanal/quinzenal).',accent:'#C99A2E',bg:'rgba(201,154,46,.04)'},
+        {level:'Encontro mensal',token:'7M Advisory Connect',use:'Aberto, cruza os hubs da praça — porta de entrada.',accent:'#C99A2E',bg:'rgba(201,154,46,.04)'},
+        {level:'Evento maior',token:'7M Advisory Summit',use:'Trimestral/anual, multi-praça — capital e palco.',accent:'#C99A2E',bg:'rgba(201,154,46,.04)'},
+        {level:'Selo',token:'7M Verified',use:'Empresa com documentação validada — confiança auditável.',accent:'#E9611A',bg:'rgba(233,97,26,.05)'},
+        {level:'Exclusividade',token:'7M Seat',use:'A cadeira setorial exclusiva — ativo concreto e escasso.',accent:'#E9611A',bg:'rgba(233,97,26,.06)'},
+      ],
+      units:[
+        {scope:'Geografia',name:'Praça',accent:'#8FB4FF',border:'rgba(143,180,255,.28)',desc:'A cidade — unidade operacional com P&L próprio, sob um City Leader. É o que se replica.',metric:'1 City Leader · N capítulos',hasArrow:true},
+        {scope:'Comunidade',name:'Capítulo',accent:'#E7C871',border:'rgba(231,200,113,.28)',desc:'Grupo recorrente dentro da praça que se reúne no Round e governa a exclusividade das cadeiras.',metric:'12–40 membros',hasArrow:true},
+        {scope:'Cliente',name:'Member',accent:'#C99A2E',border:'rgba(201,154,46,.28)',desc:'A empresa associada (CNPJ) que roda o método. Progride de 7M1 a 7M7 conforme cresce.',metric:'nível 7M1–7M7',hasArrow:true},
+        {scope:'Ativo',name:'Seat',accent:'#E9611A',border:'rgba(233,97,26,.32)',desc:'A cadeira setorial exclusiva do capítulo. Um setor, um dono. Escassez que vira preço.',metric:'1 por setor / capítulo',hasArrow:false},
+      ],
+      roles:[
+        {i:'HQ',name:'Sede 7M Advisory',c1:'#C99A2E',c2:'#E7C871',duties:['Marca, método e tecnologia','7M Capital e governança','Padrão nacional/global','Homologa City Leaders']},
+        {i:'CL',name:'City Leader',c1:'#8FB4FF',c2:'#b9ceff',duties:['P&L e recrutamento da praça','Preside os Rounds','Garante exclusividade (Seat)','Cura o marketplace local']},
+        {i:'ES',name:'Especialistas + IA',c1:'#E9611A',c2:'#ff9143',duties:['Entregam os 7 passos','Validam o que a IA recomenda','1 responsável por passo']},
+        {i:'MB',name:'Member',c1:'#3a4a7a',c2:'#8FB4FF',duties:['Participa e indica (Give7)','Consome método e capital','Ocupa e defende seu Seat']},
+      ],
+      rituals:[
+        {name:'7M Round',freq:'Semanal/quinzenal',accent:'#8FB4FF',bg:'rgba(143,180,255,.05)',border:'rgba(143,180,255,.22)',desc:'Rodada fechada do capítulo: indicações, permutas e status de negócios entre membros.',role:'Retenção e geração de deals internos.'},
+        {name:'7M Advisory Connect',freq:'Mensal',accent:'#E7C871',bg:'rgba(231,200,113,.06)',border:'rgba(231,200,113,.26)',desc:'Encontro aberto que cruza os hubs de uma praça. Convidados conhecem a rede.',role:'Topo do funil — captação de novos members.'},
+        {name:'7M Advisory Summit',freq:'Trimestral/anual',accent:'#E9611A',bg:'rgba(233,97,26,.07)',border:'rgba(233,97,26,.3)',desc:'Evento multi-praça com palcos, investidores e grandes deals. A vitrine da marca.',role:'Capital, autoridade e expansão de praças.'},
+      ],
+      revenue:[
+        {name:'Mensalidade por nível',type:'RECORRENTE',tagColor:'#7bd88f',tagBg:'rgba(123,216,143,.12)',desc:'7M1 a 7M7 — sobe conforme a empresa cresce. Base previsível de MRR.'},
+        {name:'Prêmio de Seat',type:'RECORRENTE',tagColor:'#E7C871',tagBg:'rgba(201,154,46,.14)',desc:'Sobretaxa pela exclusividade setorial. Escassez justifica o preço premium.'},
+        {name:'Comissão sobre deals',type:'VARIÁVEL',tagColor:'#8FB4FF',tagBg:'rgba(143,180,255,.14)',desc:'1%–7% sobre transações intermediadas no marketplace e via rede.'},
+        {name:'7M Verified',type:'RECORRENTE',tagColor:'#7bd88f',tagBg:'rgba(123,216,143,.12)',desc:'Taxa de verificação e renovação do selo de documentação.'},
+        {name:'Summit & Connect',type:'EVENTO',tagColor:'#E9611A',tagBg:'rgba(233,97,26,.14)',desc:'Patrocínios, ingressos e ativações de marca nos eventos.'},
+        {name:'7M Capital',type:'UPSIDE',tagColor:'#E7C871',tagBg:'rgba(201,154,46,.14)',desc:'Fee sobre captações e participação em operações de investimento.'},
+      ],
+      access:[
+        {name:'Público',who:'visitante',accent:'#8FB4FF',border:'rgba(143,180,255,.22)',sees:'Vitrine: o que fazemos por porte, prova social, diagnóstico gratuito. O método só se revela após o diagnóstico.',hidden:'Método, preços, comissões, dados de qualquer empresa.'},
+        {name:'Member',who:'empreendedor · tenant',accent:'#C99A2E',border:'rgba(201,154,46,.24)',sees:'Só a própria empresa: Growth Score, esteira, tarefas, agentes, seu capítulo, marketplace e seu Seat.',hidden:'Outras empresas, MRR, comissões, backoffice.'},
+        {name:'City Leader',who:'líder de praça',accent:'#E7C871',border:'rgba(231,200,113,.26)',sees:'Só a sua praça: membros, capítulos, ocupação de Seats, agenda de Rounds/Connect, moderação local.',hidden:'Outras praças, finanças globais, método/comissão da sede.'},
+        {name:'Advisory Admin',who:'sede / HQ',accent:'#E9611A',border:'rgba(233,97,26,.3)',sees:'Tudo: todas as praças, MRR/ARR, comissões, 7M Capital, usuários e permissões, arquitetura de expansão.',hidden:'—'},
+      ],
+      roadmap:[
+        {n:'1',name:'Praça piloto (BH)',accent:'#8FB4FF',bg:'rgba(143,180,255,.05)',border:'rgba(143,180,255,.22)',desc:'Validar método + Round + Seat em 180 dias com a CityWorking. Documentar cases.',hasArrow:true},
+        {n:'2',name:'Playbook da praça',accent:'#E7C871',bg:'rgba(231,200,113,.06)',border:'rgba(231,200,113,.26)',desc:'Empacotar recrutamento, rituais, precificação e o papel de City Leader num manual replicável.',hasArrow:true},
+        {n:'3',name:'Multi-praça + verticais',accent:'#C99A2E',bg:'rgba(201,154,46,.05)',border:'rgba(201,154,46,.24)',desc:'Abrir SP e Genebra; ativar 7M Innova, Agency e Capital como hubs nacionais.',hasArrow:true},
+        {n:'4',name:'Rede global (7M7)',accent:'#E9611A',bg:'rgba(233,97,26,.07)',border:'rgba(233,97,26,.3)',desc:'Summit internacional, ponte Brasil↔Europa e fundo próprio conectando as praças.',hasArrow:false},
+      ],
+      decisions:[
+        'A praça (cidade) é a unidade de P&L e de expansão — não a vertical. As verticais (Innova/Agency/Capital) são braços de entrega que atendem várias praças. Confirma?',
+        '7M Verified é pré-requisito obrigatório para ter Seat, entrar em deals e captar via 7M Capital — ou o Verified é opcional/apenas um selo de destaque?',
+        'City Leader vira um 4º papel na plataforma (entre Member e Admin), com acesso restrito à própria praça. Incluo isso na próxima iteração do software?',
+        'O Seat é vendido por setor dentro do capítulo (1 dono por setor) com lista de espera. Mantemos essa escassez rígida ou permitimos 2 por setor em praças grandes?',
+      ],
+    };
+  }
+}
+</script>
+</body>
+</html>

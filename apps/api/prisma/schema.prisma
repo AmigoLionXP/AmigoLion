@@ -1,0 +1,459 @@
+// 7MARKET Growth Office — data model.
+// Source of truth for entities/roles/rules: design_handoff_7market_app/backend_contract.md
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  public
+  client
+  rep
+  admin
+}
+
+enum DiagnosticStatus {
+  partial
+  complete
+}
+
+enum StepStatus {
+  done
+  doing
+  next
+  locked
+}
+
+enum SubscriptionStatus {
+  trialing
+  active
+  past_due
+  canceled
+}
+
+enum EventType {
+  comunit
+  connect
+  round
+  summit
+}
+
+enum EventStatus {
+  scheduled
+  open
+  closed
+}
+
+enum AgentRiskLevel {
+  low
+  high
+}
+
+enum AgentRunStatus {
+  queued
+  processing
+  completed
+  needs_review
+}
+
+enum AuditQueueStatus {
+  pending
+  signed
+  rejected
+}
+
+enum TaskPriority {
+  high
+  medium
+}
+
+enum BusinessScanStatus {
+  not_started
+  in_progress
+  completed
+}
+
+enum BusinessScanStepKey {
+  identificacao
+  diagnosticar
+  qualificar
+  organizar
+  crescer
+  capitalizar
+  escalar
+  valorizar
+}
+
+enum IntegrationProvider {
+  erp
+  crm
+  contabilidade
+  marketing
+  open_banking
+  google
+  meta
+  stripe
+  whatsapp
+}
+
+enum IntegrationStatus {
+  not_connected
+  pending
+  connected
+}
+
+/// users — id, email, role, created_at
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(public)
+  name         String?
+  createdAt    DateTime @default(now())
+
+  ownedCompanies Company[]       @relation("CompanyOwner")
+  rep            Rep?
+  auditSignoffs  AuditQueueItem[] @relation("AuditSpecialist")
+  agentRuns      AgentRun[]
+
+  @@map("users")
+}
+
+/// companies (tenant) — id, owner_user_id, cnpj, nome, setor, faturamento_anual, growth_score, nivel_7m, created_at
+model Company {
+  id                String   @id @default(cuid())
+  ownerUserId       String
+  owner             User     @relation("CompanyOwner", fields: [ownerUserId], references: [id])
+  cnpj              String?  @unique
+  nome              String
+  setor             String?
+  moeda             String   @default("BRL")
+  faturamentoAnual  Decimal? @db.Decimal(14, 2)
+  growthScore       Int      @default(0) // 0-1000, banking-credit-style score
+  nivel7m           Int      @default(1) // 1-7, current 7M Method rung
+  createdAt         DateTime @default(now())
+
+  diagnostics   Diagnostic[]
+  stepProgress  CompanyStepProgress[]
+  memberships   Membership[]
+  subscriptions Subscription[]
+  scoreSnapshots GrowthScoreSnapshot[]
+  tasks         Task[]
+  agentRuns     AgentRun[]
+  businessScan  BusinessScan?
+
+  @@map("companies")
+}
+
+/// diagnostics — id, company_id, gargalo, respostas(jsonb), growth_score, status, created_at
+/// companyId is nullable: the public flow runs the diagnostic before a tenant exists
+/// (POST /diagnostics is anonymous); it's linked once the visitor becomes a `client`.
+model Diagnostic {
+  id          String            @id @default(cuid())
+  companyId   String?
+  company     Company?          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  gargalo     String?
+  respostas   Json              @default("{}")
+  growthScore Int
+  status      DiagnosticStatus  @default(partial)
+  createdAt   DateTime          @default(now())
+
+  leads Lead[]
+
+  @@map("diagnostics")
+}
+
+/// leads — WhatsApp/email contact captured off the free public diagnostic
+model Lead {
+  id           String      @id @default(cuid())
+  diagnosticId String?
+  diagnostic   Diagnostic? @relation(fields: [diagnosticId], references: [id], onDelete: SetNull)
+  nome         String
+  email        String?
+  whatsapp     String?
+  createdAt    DateTime    @default(now())
+
+  @@map("leads")
+}
+
+/// growth_score_snapshots — Business Health Engine's history, one row per recompute.
+/// Diagnostic captures the intake questionnaire; this captures the score over time
+/// (diagnostic factors blended with live 7M-method execution and task engagement).
+model GrowthScoreSnapshot {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  score     Int
+  factors   Json // { saudeFinanceira, previsibilidadeReceita, riscoOperacional, capacidadeCrescimento, governanca, execucaoMetodo, engajamentoTarefas }
+  reason    String // what triggered this recompute, e.g. "step_completed:4"
+  createdAt DateTime @default(now())
+
+  @@index([companyId, createdAt])
+  @@map("growth_score_snapshots")
+}
+
+/// method_steps — 7 fixed steps (Diagnosticar…Valorizar), seeded reference data
+model MethodStep {
+  n                Int     @id // 1..7
+  code             String  @unique // 7M1..7M7
+  verbPt           String
+  verbEn           String
+  specialistRolePt String
+  specialistRoleEn String
+
+  progress CompanyStepProgress[]
+
+  @@map("method_steps")
+}
+
+/// company_step_progress (company_id, step_n, pct, status)
+model CompanyStepProgress {
+  id              String     @id @default(cuid())
+  companyId       String
+  company         Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  stepN           Int
+  step            MethodStep @relation(fields: [stepN], references: [n])
+  pct             Int        @default(0)
+  status          StepStatus @default(locked)
+  specialistName  String?
+  deadlinePt      String?
+  deadlineEn      String?
+  checklist       Json       @default("[]") // [{ txtPt, txtEn, done }]
+  startedAt       DateTime?  // set by Method7MEngineService on first checklist interaction
+  completedAt     DateTime?  // set when pct reaches 100
+  updatedAt       DateTime   @updatedAt
+
+  @@unique([companyId, stepN])
+  @@map("company_step_progress")
+}
+
+/// reps — id, user_id, nivel (1-7), faixa_faturamento, upline_rep_id, city
+model Rep {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id])
+  nivel           Int // 1 (Comunit) .. 7 (Internacional)
+  faixaFaturamento String?
+  city            String?
+  uplineRepId     String?
+  upline          Rep?     @relation("RepUpline", fields: [uplineRepId], references: [id])
+  downline        Rep[]    @relation("RepUpline")
+  createdAt       DateTime @default(now())
+
+  memberships Membership[]
+  commissions Commission[]
+  events      Event[]
+
+  @@map("reps")
+}
+
+/// memberships — company_id <-> rep_id (who brought the client), base of stacked override
+model Membership {
+  id        String   @id @default(cuid())
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  repId     String
+  rep       Rep      @relation(fields: [repId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([companyId, repId])
+  @@map("memberships")
+}
+
+/// subscriptions — id, company_id, plano, valor_mensal, status, started_at
+model Subscription {
+  id           String              @id @default(cuid())
+  companyId    String
+  company      Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  plano        String
+  valorMensal  Decimal             @db.Decimal(10, 2)
+  status       SubscriptionStatus  @default(trialing)
+  startedAt    DateTime            @default(now())
+
+  commissions Commission[]
+
+  @@map("subscriptions")
+}
+
+/// commissions — id, subscription_id, rep_id, nivel, pct, valor, mes_referencia
+model Commission {
+  id             String       @id @default(cuid())
+  subscriptionId String
+  subscription   Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  repId          String
+  rep            Rep          @relation(fields: [repId], references: [id])
+  nivel          Int // 1..7, rep's rung when this slice was earned
+  pct            Decimal      @db.Decimal(5, 2) // e.g. 1.00 .. 7.00
+  valor          Decimal      @db.Decimal(10, 2)
+  mesReferencia  String // "2026-08"
+  createdAt      DateTime     @default(now())
+
+  @@unique([subscriptionId, repId, mesReferencia])
+  @@map("commissions")
+}
+
+/// events — id, rep_id, tipo, data, faixa, status
+model Event {
+  id        String      @id @default(cuid())
+  repId     String
+  rep       Rep         @relation(fields: [repId], references: [id])
+  tipo      EventType
+  data      DateTime
+  faixa     String?
+  status    EventStatus @default(scheduled)
+  createdAt DateTime    @default(now())
+
+  @@map("events")
+}
+
+/// tasks — 7M AI-generated tasks per company (GET/POST /tasks)
+model Task {
+  id          String       @id @default(cuid())
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  titlePt     String
+  titleEn     String
+  priority    TaskPriority @default(medium)
+  prazoPt     String
+  prazoEn     String
+  tempo       String?
+  impactoPt   String?
+  impactoEn   String?
+  specialist  String?
+  done        Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+
+  @@map("tasks")
+}
+
+/// agents / agent_runs — AI executions (see AgentProvider abstraction)
+model Agent {
+  id          String @id @default(cuid())
+  key         String @unique // e.g. "7m-ai", "growth-analyst"
+  name        String
+  description String?
+
+  runs AgentRun[]
+
+  @@map("agents")
+}
+
+model AgentRun {
+  id         String          @id @default(cuid())
+  agentId    String
+  agent      Agent           @relation(fields: [agentId], references: [id])
+  companyId  String
+  company    Company         @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId     String
+  user       User            @relation(fields: [userId], references: [id])
+  input      Json
+  output     Json?
+  riskLevel  AgentRiskLevel  @default(low)
+  status     AgentRunStatus  @default(queued)
+  createdAt  DateTime        @default(now())
+  completedAt DateTime?
+
+  auditItem AuditQueueItem?
+
+  @@map("agent_runs")
+}
+
+/// audit_queue — high-risk agent runs awaiting human validation + digital signature
+model AuditQueueItem {
+  id            String            @id @default(cuid())
+  agentRunId    String            @unique
+  agentRun      AgentRun          @relation(fields: [agentRunId], references: [id], onDelete: Cascade)
+  status        AuditQueueStatus  @default(pending)
+  specialistId  String?
+  specialist    User?             @relation("AuditSpecialist", fields: [specialistId], references: [id])
+  signatureHash String?
+  signedAt      DateTime?
+  createdAt     DateTime          @default(now())
+
+  @@map("audit_queue")
+}
+
+// =====================================================================
+// 7MARKET BUSINESS SCAN™ — the official onboarding. Builds the company's
+// "Digital DNA": 8 sections of structured answers + uploaded documents
+// that feed the Método 7M gate, the Growth Score (via a bridged
+// Diagnostic + Business Health recompute on completion), the 7M AI and
+// the Growth Manager. See business-scan/business-scan-schema.ts for the
+// canonical field list per section.
+// =====================================================================
+
+/// business_scans — one per company, tracks overall wizard progress.
+model BusinessScan {
+  id          String             @id @default(cuid())
+  companyId   String             @unique
+  company     Company            @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  status      BusinessScanStatus @default(not_started)
+  currentStep BusinessScanStepKey @default(identificacao)
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  sections     BusinessScanSection[]
+  files        BusinessScanFile[]
+  integrations BusinessScanIntegration[]
+
+  @@map("business_scans")
+}
+
+/// business_scan_sections — one row per step; autosaved as the user types,
+/// so "salvar e continuar depois" is just closing and reopening the wizard.
+model BusinessScanSection {
+  id             String              @id @default(cuid())
+  businessScanId String
+  businessScan   BusinessScan        @relation(fields: [businessScanId], references: [id], onDelete: Cascade)
+  stepKey        BusinessScanStepKey
+  status         BusinessScanStatus  @default(not_started)
+  data           Json                @default("{}") // { [fieldKey]: value }
+  skippedFields  Json                @default("[]") // fieldKey[] — "Não sei responder agora"
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([businessScanId, stepKey])
+  @@map("business_scan_sections")
+}
+
+/// business_scan_files — uploaded documents (contrato social, DRE, valuation, ...).
+/// Stored on local disk for now (storagePath); swap for S3/GCS in production
+/// without changing the API shape. IA interpretation of these is a future step —
+/// mimeType/fieldKey are already captured so a future job can pick them up.
+model BusinessScanFile {
+  id             String              @id @default(cuid())
+  businessScanId String
+  businessScan   BusinessScan        @relation(fields: [businessScanId], references: [id], onDelete: Cascade)
+  stepKey        BusinessScanStepKey
+  fieldKey       String // e.g. "contratoSocial", "dre"
+  fileName       String
+  mimeType       String
+  size           Int
+  storagePath    String
+  uploadedAt     DateTime            @default(now())
+
+  @@map("business_scan_files")
+}
+
+/// business_scan_integrations — "Conectar Sistema" placeholders. No real OAuth
+/// flow exists yet for any provider; connect() marks `pending` so the UI can
+/// show "conectando..." and the architecture is ready to swap in a real
+/// provider-specific flow per integration without touching the schema.
+model BusinessScanIntegration {
+  id             String              @id @default(cuid())
+  businessScanId String
+  businessScan   BusinessScan        @relation(fields: [businessScanId], references: [id], onDelete: Cascade)
+  provider       IntegrationProvider
+  status         IntegrationStatus   @default(not_connected)
+  connectedAt    DateTime?
+  updatedAt      DateTime            @updatedAt
+
+  @@unique([businessScanId, provider])
+  @@map("business_scan_integrations")
+}
