@@ -66,9 +66,13 @@ grant execute on function public.is_company_in_my_region(uuid) to authenticated;
 
 -- ---------------------------------------------------------------------------
 -- Auto-create a profile row when someone signs up (Supabase Auth trigger).
--- Reads role/full_name from the signup call's options.data (raw_user_meta_data).
--- Defaults role to 'member' — 'rep'/'admin' accounts are promoted explicitly by an Admin,
--- never self-assigned at signup.
+-- Reads full_name from the signup call's options.data (raw_user_meta_data), but role is always
+-- hardcoded to 'member' here — NOT read from metadata. raw_user_meta_data is client-supplied
+-- (anyone calling supabase.auth.signUp() from the browser controls it), so trusting a 'role' key
+-- from it would let any anonymous signup self-elevate to 'admin'. 'rep'/'admin' accounts are
+-- provisioned out-of-band (db/seed.ts's supabase.auth.admin.createUser(), or a future
+-- Admin-only promotion route) and have their profiles.role set directly with the service role
+-- key — never through this trigger.
 -- ---------------------------------------------------------------------------
 
 create or replace function public.handle_new_auth_user()
@@ -79,7 +83,7 @@ begin
   insert into public.profiles (id, role, full_name, email)
   values (
     new.id,
-    coalesce(new.raw_user_meta_data ->> 'role', 'member')::public.role,
+    'member'::public.role,
     coalesce(new.raw_user_meta_data ->> 'full_name', new.email),
     new.email
   );

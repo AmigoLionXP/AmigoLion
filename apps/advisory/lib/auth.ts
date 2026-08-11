@@ -2,8 +2,9 @@ import { eq } from 'drizzle-orm';
 import { createClient } from './supabase/server';
 import { runAsUser, type Tx } from '@/db/rls-context';
 import { profiles } from '@/db/schema';
+import type { Role } from './auth-types';
 
-export type Role = 'member' | 'rep' | 'admin';
+export type { Role };
 
 export class AuthError extends Error {
   constructor(

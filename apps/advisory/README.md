@@ -1,6 +1,6 @@
 # 7M Advisory
 
-Backend for the 7M Advisory platform — a growth consultancy for SMEs organized around the
+Full-stack app for the 7M Advisory platform — a growth consultancy for SMEs organized around the
 **Método 7M** (7 steps, human specialists + AI agents, from diagnosis to legacy). Built from
 `design_handoff_7m_advisory/README.md` (tokens, roles, plan table) and
 `7MARKET - Arquitetura.dc.html` (Praça → Capítulo → Member → Seat hierarchy, revenue model, 4
@@ -38,6 +38,19 @@ as a third, unrelated product in the same monorepo — nothing here touches eith
    deterministic** ported version of the design prototype's regex-routed `botAnswer()` for the AI
    chat, not a placeholder) and a real implementation that activates the moment its env vars are
    set (WhatsApp Cloud API, Resend, Anthropic).
+6. **Frontend** (`app/`) — public landing + interactive diagnostic wizard (`POST /api/wizard`,
+   LGPD consent checkbox), login/signup (`app/login`), and three role-scoped dashboards built on a
+   shared `DashboardShell` (sidebar nav keyed off the caller's `profile.role`): Member (Minha
+   empresa, esteira de 7 passos, O Método 7M, Meus agentes de IA, Rede 7M · Circle, Marketplace),
+   Rep (painel, minha rede, comissões, eventos), Admin (visão geral, praças & capítulos,
+   arquitetura 7M, simulador de receita, moderar marketplace, Advisory Admin). Every screen reads
+   real data through the routes below — nothing is hardcoded except static reference content (the
+   7M0-7M7 price/commission ladder in `lib/plans.ts`, the 7-step method copy in
+   `lib/method-content.ts`) that has no dedicated GET route. The prototype's fictional case studies
+   (Padaria do Bairro's numbers, MotoTech's "+38%", etc.) were **not** ported as if real — the
+   landing's "Exemplos de aplicação" section is explicitly labeled illustrative and carries a
+   `{/* TODO */}` marker for real testimonials before launch. Floating WhatsApp + "Guia 7M AI" chat
+   (`components/FloatingActions.tsx`) is present on the landing and every dashboard screen.
 6. **Production PWA** — `public/manifest-advisory.webmanifest` + `public/sw.js` (network-first for
    navigations, stale-while-revalidate for other assets, cache `7madvisory-v3`, **never caches
    `/api/*`** so per-tenant data is never replayed from a shared cache). Icons are the real
@@ -85,6 +98,16 @@ Two layers, not one:
 connection (Supabase's direct/`postgres` role, which has `BYPASSRLS`) to create policies and
 insert into `auth.users` in the first place.
 
+**Role is never client-controlled.** `supabase.auth.signUp()` lets the caller set arbitrary
+`options.data` (→ `raw_user_meta_data`), so the `on_auth_user_created` trigger in
+`0001_rls.sql` does **not** read a `role` key from it — it hardcodes every self-signup to
+`'member'`, full stop. `rep`/`admin` accounts only ever get created with `db/seed.ts`'s
+`supabase.auth.admin.createUser()` (the privileged Admin API) or a future Admin-only promotion
+route — never through the public signup form in `app/login`. An earlier version of this trigger
+trusted `raw_user_meta_data ->> 'role'`, which would have let anyone self-elevate to `admin` by
+passing `{ data: { role: 'admin' } }` to `signUp()` from the browser; this was caught and fixed
+while wiring up the login page, before it ever reached a real deployment.
+
 ## LGPD
 
 - **Data collected:** the wizard funnel (`wizard_leads`) stores name, email, sector, and
@@ -118,18 +141,33 @@ before launch; this section only documents what the current schema/code does and
 
 ```
 app/
+  page.tsx                           Public landing + wizard modal
+  login/                             Login/signup (Member self-signup only)
+  dashboard/
+    layout.tsx                       Auth guard + DashboardShell (redirects to /login)
+    page.tsx                         Role-conditional index (Member/Rep/Admin home)
+    setup/                           Member — first-time company creation
+    pipeline/, method/, agents/, network/, marketplace/     Member views
+    rep/network|commissions|events/                          Rep views
+    admin/regions|arch|simulator|users/                       Admin views (marketplace shared)
   api/
     wizard/                          POST — public funnel submission
     chat/                            POST — Guia 7M AI
     checkout/                        POST — Stripe Checkout Session for a plan
     stripe/webhook/                  POST — Stripe subscription sync
-    me/company/                      GET, PATCH — Member's own company
+    me/                              GET — caller's own profile + role + hasCompany
+    me/company/                      GET, POST, PATCH — Member's own company
     me/method-progress/[stepN]/      GET list, PATCH one step (auto-unlocks the next)
     me/give7/                        GET, POST — indications given/received
     marketplace/[id]/interest/       GET, POST list+create; interest on a listing
-    rep/region/                      GET — City Leader's own praça
-    admin/companies|metrics|transactions|verifications/[id]/  admin-only
+    rep/region/                      GET — City Leader's own praça (+ itemized commissions)
+    admin/companies|metrics|transactions|users|regions/       admin-only, GET
+    admin/verifications/             GET list (pending) + PATCH [id] (approve/reject)
     admin/transactions/[id]/charge-commission/  POST — collect the deal commission via Stripe
+components/
+  Logo.tsx, Wizard.tsx, FloatingActions.tsx, DashboardShell.tsx
+  ui/Primitives.tsx                  Card, Kpi, ProgressBar, Badge, buttons
+  dashboard/                         ViewHeader, Loading/ErrorState, MemberHome, RepHome, AdminHome
 db/
   schema.ts        Drizzle schema — source of truth for the data model
   rls-context.ts    runAsUser() — the RLS-scoped transaction wrapper every route uses
@@ -139,6 +177,7 @@ lib/
   supabase/         @supabase/ssr server/browser/middleware clients
   providers/        whatsapp.ts, email.ts, ai.ts — pluggable stubs
   validation.ts      Zod schemas for every route body
+  api-types.ts, plans.ts, method-content.ts   Frontend-only types + static reference content
   stripe.ts, wizard-logic.ts
 supabase/migrations/ 0000 (schema, drizzle-kit generated) + 0001 (RLS, hand-written)
 public/
@@ -147,18 +186,24 @@ public/
 
 ## What's still needed to go live
 
-- **Frontend screens** — this delivery is the backend; the landing page, wizard UI, login, and
-  the three dashboards (Member/Rep/Admin) from `7M Advisory.dc.html` still need to be built in
-  `app/`. `app/page.tsx` is currently a placeholder.
 - **Stripe products/prices** — create the 8 Prices (7M0-7M7) in the Stripe dashboard and write
   each `price_id` into `plans.stripe_price_id`.
-- **A real Supabase project** — everything here was verified against a local Postgres instance
-  with `auth.users`/`auth.uid()`/`anon`/`authenticated` stubbed to match Supabase's real shape
-  closely enough to prove the RLS policies and migrations are correct; it has not been run against
-  an actual Supabase-hosted project (no credentials available in this environment). The Auth Admin
-  API path in `db/seed.ts` (`SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY` set) is the one that runs
-  against a real project — the direct-`auth.users`-insert fallback is local-dev-only.
+- **A real Supabase project** — the backend (migrations, RLS, seed, every API route) was verified
+  against a local Postgres instance with `auth.users`/`auth.uid()`/`anon`/`authenticated` stubbed
+  to match Supabase's real shape. The frontend's authenticated flows (login → role-based redirect →
+  all 15 dashboard views, for all 3 demo roles) were additionally verified end-to-end through a
+  real browser (Playwright) against a minimal local stand-in for the Supabase Auth HTTP API
+  (`/auth/v1/token`, `/auth/v1/user`) — real page loads, zero console/page errors, zero 5xx
+  responses, and every screen rendering genuinely fetched data (e.g. the Member's 7-step pipeline
+  showing the seeded company's actual per-step status, the Admin's transaction ledger showing the
+  real seeded amount/commission). None of this has run against an actual Supabase-hosted project
+  (no credentials available in this environment) — do a smoke pass through the same login → each
+  dashboard view flow once real `NEXT_PUBLIC_SUPABASE_URL`/`SUPABASE_SERVICE_ROLE_KEY` are set,
+  before launch. The Auth Admin API path in `db/seed.ts` is the one that runs against a real
+  project — the direct-`auth.users`-insert fallback is local-dev-only.
 - **Document uploads for 7M Verified** — `verifications.document_path` expects a Supabase Storage
   object path; the Storage bucket + upload UI aren't created yet.
 - **7M Seat waitlist promotion logic** — `seat_waitlist` exists and is populated, but nothing yet
   automatically promotes the next company in line when a Seat frees up.
+- **"Meus eventos" (Rep)** has no dedicated backend yet — it lists the Rep's real chapters but
+  scheduling/RSVPs are handled over WhatsApp for now rather than a fabricated events UI.

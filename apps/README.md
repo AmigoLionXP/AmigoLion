@@ -88,8 +88,10 @@ Postgres instance: two Member accounts see strictly their own company, cross-ten
 0 rows, an Admin sees everything, anonymous access is denied outright) — not just by application
 code remembering to filter every query correctly.
 
-This delivery is the **backend**: auth/RBAC, schema/migrations/seed, Zod-validated API routes,
-Stripe billing, pluggable WhatsApp/email/AI provider stubs, and a production PWA config. The
-landing page, wizard UI, and the three role dashboards from `7M Advisory.dc.html` still need to be
-built on top of it. See `apps/advisory/README.md` for the full breakdown, including LGPD notes and
-exactly how the RLS + Drizzle combination works.
+This delivery includes both halves: the **backend** (auth/RBAC, schema/migrations/seed,
+Zod-validated API routes, Stripe billing, pluggable WhatsApp/email/AI provider stubs, production
+PWA config) and the **frontend** — the public landing + diagnostic wizard, login/signup, and the
+three role dashboards (Member/Rep/Admin) from `7M Advisory.dc.html`, all wired to real data through
+the API rather than the prototype's mock state. See `apps/advisory/README.md` for the full
+breakdown, including LGPD notes, exactly how the RLS + Drizzle combination works, and how the
+authenticated frontend flows were verified without a real Supabase project.

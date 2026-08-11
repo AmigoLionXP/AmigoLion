@@ -33,6 +33,7 @@ export const GET = withErrorHandling(async () =>
       seatsOccupied: regionSeats.filter((s) => s.status === 'occupied').length,
       seatsTotal: regionSeats.length,
       commissionMonthTotal: commissionTotal,
+      commissions: myCommissions,
     });
   }),
 );
