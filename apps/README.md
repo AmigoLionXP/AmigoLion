@@ -1,19 +1,19 @@
-# 7MARKET Growth Office
+# 7MARKET Growth Office · 7M Advisory
 
-Implementation of the **7MARKET Growth Office** app, built from the design handoff package
-(`design_handoff_7market_app/README.md` + `backend_contract.md`): a Next.js/React front end
-recreating the hi-fi prototype's screens, and a NestJS/Postgres/Prisma backend serving the API
-those screens consume.
-
-This lives alongside the existing **AmigoLion** app (root of this repo) as an unrelated, separate
-product — nothing here touches AmigoLion's files. Think of this repo as hosting two independent
-codebases side by side:
+This repo hosts three unrelated products side by side — none of them touch each other's files:
 
 ```
 /                     ← AmigoLion (kids' routine PWA) — untouched
-/apps/web             ← 7MARKET front end (Next.js 14 App Router, TypeScript, Tailwind)
-/apps/api             ← 7MARKET backend (NestJS, Prisma, PostgreSQL)
+/apps/web             ← 7MARKET Growth Office front end (Next.js 14 App Router, TypeScript, Tailwind)
+/apps/api             ← 7MARKET Growth Office backend (NestJS, Prisma, PostgreSQL)
+/apps/advisory        ← 7M Advisory (Next.js 14 App Router, Supabase/Postgres+Auth+RLS, Drizzle, Stripe)
 ```
+
+## 7MARKET Growth Office
+
+Built from the design handoff package (`design_handoff_7market_app/README.md` +
+`backend_contract.md`): a Next.js/React front end recreating the hi-fi prototype's screens, and a
+NestJS/Postgres/Prisma backend serving the API those screens consume.
 
 ## Quick start
 
@@ -70,3 +70,26 @@ the UI never renders empty.
   answers (not canned copy). Deterministic and content-driven throughout — no live LLM call.
 
 See `apps/web/README.md` and `apps/api/README.md` for details on each half.
+
+## 7M Advisory
+
+Built from a separate design handoff package (`design_handoff_7m_advisory/README.md` +
+`7MARKET - Arquitetura.dc.html`) for an unrelated product: a growth consultancy for SMEs organized
+around the **Método 7M** — a network layer (Praça → Capítulo → Seat), a method layer (the same
+7-step journey concept as the Growth Office, independently modeled here), and a marketplace/deals
+layer, sold on an 8-tier plan ladder (7M0 R$497 … 7M7 R$7.000, with a 1%-7% deal commission that
+scales with the plan).
+
+Stack is deliberately different from `apps/web`/`apps/api`: Next.js API routes instead of a
+separate NestJS service, Supabase (Postgres + Auth + Row Level Security + Storage) instead of a
+self-managed Postgres + hand-rolled tenant-scoping service, and Drizzle instead of Prisma. Tenant
+isolation is enforced at the database layer via RLS policies (verified end-to-end against a real
+Postgres instance: two Member accounts see strictly their own company, cross-tenant writes affect
+0 rows, an Admin sees everything, anonymous access is denied outright) — not just by application
+code remembering to filter every query correctly.
+
+This delivery is the **backend**: auth/RBAC, schema/migrations/seed, Zod-validated API routes,
+Stripe billing, pluggable WhatsApp/email/AI provider stubs, and a production PWA config. The
+landing page, wizard UI, and the three role dashboards from `7M Advisory.dc.html` still need to be
+built on top of it. See `apps/advisory/README.md` for the full breakdown, including LGPD notes and
+exactly how the RLS + Drizzle combination works.

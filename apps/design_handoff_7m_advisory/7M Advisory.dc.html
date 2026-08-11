@@ -1,0 +1,1568 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest-advisory.webmanifest">
+<meta name="theme-color" content="#0a1436">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="7M Advisory">
+<link rel="apple-touch-icon" href="assets/icons/gold-180.png">
+<script>
+  if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js',{scope:'./'}).catch(()=>{});});}
+</script>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a1436;font-family:'Manrope',system-ui,sans-serif;-webkit-font-smoothing:antialiased;color:#e8eaf0}
+  a{color:#C99A2E;text-decoration:none}a:hover{color:#E7C871}
+  ::selection{background:rgba(201,154,46,.32)}
+  .sc::-webkit-scrollbar{width:9px;height:9px}
+  .sc::-webkit-scrollbar-thumb{background:rgba(255,255,255,.09);border-radius:6px}
+  .sc::-webkit-scrollbar-track{background:transparent}
+  input,textarea,select,button{font-family:inherit}
+  @keyframes flt{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  @media(max-width:860px){
+    .l-hero{grid-template-columns:1fr !important;gap:40px !important;padding:56px 22px 60px !important}
+    .l-hero h1{font-size:46px !important}
+    .l-nav-links{gap:16px !important}
+    .l-nav-links a{display:none !important}
+    .l-pad{padding-left:22px !important;padding-right:22px !important}
+    .l-grid2{grid-template-columns:1fr !important}
+    .l-grid3{grid-template-columns:1fr !important}
+    .l-grid4{grid-template-columns:1fr 1fr !important}
+    .l-grid7{grid-template-columns:1fr 1fr !important;gap:10px !important}
+    .l-cta h2{font-size:34px !important}
+    .dash{grid-template-columns:1fr !important}
+    .dash-aside{flex-direction:row !important;flex-wrap:wrap !important;height:auto !important;border-right:none !important;border-bottom:1px solid rgba(255,255,255,.06) !important;align-items:center !important}
+    .dash-aside .navbtn{width:auto !important}
+    .dash-kpi{grid-template-columns:1fr 1fr !important}
+    .dash-sim{grid-template-columns:1fr !important}
+    .dash-agents{grid-template-columns:1fr !important}
+    .pub-modal{grid-template-columns:1fr !important}
+    .pub-help{border-left:none !important;border-top:1px solid rgba(201,154,46,.2) !important}
+  }
+</style>
+</helmet>
+
+<sc-if value="{{ showLanding }}" hint-placeholder-val="{{ true }}">
+<!-- ============================ LANDING ============================ -->
+<div class="sc" style="height:100vh;overflow-y:auto">
+
+  <!-- nav -->
+  <div style="position:sticky;top:0;z-index:20;backdrop-filter:blur(12px);background:rgba(10,20,54,.72);border-bottom:1px solid rgba(255,255,255,.06)">
+    <div style="max-width:1200px;margin:0 auto;padding:20px 40px;display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:14px">
+        <img src="assets/7m-gold-mono.png" alt="7M Advisory" style="height:60px;width:60px;border-radius:14px;display:block;box-shadow:0 6px 20px rgba(201,154,46,.18)">
+        <div style="line-height:1"><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;letter-spacing:.14em;color:#E7C871">ADVISORY</div><div style="font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.24em;text-transform:uppercase;color:#C99A2E;margin-top:5px">Strategy · Growth · Performance</div></div>
+      </div>
+      <div class="l-nav-links" style="display:flex;align-items:center;gap:32px">
+        <a href="#porte" style="color:#b6bccb;font-size:15px;font-weight:600">O que fazemos</a>
+        <button onclick="{{ goDash }}" style="background:none;border:none;color:#b6bccb;font-size:15px;font-weight:600;cursor:pointer">Área do Member</button>
+        <a href="#faq" style="color:#b6bccb;font-size:15px;font-weight:600">FAQ</a>
+        <button onclick="{{ goDash }}" title="Acesso · 7M Member, Advisory Rep e Advisory Admin" style="display:flex;align-items:center;gap:9px;background:rgba(255,255,255,.05);border:1px solid rgba(201,154,46,.35);color:#E7C871;padding:10px 16px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 3 3 8l9 5 9-5-9-5Z"/><path d="M3 12l9 5 9-5"/><path d="M3 16l9 5 9-5"/></svg>
+          Acesso
+        </button>
+        <button onclick="{{ goDash }}" style="background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:12px 24px;border-radius:11px;font-weight:800;font-size:14px;cursor:pointer">Acessar plataforma</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- hero -->
+  <div style="position:relative;overflow:hidden">
+    <div style="position:absolute;top:-20%;right:-8%;width:640px;height:640px;border-radius:50%;background:radial-gradient(circle,rgba(201,154,46,.16),transparent 64%);filter:blur(14px)"></div>
+    <div class="l-hero" style="position:relative;max-width:1200px;margin:0 auto;padding:96px 40px 80px;display:grid;grid-template-columns:1.15fr .85fr;gap:60px;align-items:center">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:11px;border:1px solid rgba(201,154,46,.4);border-radius:999px;padding:9px 18px;font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:#E7C871">
+          <span style="width:7px;height:7px;border-radius:50%;background:#C99A2E;box-shadow:0 0 10px #C99A2E"></span>Infraestrutura de crescimento · Seu Growth Office
+        </div>
+        <h1 style="margin-top:28px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:62px;line-height:1.02;letter-spacing:-.035em;color:#fff;text-wrap:balance">Trabalha demais, o negócio não anda sem você, e vender virou <span style="font-family:'Instrument Serif';font-style:italic;font-weight:400;background:linear-gradient(150deg,#B07E1C,#F4D48A 44%,#9A6E12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent">sorte</span>?</h1>
+        <p style="margin-top:24px;font-size:21px;line-height:1.5;color:#aab1c2;max-width:560px;font-weight:500">Você não precisa de mais um curso. Precisa de um <strong style="color:#fff">sistema de crescimento</strong>: 7 passos, especialistas humanos + IA, do diagnóstico ao patrimônio. Descubra em 1 clique onde seu negócio trava.</p>
+        <div style="margin-top:34px;display:flex;gap:14px;flex-wrap:wrap">
+          <button onclick="{{ openWizard }}" style="background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:17px 32px;border-radius:13px;font-weight:800;font-size:16px;cursor:pointer">Ver meu próximo passo — grátis</button>
+          <a href="#metodo" style="display:inline-flex;align-items:center;padding:17px 30px;border-radius:13px;border:1px solid rgba(255,255,255,.16);color:#fff;font-weight:700;font-size:16px">Ver o método →</a>
+        </div>
+        <div style="margin-top:40px;display:flex;gap:40px">
+          <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:#fff">7</div><div style="font-size:14px;color:#8891a3;font-weight:600">passos do método</div></div>
+          <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:#fff">5</div><div style="font-size:14px;color:#8891a3;font-weight:600">especialistas + IA</div></div>
+          <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:#fff">7M7</div><div style="font-size:14px;color:#8891a3;font-weight:600">rede global</div></div>
+        </div>
+      </div>
+      <!-- diagnóstico interativo de 1 clique -->
+      <div style="position:relative;background:radial-gradient(130% 120% at 85% -10%,#1a2350,#101a3d);border:1px solid rgba(201,154,46,.28);border-radius:22px;padding:30px;box-shadow:0 30px 70px rgba(0,0,0,.4)">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#C99A2E">Seu próximo passo em 1 clique</div>
+        <div style="margin-top:8px;font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">Qual é o seu maior gargalo hoje?</div>
+        <div style="margin-top:18px;display:flex;flex-direction:column;gap:9px">
+          <sc-for list="{{ heroChallenges }}" as="c" hint-placeholder-count="6">
+            <div onclick="{{ c.pick }}" style="{{ c.style }}"><span style="font-size:22px">{{ c.icon }}</span><span style="font-family:'Space Grotesk';font-weight:600;font-size:16px;color:#fff">{{ c.label }}</span></div>
+          </sc-for>
+        </div>
+        <sc-if value="{{ heroPicked }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top:16px;padding:18px;background:rgba(201,154,46,.1);border:1px solid rgba(201,154,46,.3);border-radius:14px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#C99A2E">Prévia do seu próximo passo</div>
+            <div style="margin-top:8px;font-size:15px;color:#e8eaf0;line-height:1.5">Foco imediato: <strong style="color:#fff">{{ heroStep }}</strong> · Nível sugerido <strong style="color:#E7C871">{{ heroPlan }}</strong><br>Especialista ideal: <strong style="color:#fff">{{ heroSpec }}</strong></div>
+            <button onclick="{{ startFromHero }}" style="margin-top:14px;width:100%;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:14px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer">Ver meu caminho completo →</button>
+          </div>
+        </sc-if>
+        <sc-if value="{{ heroEmpty }}" hint-placeholder-val="{{ true }}">
+          <div style="margin-top:16px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">Escolha uma opção para ver sua prévia gratuita</div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+
+  <!-- trust strip -->
+  <div style="border-top:1px solid rgba(255,255,255,.06);border-bottom:1px solid rgba(255,255,255,.06);background:rgba(201,154,46,.05)">
+    <div class="l-pad l-grid4" style="max-width:1200px;margin:0 auto;padding:26px 40px;display:grid;grid-template-columns:auto 1fr 1fr 1fr;gap:28px;align-items:center">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#8891a3;line-height:1.5">Empresas<br>no piloto BH</div>
+      <div style="border-left:1px solid rgba(255,255,255,.1);padding-left:24px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#E7C871">+38%</div><div style="font-size:13px;color:#aab1c2">faturamento · MotoTech</div></div>
+      <div style="border-left:1px solid rgba(255,255,255,.1);padding-left:24px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#E7C871">12h</div><div style="font-size:13px;color:#aab1c2">/semana ao dono · Bella</div></div>
+      <div style="border-left:1px solid rgba(255,255,255,.1);padding-left:24px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#E7C871">R$ 220k</div><div style="font-size:13px;color:#aab1c2">crédito destravado · AgroLuz</div></div>
+    </div>
+  </div>
+
+  <!-- problem -->
+  <div style="border-top:1px solid rgba(255,255,255,.06);background:#0d183f">
+    <div style="max-width:1200px;margin:0 auto;padding:72px 40px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">A realidade do empreendedor</div>
+      <h2 style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:40px;letter-spacing:-.02em;color:#fff;max-width:760px;text-wrap:balance">6 em cada 10 empresas fecham em 5 anos. Não por falta de esforço — por falta de método.</h2>
+      <div class="l-grid4" style="margin-top:44px;display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+        <sc-for list="{{ pains }}" as="p" hint-placeholder-count="4">
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:26px">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:32px;color:#E7C871">{{ p.stat }}</div>
+            <div style="margin-top:8px;font-size:15px;color:#aab1c2;line-height:1.5;font-weight:500">{{ p.text }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- o que fazemos por porte -->
+  <div id="porte" style="border-top:1px solid rgba(255,255,255,.06);background:#0a1436">
+    <div style="max-width:1200px;margin:0 auto;padding:80px 40px">
+      <div style="text-align:center"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">O que fazemos por você</span></div>
+      <h2 style="text-align:center;margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:44px;letter-spacing:-.025em;color:#fff;text-wrap:balance">Onde quer que seu negócio esteja, temos o próximo passo</h2>
+      <p style="text-align:center;margin-top:14px;font-size:19px;color:#aab1c2;max-width:660px;margin-left:auto;margin-right:auto">Pequeno, médio ou grande — o que muda é o gargalo. Veja o que destravamos em cada momento.</p>
+      <div class="l-grid3" style="margin-top:48px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;align-items:stretch">
+        <sc-for list="{{ porte }}" as="p" hint-placeholder-count="3">
+          <div style="display:flex;flex-direction:column;background:{{ p.bg }};border:1px solid {{ p.border }};border-top:4px solid {{ p.accent }};border-radius:18px;padding:30px 26px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:{{ p.accent }}">{{ p.tag }}</div>
+            <div style="margin-top:8px;font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff;line-height:1.15">{{ p.name }}</div>
+            <div style="margin-top:14px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8891a3">A dor de agora</div>
+            <div style="margin-top:6px;font-size:15px;color:#aab1c2;line-height:1.5">{{ p.pain }}</div>
+            <div style="margin-top:18px;font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#8891a3">O que fazemos</div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ p.does }}" as="d" hint-placeholder-count="3">
+                <div style="display:flex;gap:10px;font-size:14.5px;color:#e8eaf0;line-height:1.4"><span style="color:{{ p.accent }};flex-shrink:0">→</span>{{ d }}</div>
+              </sc-for>
+            </div>
+            <div style="flex:1"></div>
+            <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);font-size:15px;color:#fff"><strong style="color:{{ p.accent }}">Resultado:</strong> {{ p.win }}</div>
+            <button onclick="{{ openWizard }}" style="margin-top:16px;background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.14);padding:13px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer">Descobrir meu próximo passo →</button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- método: 7 passos (desbloqueia após o diagnóstico) -->
+  <div id="metodo" style="max-width:1200px;margin:0 auto;padding:80px 40px">
+    <div style="text-align:center;margin-bottom:8px"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">Método 7M</span></div>
+    <h2 style="text-align:center;font-family:'Space Grotesk';font-weight:700;font-size:44px;letter-spacing:-.025em;color:#fff">A escada dos sete passos</h2>
+    <p style="text-align:center;margin-top:14px;font-size:19px;color:#aab1c2;max-width:620px;margin-left:auto;margin-right:auto">Cada passo resolve uma dor e destrava o próximo. Do diagnóstico ao patrimônio.</p>
+    <sc-if value="{{ pubMethodLocked }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:40px;background:rgba(255,255,255,.03);border:1px solid rgba(201,154,46,.28);border-radius:18px;padding:44px;text-align:center;max-width:720px;margin-left:auto;margin-right:auto">
+        <div style="font-size:38px">🧭</div>
+        <div style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#fff">O método se revela a partir do seu momento</div>
+        <p style="margin-top:10px;font-size:16px;color:#aab1c2;max-width:520px;margin-left:auto;margin-right:auto">Cada empresa entra num ponto diferente da escada. Responda <strong style="color:#E7C871">duas perguntas</strong> — em 2 minutos você vê qual é o seu próximo passo, quem conduz e o plano do seu porte.</p>
+        <div style="margin-top:20px;display:flex;flex-wrap:wrap;justify-content:center;gap:10px">
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#c2c8d6;background:rgba(255,255,255,.05);padding:9px 15px;border-radius:999px">Porte + dor</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#c2c8d6;background:rgba(255,255,255,.05);padding:9px 15px;border-radius:999px">Seu próximo passo</span>
+          <span style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#c2c8d6;background:rgba(255,255,255,.05);padding:9px 15px;border-radius:999px">Especialista ideal</span>
+        </div>
+        <button onclick="{{ openWizard }}" style="margin-top:24px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px 30px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer">Ver meu próximo passo →</button>
+        <div style="margin-top:12px;font-size:13px;color:#8891a3">Já é cliente? <span onclick="{{ goDash }}" style="color:#E7C871;cursor:pointer;font-weight:600">Acesse sua área →</span></div>
+      </div>
+    </sc-if>
+    <sc-if value="{{ pubMethodOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:48px;display:flex;flex-direction:column;gap:14px">
+      <sc-for list="{{ steps }}" as="s" hint-placeholder-count="7">
+        <div style="display:flex;align-items:center;gap:26px;background:{{ s.bg }};border:1px solid {{ s.border }};border-left:5px solid {{ s.accent }};border-radius:16px;padding:26px 30px">
+          <div style="flex-shrink:0;font-family:'Instrument Serif';font-style:italic;font-size:56px;color:{{ s.accent }};line-height:1;min-width:64px">{{ s.n }}</div>
+          <div style="flex-shrink:0;width:150px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff;letter-spacing:.01em">{{ s.verb }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;color:{{ s.accent }};text-transform:uppercase;margin-top:4px">{{ s.phase }}</div></div>
+          <div style="flex:1;font-size:17px;color:#c2c8d6;line-height:1.5;font-weight:500">{{ s.desc }}</div>
+          <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3;text-align:right;max-width:150px">{{ s.owner }}</div>
+        </div>
+      </sc-for>
+    </div>
+    </sc-if>
+  </div>
+
+  <!-- arquitetura de expansão — mecanismo interno, não exposto na vitrine -->
+  <sc-if value="{{ pubMechanism }}" hint-placeholder-val="{{ false }}">
+  <div id="arquitetura" style="border-top:1px solid rgba(255,255,255,.06);background:#0d183f">
+    <div style="max-width:1200px;margin:0 auto;padding:80px 40px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">Arquitetura de expansão</div>
+      <h2 style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:40px;letter-spacing:-.02em;color:#fff;max-width:720px">Do CNPJ à rede global: sete níveis, modelo de capítulos</h2>
+      <p style="margin-top:14px;font-size:18px;color:#aab1c2;max-width:680px">Cada empresa entra num núcleo, cresce em capítulos regionais e escala até a rede nacional e global. Quanto mais alto o nível, mais conexões, permutas e capital circulando — e mais entregas dos especialistas e agentes.</p>
+      <div class="l-grid7" style="margin-top:44px;display:grid;grid-template-columns:repeat(7,1fr);gap:10px">
+        <sc-for list="{{ arch }}" as="a" hint-placeholder-count="7">
+          <div style="background:{{ a.bg }};border:1px solid {{ a.border }};border-radius:14px;padding:20px 16px;display:flex;flex-direction:column;gap:10px;min-height:210px">
+            <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:16px;color:{{ a.accent }}">{{ a.code }}</div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff;line-height:1.15">{{ a.name }}</div>
+            <div style="font-size:13px;color:#9aa2b4;line-height:1.45;flex:1">{{ a.desc }}</div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ a.accent }}">{{ a.scale }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- preços & comissões — mecanismo interno, não exposto na vitrine -->
+  <sc-if value="{{ pubMechanism }}" hint-placeholder-val="{{ false }}">
+  <div id="precos" style="max-width:1200px;margin:0 auto;padding:80px 40px">
+    <div style="text-align:center"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">Pacotes de serviço</span></div>
+    <h2 style="text-align:center;margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:44px;letter-spacing:-.025em;color:#fff">Você paga pelo nível em que joga</h2>
+    <p style="text-align:center;margin-top:14px;font-size:19px;color:#aab1c2;max-width:640px;margin-left:auto;margin-right:auto">A mensalidade acompanha a evolução: começa em R$ 1.000 no 7M1 e sobe R$ 1.000 a cada nível conquistado — até o topo em R$ 7.000. Você só sobe de faixa quando a empresa cresce.</p>
+
+    <sc-if value="{{ accessLocked }}" hint-placeholder-val="{{ true }}">
+      <div style="margin-top:40px;background:rgba(255,255,255,.03);border:1px solid rgba(201,154,46,.28);border-radius:18px;padding:44px;text-align:center">
+        <div style="font-size:38px">🔒</div>
+        <div style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">Tabela de preços restrita</div>
+        <p style="margin-top:10px;font-size:16px;color:#aab1c2;max-width:460px;margin-left:auto;margin-right:auto">Os valores dos planos 7M1–7M7 e as comissões são liberados mediante solicitação de acesso.</p>
+        <button onclick="{{ openAccess }}" style="margin-top:22px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:14px 28px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer">Solicitar acesso</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ accessGranted }}" hint-placeholder-val="{{ false }}">
+
+    <!-- entry plan -->
+    <div style="margin-top:40px;max-width:760px;margin-left:auto;margin-right:auto;display:flex;align-items:center;gap:24px;background:rgba(255,255,255,.03);border:1px dashed rgba(201,154,46,.4);border-radius:16px;padding:24px 28px">
+      <div style="flex-shrink:0"><div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:#C99A2E">7M0 · Entrada</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#fff;margin-top:2px">Diagnóstico</div></div>
+      <div style="flex:1;font-size:15px;color:#aab1c2;line-height:1.5">Plano de entrada acessível para MEI e micro que ainda estão organizando o caixa. Diagnóstico completo dos 7 passos e plano de 12 meses, antes de assumir a mensalidade cheia.</div>
+      <div style="flex-shrink:0;text-align:right"><div style="font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#E7C871">R$ 497<span style="font-size:14px;color:#8891a3">/mês</span></div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3">2 meses · migra p/ 7M1</div></div>
+    </div>
+
+    <div class="l-grid7" style="margin-top:32px;display:grid;grid-template-columns:repeat(7,1fr);gap:10px">
+      <sc-for list="{{ arch }}" as="a" hint-placeholder-count="7">
+        <div style="background:{{ a.bg }};border:1px solid {{ a.border }};border-radius:16px;padding:22px 12px;display:flex;flex-direction:column;align-items:center;gap:7px;text-align:center;min-height:246px">
+          <div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:15px;color:{{ a.accent }}">{{ a.code }}</div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff;line-height:1.15">{{ a.name }}</div>
+          <div style="flex:1"></div>
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#E7C871;line-height:1">{{ a.price }}</div>
+          <div style="width:100%;padding-top:9px;margin-top:3px;border-top:1px solid rgba(255,255,255,.08)"><div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ a.comm }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:9px;color:#8891a3;letter-spacing:.06em">COMISSÃO</div></div>
+        </div>
+      </sc-for>
+    </div>
+    <div style="margin-top:22px;max-width:820px;margin-left:auto;margin-right:auto;text-align:center;font-size:14px;color:#9aa2b4;line-height:1.6"><span style="color:#E7C871;font-weight:700">Comissão progressiva de 1% a 7%</span> sobre transações intermediadas pela 7M Advisory. Todos os 7 passos inclusos desde o 7M1 · sem fidelidade forçada · reajuste só ao subir de nível.</div>
+
+    <!-- explicação da comissão -->
+    <div style="margin-top:36px;max-width:900px;margin-left:auto;margin-right:auto;background:rgba(255,255,255,.03);border:1px solid rgba(201,154,46,.24);border-radius:18px;padding:30px">
+      <div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#fff;text-align:center">Como funciona a comissão — sem letra miúda</div>
+      <p style="text-align:center;margin-top:8px;font-size:15px;color:#aab1c2;max-width:620px;margin-left:auto;margin-right:auto">A comissão só incide quando a 7M Advisory participa do negócio. O que é seu, continua 100% seu.</p>
+      <div class="l-grid2" style="margin-top:24px;display:grid;grid-template-columns:1fr 1fr;gap:16px">
+        <div style="background:rgba(123,216,143,.06);border:1px solid rgba(123,216,143,.28);border-radius:14px;padding:22px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#7bd88f;margin-bottom:12px">✓ Conta comissão</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ commCounts }}" as="c" hint-placeholder-count="4"><div style="display:flex;gap:10px;font-size:14px;color:#e8eaf0;line-height:1.4"><span style="color:#7bd88f;flex-shrink:0">✓</span>{{ c }}</div></sc-for>
+          </div>
+        </div>
+        <div style="background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.1);border-radius:14px;padding:22px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#8891a3;margin-bottom:12px">✕ Não conta comissão</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ commNot }}" as="c" hint-placeholder-count="4"><div style="display:flex;gap:10px;font-size:14px;color:#aab1c2;line-height:1.4"><span style="color:#8891a3;flex-shrink:0">✕</span>{{ c }}</div></sc-for>
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:18px;background:rgba(201,154,46,.08);border-radius:12px;padding:16px 20px;font-size:14px;color:#e8eaf0;line-height:1.5"><strong style="color:#E7C871">Exemplo:</strong> você é 7M2 (2%). A 7M Advisory te conecta a um comprador que fecha R$ 50.000. Comissão: R$ 1.000. As vendas normais da sua loja no mesmo mês: <strong style="color:#fff">R$ 0 de comissão</strong>.</div>
+    </div>
+    </sc-if>
+  </div>
+  </sc-if>
+
+  <!-- agentes & time — mecanismo interno, não exposto na vitrine -->
+  <sc-if value="{{ pubMechanism }}" hint-placeholder-val="{{ false }}">
+  <div id="agentes" style="max-width:1200px;margin:0 auto;padding:80px 40px">
+    <div class="l-grid2" style="display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:center">
+      <div>
+        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">Time híbrido</div>
+        <h2 style="margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:40px;letter-spacing:-.02em;color:#fff">Cinco especialistas. Agentes de IA. Um só padrão de gestão.</h2>
+        <p style="margin-top:18px;font-size:18px;color:#aab1c2;line-height:1.55">Cada empresa cadastrada roda pelo mesmo pipeline dos 7 passos. Os especialistas conduzem; os agentes Claude monitoram indicadores, sugerem melhorias de processo e mantêm a execução no ritmo — 24/7.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ team }}" as="t" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:18px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px 22px">
+            <div style="flex-shrink:0;width:46px;height:46px;border-radius:12px;background:linear-gradient(140deg,{{ t.c1 }},{{ t.c2 }});display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#0a1233">{{ t.i }}</div>
+            <div style="flex:1"><div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ t.role }}</div><div style="font-size:14px;color:#9aa2b4">{{ t.agent }}</div></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#C99A2E;text-transform:uppercase;letter-spacing:.1em">{{ t.step }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- prova social -->
+  <div style="border-top:1px solid rgba(255,255,255,.06);background:#0d183f">
+    <div class="l-pad" style="max-width:1200px;margin:0 auto;padding:80px 40px">
+      <div style="text-align:center"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">Quem já subiu de nível</span></div>
+      <h2 style="text-align:center;margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:40px;letter-spacing:-.025em;color:#fff">Resultados reais de quem entrou no método</h2>
+      <div class="l-grid3" style="margin-top:44px;display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+        <sc-for list="{{ cases }}" as="c" hint-placeholder-count="3">
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:26px;display:flex;flex-direction:column;gap:16px">
+            <div style="display:flex;align-items:baseline;gap:10px"><span style="font-family:'Space Grotesk';font-weight:700;font-size:40px;color:#E7C871;line-height:1">{{ c.metric }}</span><span style="font-size:14px;color:#aab1c2;line-height:1.3">{{ c.metricLabel }}</span></div>
+            <div style="font-size:16px;color:#e8eaf0;line-height:1.55;font-style:italic">“{{ c.quote }}”</div>
+            <div style="flex:1"></div>
+            <div style="display:flex;align-items:center;gap:12px;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+              <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,#1a2350,#2a3568);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#E7C871">{{ c.i }}</div>
+              <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff">{{ c.name }}</div><div style="font-size:12px;color:#8891a3">{{ c.who }} · {{ c.sector }}</div></div>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="margin-top:20px;text-align:center;font-family:'JetBrains Mono',monospace;font-size:12px;color:#5a6180">Resultados de empresas participantes do piloto BH. Não representam garantia de resultado.</div>
+    </div>
+  </div>
+
+  <!-- FAQ -->
+  <div id="faq" style="border-top:1px solid rgba(255,255,255,.06);background:#0d183f">
+    <div class="l-pad" style="max-width:900px;margin:0 auto;padding:80px 40px">
+      <div style="text-align:center"><span style="font-family:'JetBrains Mono',monospace;font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:#C99A2E">Perguntas &amp; respostas</span></div>
+      <h2 style="text-align:center;margin-top:14px;font-family:'Space Grotesk';font-weight:700;font-size:40px;letter-spacing:-.025em;color:#fff">Dúvidas frequentes</h2>
+      <div style="margin-top:40px;display:flex;flex-direction:column;gap:12px">
+        <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="6">
+          <div onclick="{{ f.toggle }}" style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:20px 24px;cursor:pointer">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ f.q }}</div><div style="flex-shrink:0;font-size:22px;color:#C99A2E">{{ f.sign }}</div></div>
+            <sc-if value="{{ f.open }}" hint-placeholder-val="{{ false }}"><div style="margin-top:12px;font-size:16px;color:#aab1c2;line-height:1.55">{{ f.a }}</div></sc-if>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div style="border-top:1px solid rgba(255,255,255,.06);background:radial-gradient(120% 100% at 50% 0%,#17140c 0%,#0a1436 60%)">
+    <div class="l-cta l-pad" style="max-width:900px;margin:0 auto;padding:88px 40px;text-align:center">
+      <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:52px;letter-spacing:-.03em;color:#fff;text-wrap:balance">Comece no passo 1 hoje. <span style="font-family:'Instrument Serif';font-style:italic;font-weight:400;color:#E7C871">Chegue ao topo.</span></h2>
+      <p style="margin-top:20px;font-size:20px;color:#aab1c2">Cadastre sua empresa e veja seu próximo passo dentro do Método 7M — quem conduz e o plano do seu porte.</p>
+      <button onclick="{{ openWizard }}" style="margin-top:34px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:19px 44px;border-radius:14px;font-weight:800;font-size:18px;cursor:pointer">Ver meu próximo passo — grátis</button>
+      <div style="margin-top:20px;display:flex;justify-content:center;gap:26px;flex-wrap:wrap;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8891a3">
+        <span>✓ Sem cartão</span><span>✓ Sem compromisso</span><span>✓ Resultado em 2 minutos</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- footer -->
+  <div style="border-top:1px solid rgba(255,255,255,.06);background:#0d183f">
+    <div style="max-width:1200px;margin:0 auto;padding:40px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:20px">
+      <div style="display:flex;align-items:center;gap:2px"><img src="assets/7m-gold-mono.png" alt="7M Advisory" style="height:36px;width:36px;border-radius:9px;display:block"><span style="display:none">7</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#fff">Advisory</span></div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#6b7488">SEVEN STEPS TO THE TOP · © 2026 7M Advisory</div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showLogin }}" hint-placeholder-val="{{ false }}">
+<!-- ============================ LOGIN ============================ -->
+<div style="height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;background:radial-gradient(120% 100% at 50% 0%,#17140c 0%,#0a1436 60%)">
+  <div style="width:100%;max-width:400px;background:#121e48;border:1px solid rgba(201,154,46,.24);border-radius:22px;padding:38px 34px">
+    <div style="display:flex;align-items:baseline;gap:2px;justify-content:center;margin-bottom:6px">
+      <span style="font-family:'Instrument Serif';font-style:italic;font-size:44px;background:linear-gradient(150deg,#B07E1C,#F4D48A 44%,#9A6E12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:.7">7</span>
+      <span style="font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#fff">Advisory</span>
+    </div>
+    <div style="text-align:center;font-size:14px;color:#8891a3;margin-bottom:26px">Acesso restrito · empreendedor ou 7M Advisory</div>
+    <label style="font-size:13px;color:#aab1c2;font-weight:600">Senha de acesso</label>
+    <input type="password" value="{{ pwd }}" oninput="{{ setPwd }}" placeholder="••••••••" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid {{ pwdBorder }};border-radius:11px;padding:13px 15px;color:#fff;font-size:16px;letter-spacing:.1em">
+    <sc-if value="{{ pwdError }}" hint-placeholder-val="{{ false }}"><div style="margin-top:8px;font-size:13px;color:#ff9143">Senha incorreta. Tente novamente.</div></sc-if>
+    <button onclick="{{ doLogin }}" style="margin-top:18px;width:100%;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer">Entrar</button>
+    <button onclick="{{ goLanding }}" style="margin-top:10px;width:100%;background:none;border:none;color:#8891a3;font-size:13px;cursor:pointer">← Voltar ao site</button>
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid rgba(255,255,255,.07);font-family:'JetBrains Mono',monospace;font-size:11px;color:#5a6180;text-align:center;line-height:1.6">Demo · 7M Member: <span style="color:#8FB4FF">member</span><br>Demo · Advisory Admin: <span style="color:#E7C871">admin</span><br>Demo · Advisory Rep: <span style="color:#8FB4FF">rep</span></div>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ showDash }}" hint-placeholder-val="{{ false }}">
+<!-- ============================ DASHBOARD ============================ -->
+<div class="dash" style="height:100vh;display:grid;grid-template-columns:250px 1fr;overflow:hidden">
+
+  <!-- sidebar -->
+  <aside class="sc dash-aside" style="background:#0d183f;border-right:1px solid rgba(255,255,255,.06);padding:22px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:5px">
+    <div style="padding:6px 10px 20px;display:flex;align-items:center;gap:2px">
+      <img src="assets/7m-gold-mono.png" alt="7M Advisory" style="height:38px;width:38px;border-radius:9px;display:block"><span style="display:none" data-hidden="1">7</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#fff">Advisory</span>
+    </div>
+    <div style="font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.18em;color:#5a6180;text-transform:uppercase;padding:6px 10px 8px">{{ panelLabel }}</div>
+    <sc-for list="{{ nav }}" as="n" hint-placeholder-count="6">
+      <button class="navbtn" onclick="{{ n.go }}" style="{{ n.style }}"><span style="font-size:17px">{{ n.icon }}</span>{{ n.label }}</button>
+    </sc-for>
+    <div style="flex:1"></div>
+    <button onclick="{{ goLanding }}" style="display:flex;align-items:center;gap:10px;background:none;border:1px solid rgba(255,255,255,.1);color:#aab1c2;padding:12px 14px;border-radius:11px;font-weight:600;font-size:14px;cursor:pointer;text-align:left">← Voltar ao site</button>
+  </aside>
+
+  <!-- main -->
+  <main class="sc" style="overflow-y:auto;background:#0a1436">
+    <div style="position:sticky;top:0;z-index:10;backdrop-filter:blur(12px);background:rgba(10,20,54,.8);border-bottom:1px solid rgba(255,255,255,.06);padding:20px 36px;display:flex;align-items:center;justify-content:space-between">
+      <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#fff">{{ viewTitle }}</div><div style="font-size:13px;color:#8891a3">{{ viewSub }}</div></div>
+      <button onclick="{{ headerAction }}" style="background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:12px 22px;border-radius:11px;font-weight:800;font-size:14px;cursor:pointer">{{ headerLabel }}</button>
+    </div>
+
+    <div style="padding:32px 36px 60px;max-width:1200px">
+
+      <!-- MY 7M Advisory (visão do dono) -->
+      <sc-if value="{{ isMy }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-sim" style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;margin-bottom:16px">
+          <!-- growth score -->
+          <div style="background:radial-gradient(130% 120% at 20% 0%,#1a1608,#121e48);border:1px solid rgba(201,154,46,.28);border-radius:18px;padding:26px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#C99A2E">Sua evolução no Método 7M</div>
+            <div style="display:flex;align-items:baseline;gap:6px;margin-top:8px"><span style="font-family:'Space Grotesk';font-weight:700;font-size:64px;color:#fff;line-height:1">{{ gsScore }}</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#8891a3">/7</span></div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ gsDims }}" as="d" hint-placeholder-count="7">
+                <div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:#c2c8d6;font-weight:600">{{ d.name }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:{{ d.accent }}">{{ d.v }}/7</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div style="height:100%;width:{{ d.pct }}%;background:{{ d.accent }};border-radius:3px"></div></div></div>
+              </sc-for>
+            </div>
+          </div>
+          <!-- próxima ação + CTAs -->
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:26px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#C99A2E">Próxima ação</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff;margin-top:10px;line-height:1.25">Seu principal gargalo é <span style="color:#E7C871">capital e organização financeira</span>.</div>
+              <div style="font-size:15px;color:#aab1c2;margin-top:8px;line-height:1.5">Avance no passo 3 (Organizar) para destravar o acesso a crédito no passo 5. O agente 7M AI Finance já preparou um plano de contas para você validar.</div>
+              <div style="margin-top:18px;display:flex;flex-wrap:wrap;gap:10px">
+                <button onclick="{{ goChat }}" style="background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:12px 20px;border-radius:11px;font-weight:800;font-size:14px;cursor:pointer">Falar com 7M AI</button>
+                <a href="https://wa.me/41779578583" target="_blank" style="background:#25D366;color:#0a2e1a;padding:12px 20px;border-radius:11px;font-weight:800;font-size:14px;text-decoration:none">Falar com especialista</a>
+                <button onclick="{{ openReg }}" style="background:rgba(255,255,255,.05);color:#fff;border:1px solid rgba(255,255,255,.14);padding:12px 20px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer">Ativar crescimento</button>
+              </div>
+            </div>
+            <!-- tarefas -->
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:18px;padding:24px">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:14px">Minhas tarefas</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ myTasks }}" as="t" hint-placeholder-count="4">
+                  <div style="display:flex;align-items:center;gap:12px"><span style="flex-shrink:0;width:22px;height:22px;border-radius:6px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center;font-size:13px;color:{{ t.col }}">{{ t.mk }}</span><span style="flex:1;font-size:15px;color:#e8eaf0;text-decoration:{{ t.deco }}">{{ t.t }}</span><span style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3">{{ t.due }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- REPRESENTANTE · PAINEL -->
+      <sc-if value="{{ isRep }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-sim" style="display:grid;grid-template-columns:1fr 1.3fr;gap:16px;margin-bottom:16px">
+          <div style="background:radial-gradient(130% 120% at 20% 0%,#0d2136,#121e48);border:1px solid rgba(143,180,255,.3);border-radius:18px;padding:26px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#8FB4FF">Seu nível na escada</div>
+            <div style="display:flex;align-items:baseline;gap:10px;margin-top:10px"><span style="font-family:'Instrument Serif';font-style:italic;font-size:52px;color:#8FB4FF;line-height:.8">{{ repLevel.code }}</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">{{ repLevel.name }}</span></div>
+            <div style="margin-top:16px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;justify-content:space-between;padding-top:12px;border-top:1px solid rgba(255,255,255,.08)"><span style="color:#aab1c2;font-size:14px">Faixa que você produz</span><span style="font-family:'JetBrains Mono',monospace;color:#fff;font-weight:700">{{ repLevel.band }}</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center"><span style="color:#aab1c2;font-size:14px">Sua comissão</span><span style="font-family:'Space Grotesk';font-weight:700;color:#8FB4FF;font-size:18px">{{ repLevel.pct }}</span></div>
+            </div>
+            <div style="margin-top:16px;background:rgba(143,180,255,.08);border-radius:12px;padding:14px 16px;font-size:13px;color:#c2c8d6;line-height:1.5">Produza eventos, apresente o método a novos candidatos e receba apoio do nível superior. <strong style="color:#8FB4FF">Suba de nível</strong> ampliando a rede e a faixa de faturamento que atende.</div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div class="dash-kpi" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <sc-for list="{{ repKpis }}" as="k" hint-placeholder-count="4">
+                <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#8891a3">{{ k.label }}</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#fff;margin-top:6px">{{ k.value }}</div><div style="font-size:12px;color:#8FB4FF">{{ k.sub }}</div></div>
+              </sc-for>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:14px">Suas próximas ações</div>
+              <div style="display:flex;flex-direction:column;gap:13px">
+                <sc-for list="{{ repNext }}" as="a" hint-placeholder-count="3">
+                  <div style="display:flex;gap:12px"><span style="color:#8FB4FF;flex-shrink:0;font-weight:700">→</span><div><div style="font-family:'Space Grotesk';font-weight:600;font-size:15px;color:#fff">{{ a.t }}</div><div style="font-size:13px;color:#aab1c2;line-height:1.45">{{ a.d }}</div></div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- REPRESENTANTE · MINHA REDE -->
+      <sc-if value="{{ isRepNet }}" hint-placeholder-val="{{ false }}">
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">Membros que você trouxe</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">o override empilha sobre a sua rede</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ repMembers }}" as="m" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 18px">
+                <div style="flex-shrink:0;width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,#1a2350,#2a3568);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#8FB4FF">{{ m.i }}</div>
+                <div style="flex:1;min-width:150px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff">{{ m.name }}</div><div style="font-size:12px;color:#8891a3">{{ m.sector }}</div></div>
+                <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8FB4FF;background:rgba(143,180,255,.12);padding:5px 11px;border-radius:999px">{{ m.level }}</div>
+                <div style="flex-shrink:0;text-align:right"><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff">{{ m.sub }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8891a3">assinatura</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- REPRESENTANTE · COMISSÕES -->
+      <sc-if value="{{ isRepComm }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-kpi" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px">
+          <sc-for list="{{ repCommKpis }}" as="k" hint-placeholder-count="3">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8891a3">{{ k.label }}</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#fff;margin-top:8px">{{ k.value }}</div><div style="font-size:13px;color:#8FB4FF;margin-top:2px">{{ k.sub }}</div></div>
+          </sc-for>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:16px">De onde vem a sua comissão</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ repCommRows }}" as="r" hint-placeholder-count="3">
+              <div style="display:flex;align-items:center;gap:16px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:14px 18px">
+                <div style="flex:1;font-size:15px;color:#e8eaf0;font-weight:600">{{ r.src }}</div>
+                <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:13px;color:#aab1c2">{{ r.vol }}</div>
+                <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8FB4FF">× {{ r.rate }}</div>
+                <div style="flex-shrink:0;width:90px;text-align:right;font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#7bd88f">{{ r.earn }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="margin-top:16px;background:rgba(143,180,255,.08);border-radius:12px;padding:14px 18px;font-size:13px;color:#c2c8d6;line-height:1.5">A matriz 7M Advisory fatura as assinaturas e repassa a sua comissão sobre o volume da rede que você lidera. Ao subir de nível, o percentual aumenta e passa a incidir sobre uma faixa maior.</div>
+        </div>
+      </sc-if>
+
+      <!-- REPRESENTANTE · EVENTOS -->
+      <sc-if value="{{ isRepEvents }}" hint-placeholder-val="{{ false }}">
+        <div class="l-grid3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+          <sc-for list="{{ repEvents }}" as="e" hint-placeholder-count="3">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:10px">
+              <div style="display:flex;align-items:center;justify-content:space-between"><div style="font-family:'Instrument Serif';font-style:italic;font-size:30px;color:#8FB4FF;line-height:.9">{{ e.date }}</div><span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:{{ e.statusColor }};background:{{ e.statusBg }};padding:5px 11px;border-radius:999px">{{ e.status }}</span></div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff;line-height:1.2">{{ e.name }}</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">{{ e.type }}</div>
+              <div style="font-size:13px;color:#aab1c2">Faixa: <strong style="color:#e8eaf0">{{ e.faixa }}</strong></div>
+              <div style="flex:1"></div>
+              <button onclick="{{ headerAction }}" style="margin-top:6px;width:100%;background:rgba(143,180,255,.12);color:#8FB4FF;border:1px solid rgba(143,180,255,.35);padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer">Produzir / convidar</button>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- O MÉTODO (cliente) -->
+      <sc-if value="{{ isMethod }}" hint-placeholder-val="{{ false }}">
+        <div style="background:radial-gradient(130% 120% at 15% 0%,#1a1608,#121e48);border:1px solid rgba(201,154,46,.24);border-radius:16px;padding:22px 26px;margin-bottom:16px">
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C99A2E">Sua jornada</div>
+          <div style="margin-top:6px;font-family:'Space Grotesk';font-weight:700;font-size:22px;color:#fff">Do diagnóstico ao patrimônio — um passo destrava o próximo</div>
+          <div style="margin-top:6px;font-size:14px;color:#aab1c2">Cada passo é conduzido por um especialista humano + um agente de IA. Você avança no ritmo da sua empresa.</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <sc-for list="{{ steps }}" as="s" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:22px;background:{{ s.bg }};border:1px solid {{ s.border }};border-left:5px solid {{ s.accent }};border-radius:14px;padding:20px 26px">
+              <div style="flex-shrink:0;font-family:'Instrument Serif';font-style:italic;font-size:46px;color:{{ s.accent }};line-height:1;min-width:52px">{{ s.n }}</div>
+              <div style="flex-shrink:0;width:140px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#fff">{{ s.verb }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.1em;color:{{ s.accent }};text-transform:uppercase;margin-top:3px">{{ s.phase }}</div></div>
+              <div style="flex:1;font-size:15px;color:#c2c8d6;line-height:1.5">{{ s.desc }}</div>
+              <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3;text-align:right;max-width:140px">{{ s.owner }}</div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- VISÃO GERAL -->
+      <sc-if value="{{ isOverview }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px">
+          <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8891a3">{{ k.label }}</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:34px;color:#fff;margin-top:8px">{{ k.value }}</div>
+              <div style="font-size:13px;color:#C99A2E;margin-top:2px">{{ k.delta }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">Empresas na esteira</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">{{ companyCount }} ativas</div></div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <sc-for list="{{ companies }}" as="c" hint-placeholder-count="5">
+              <div style="display:flex;align-items:center;gap:18px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:16px 20px">
+                <div style="flex-shrink:0;width:42px;height:42px;border-radius:11px;background:linear-gradient(140deg,#1a1c24,#2a2d38);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;color:#E7C871">{{ c.i }}</div>
+                <div style="flex:1;min-width:160px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#fff">{{ c.name }}</div><div style="font-size:13px;color:#8891a3">{{ c.sector }} · {{ c.arch }}</div></div>
+                <div style="flex:1;max-width:280px">
+                  <div style="display:flex;justify-content:space-between;font-size:12px;color:#9aa2b4;margin-bottom:5px"><span>Passo {{ c.step }}/7 · {{ c.stepName }}</span><span style="color:#C99A2E">{{ c.pct }}%</span></div>
+                  <div style="height:8px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="height:100%;width:{{ c.pct }}%;background:linear-gradient(90deg,#8A6210,#E7C871);border-radius:4px"></div></div>
+                </div>
+                <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;padding:6px 12px;border-radius:999px;background:{{ c.stBg }};color:{{ c.stColor }}">{{ c.status }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- PIPELINE 7 PASSOS -->
+      <sc-if value="{{ isPipeline }}" hint-placeholder-val="{{ false }}">
+        <div class="sc" style="display:flex;gap:14px;overflow-x:auto;padding-bottom:12px">
+          <sc-for list="{{ pipeline }}" as="col" hint-placeholder-count="7">
+            <div style="flex-shrink:0;width:240px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-top:3px solid {{ col.accent }};border-radius:14px;padding:16px">
+              <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:14px"><span style="font-family:'Instrument Serif';font-style:italic;font-size:26px;color:{{ col.accent }}">{{ col.n }}</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff">{{ col.verb }}</span></div>
+              <div style="display:flex;flex-direction:column;gap:9px">
+                <sc-for list="{{ col.cards }}" as="cd" hint-placeholder-count="2">
+                  <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:12px 13px">
+                    <div style="font-family:'Space Grotesk';font-weight:600;font-size:14px;color:#e8eaf0">{{ cd.name }}</div>
+                    <div style="font-size:11.5px;color:#8891a3;margin-top:3px">{{ cd.note }}</div>
+                    <div style="margin-top:8px;display:inline-flex;align-items:center;gap:6px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#C99A2E;background:rgba(201,154,46,.1);padding:4px 8px;border-radius:6px">✦ {{ cd.agent }}</div>
+                  </div>
+                </sc-for>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- AGENTES / MELHORIA DE PROCESSOS -->
+      <sc-if value="{{ isAgents }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-agents" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+          <sc-for list="{{ agentCards }}" as="a" hint-placeholder-count="4">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+              <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">
+                <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,#C99A2E,#E7C871);display:flex;align-items:center;justify-content:center;color:#0a1233;font-size:18px">✦</div>
+                <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff">{{ a.name }}</div><div style="font-size:12px;color:#8891a3">{{ a.scope }}</div></div>
+              </div>
+              <div style="font-size:14px;color:#aab1c2;line-height:1.5">{{ a.insight }}</div>
+              <div style="margin-top:14px;display:flex;align-items:center;justify-content:space-between;padding-top:14px;border-top:1px solid rgba(255,255,255,.06)">
+                <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3">{{ a.metric }}</span>
+                <span style="font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;color:#7bd88f">{{ a.gain }}</span>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- MARKETPLACE -->
+      <sc-if value="{{ isMarket }}" hint-placeholder-val="{{ false }}">
+        <sc-if value="{{ isAdminMarket }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:14px;background:rgba(201,154,46,.08);border:1px solid rgba(201,154,46,.28);border-radius:14px;padding:16px 20px;margin-bottom:18px">
+            <span style="font-size:22px">🛡️</span>
+            <div style="flex:1"><div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#fff">Moderação — visão 7M Advisory</div><div style="font-size:13px;color:#aab1c2">Aprove, destaque ou remova anúncios. Transações fechadas geram comissão do nível do anunciante.</div></div>
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#E7C871;background:rgba(201,154,46,.14);padding:6px 12px;border-radius:999px">2 pendentes</div>
+          </div>
+        </sc-if>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:22px">
+          <button onclick="{{ mkOfertas }}" style="{{ mkTabOfertas }}">Ofertas de produtos &amp; serviços</button>
+          <button onclick="{{ mkProcuro }}" style="{{ mkTabProcuro }}">Intenções de compra</button>
+          <div style="flex:1"></div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">{{ mkCount }} anúncios</div>
+        </div>
+        <div class="l-grid3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+          <sc-for list="{{ listings }}" as="l" hint-placeholder-count="6">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;overflow:hidden;display:flex;flex-direction:column">
+              <div style="height:150px;background:{{ l.photo }};display:flex;align-items:center;justify-content:center;position:relative">
+                <span style="font-size:44px;opacity:.9">{{ l.icon }}</span>
+                <span style="position:absolute;top:12px;left:12px;font-family:'JetBrains Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.08em;color:#0a1233;background:{{ l.tagBg }};padding:5px 10px;border-radius:6px">{{ l.tag }}</span>
+                <span style="position:absolute;top:12px;right:12px;font-family:'JetBrains Mono',monospace;font-size:10px;color:#fff;background:rgba(0,0,0,.45);padding:5px 9px;border-radius:6px">{{ l.arch }}</span>
+              </div>
+              <div style="padding:16px 18px;display:flex;flex-direction:column;gap:8px;flex:1">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px"><div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;line-height:1.2">{{ l.title }}</div><div style="flex-shrink:0;font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#E7C871">{{ l.price }}</div></div>
+                <div style="font-size:13px;color:#aab1c2;line-height:1.45">{{ l.desc }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3">{{ l.seller }} · {{ l.location }}</div>
+                <div style="margin-top:4px;padding-top:12px;border-top:1px solid rgba(255,255,255,.06);display:flex;flex-direction:column;gap:8px">
+                  <sc-for list="{{ l.qa }}" as="q" hint-placeholder-count="2">
+                    <div><div style="font-size:12.5px;color:#e8eaf0;font-weight:600">💬 {{ q.q }}</div><div style="font-size:12.5px;color:#9aa2b4;margin-top:2px">{{ q.a }}</div></div>
+                  </sc-for>
+                </div>
+                <div style="flex:1"></div>
+                <button onclick="{{ l.act }}" style="margin-top:8px;width:100%;background:{{ l.btnBg }};color:{{ l.btnColor }};border:1px solid {{ l.btnBorder }};padding:11px;border-radius:11px;font-weight:700;font-size:14px;cursor:pointer">{{ l.btn }}</button>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- REDE 7M / BUSINESS CIRCLE -->
+      <sc-if value="{{ isNetwork }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px">
+          <sc-for list="{{ netScore }}" as="k" hint-placeholder-count="4">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px"><div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8891a3">{{ k.label }}</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#fff;margin-top:8px">{{ k.value }}</div><div style="font-size:13px;color:#C99A2E;margin-top:2px">{{ k.sub }}</div></div>
+          </sc-for>
+        </div>
+        <div class="dash-sim" style="display:grid;grid-template-columns:1.3fr 1fr;gap:16px">
+          <!-- circle directory -->
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:4px">Diretório do Business Circle</div>
+            <div style="font-size:13px;color:#8891a3;margin-bottom:16px">Membros do seu círculo em Belo Horizonte e região</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ circle }}" as="c" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:13px 16px">
+                  <div style="flex-shrink:0;width:40px;height:40px;border-radius:10px;background:linear-gradient(140deg,#1a1c24,#2a2d38);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#E7C871">{{ c.i }}</div>
+                  <div style="flex:1;min-width:130px"><div style="font-family:'Space Grotesk';font-weight:600;font-size:15px;color:#fff">{{ c.name }}</div><div style="font-size:12px;color:#8891a3">{{ c.sector }} · {{ c.city }} · {{ c.arch }}</div></div>
+                  <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7bd88f">Give {{ c.give }}</div>
+                  <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8FB4FF">Get {{ c.get }}</div>
+                </div>
+              </sc-for>
+            </div>
+            <!-- AI matches -->
+            <div style="margin-top:20px;padding-top:18px;border-top:1px solid rgba(255,255,255,.06)">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C99A2E;margin-bottom:12px">✦ Conexões sugeridas pela IA</div>
+              <div style="display:flex;flex-direction:column;gap:10px">
+                <sc-for list="{{ matches }}" as="m" hint-placeholder-count="3">
+                  <div style="background:rgba(201,154,46,.06);border:1px solid rgba(201,154,46,.2);border-radius:11px;padding:13px 16px;font-size:14px;color:#e8eaf0"><strong style="color:#E7C871">{{ m.a }}</strong> ⇄ <strong style="color:#E7C871">{{ m.b }}</strong><div style="font-size:13px;color:#9aa2b4;margin-top:3px">{{ m.why }}</div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+          <!-- Give7 Get7 -->
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff">Give 7 — Get 7</div>
+            <div style="font-size:13px;color:#8891a3;margin-bottom:16px">Sete formas de gerar valor na rede</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ give7 }}" as="g" hint-placeholder-count="7">
+                <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:12px 15px">
+                  <div style="flex-shrink:0;font-family:'Instrument Serif';font-style:italic;font-size:26px;color:#C99A2E;min-width:26px">{{ g.i }}</div>
+                  <div><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#fff">{{ g.t }}</div><div style="font-size:12.5px;color:#9aa2b4">{{ g.d }}</div></div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- PILOTO BH 180 -->
+      <sc-if value="{{ isPilot }}" hint-placeholder-val="{{ false }}">
+        <div style="background:radial-gradient(130% 120% at 15% 0%,#1a1608,#121e48);border:1px solid rgba(201,154,46,.28);border-radius:18px;padding:26px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px">
+            <div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:#C99A2E">7M Advisory BH Growth Hub · em parceria com CityWorking</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:28px;color:#fff;margin-top:6px">Dia {{ pilotDays }} de {{ pilotTotal }}</div>
+              <div style="font-size:14px;color:#aab1c2;margin-top:2px">CityWorking acelera o networking · 7M Advisory entrega a infraestrutura de crescimento</div>
+            </div>
+            <div style="text-align:right"><div style="font-family:'Space Grotesk';font-weight:700;font-size:40px;color:#E7C871">{{ pilotPct }}%</div><div style="font-size:12px;color:#8891a3">do piloto concluído</div></div>
+          </div>
+          <div style="margin-top:18px;height:10px;background:rgba(255,255,255,.08);border-radius:5px;overflow:hidden"><div style="height:100%;width:{{ pilotPct }}%;background:linear-gradient(90deg,#8A6210,#E7C871);border-radius:5px"></div></div>
+        </div>
+        <div class="dash-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+          <sc-for list="{{ pilotGoals }}" as="g" hint-placeholder-count="8">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:18px">
+              <div style="font-size:12px;color:#8891a3;font-weight:600">{{ g.label }}</div>
+              <div style="display:flex;align-items:baseline;gap:5px;margin-top:6px"><span style="font-family:'Space Grotesk';font-weight:700;font-size:26px;color:#fff">{{ g.cur }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">/ {{ g.goal }}</span></div>
+              <div style="margin-top:8px;height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div style="height:100%;width:{{ g.pct }}%;background:#C99A2E;border-radius:3px"></div></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+          <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:16px">Funil de geração de demanda (Growth Engine)</div>
+          <div style="display:flex;align-items:flex-end;gap:16px">
+            <sc-for list="{{ pilotFunnel }}" as="f" hint-placeholder-count="4">
+              <div style="flex:1;text-align:center"><div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:{{ f.accent }}">{{ f.v }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3;margin-top:4px">{{ f.stage }}</div><div style="margin-top:8px;height:8px;background:{{ f.accent }};border-radius:4px;opacity:.7"></div></div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- SIMULADOR DE RECEITA -->
+      <sc-if value="{{ isSim }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-sim" style="display:grid;grid-template-columns:1.4fr 1fr;gap:20px">
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff;margin-bottom:6px">Sua carteira por nível</div>
+            <div style="font-size:13px;color:#8891a3;margin-bottom:18px">Informe quantas empresas você atende em cada nível. Ajuste o volume médio intermediado por empresa abaixo.</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ simRows }}" as="r" hint-placeholder-count="7">
+                <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-left:4px solid {{ r.accent }};border-radius:11px;padding:12px 16px">
+                  <div style="flex-shrink:0;width:118px"><div style="font-family:'JetBrains Mono',monospace;font-weight:700;font-size:13px;color:{{ r.accent }}">{{ r.code }}</div><div style="font-size:12px;color:#9aa2b4">{{ r.price }} · {{ r.comm }}</div></div>
+                  <div style="display:flex;align-items:center;gap:8px"><button onclick="{{ r.dec }}" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer">−</button><div style="width:38px;text-align:center;font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ r.count }}</div><button onclick="{{ r.inc }}" style="width:30px;height:30px;border-radius:8px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:#fff;font-size:18px;cursor:pointer">+</button></div>
+                  <div style="flex:1"></div>
+                  <div style="text-align:right"><div style="font-family:'Space Grotesk';font-weight:700;font-size:15px;color:#E7C871">{{ r.rev }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:10px;color:#8891a3">mens.+comissão/mês</div></div>
+                </div>
+              </sc-for>
+            </div>
+            <div style="margin-top:18px">
+              <div style="display:flex;justify-content:space-between;font-size:13px;color:#aab1c2;margin-bottom:6px"><span>Volume médio intermediado por empresa/mês</span><span style="color:#E7C871;font-weight:700">{{ simVolLabel }}</span></div>
+              <input type="range" min="0" max="200000" step="5000" value="{{ simVolume }}" oninput="{{ setVol }}" style="width:100%;accent-color:#C99A2E">
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:14px">
+            <div style="background:linear-gradient(150deg,rgba(201,154,46,.18),rgba(255,255,255,.02));border:1px solid rgba(201,154,46,.32);border-radius:16px;padding:24px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#E7C871">Receita mensal total</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:42px;color:#fff;margin-top:6px">{{ simTotal }}</div>
+              <div style="font-size:13px;color:#aab1c2">{{ simCompanies }} empresas · projeção mensal recorrente</div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px">
+              <div style="display:flex;justify-content:space-between;align-items:center;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.06)"><span style="font-size:14px;color:#aab1c2">Mensalidades</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ simFees }}</span></div>
+              <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px"><span style="font-size:14px;color:#aab1c2">Comissões (1–7%)</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#fff">{{ simComm }}</span></div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px"><div style="font-size:13px;color:#8891a3">Projeção anual</div><div style="font-family:'Space Grotesk';font-weight:700;font-size:28px;color:#7bd88f;margin-top:4px">{{ simYear }}</div></div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- ARQUITETURA -->
+      <sc-if value="{{ isArch }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column-reverse;gap:12px">
+          <sc-for list="{{ arch }}" as="a" hint-placeholder-count="7">
+            <div style="display:flex;align-items:center;gap:22px;background:{{ a.bg }};border:1px solid {{ a.border }};border-left:5px solid {{ a.accent }};border-radius:14px;padding:20px 26px">
+              <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-weight:700;font-size:20px;color:{{ a.accent }};min-width:56px">{{ a.code }}</div>
+              <div style="flex-shrink:0;width:200px;font-family:'Space Grotesk';font-weight:700;font-size:20px;color:#fff">{{ a.name }}</div>
+              <div style="flex:1;font-size:15px;color:#aab1c2;line-height:1.45">{{ a.desc }}</div>
+              <div style="flex-shrink:0;text-align:right"><div style="font-family:'Space Grotesk';font-weight:700;font-size:18px;color:#E7C871">{{ a.price }}</div><div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3;margin-top:2px">+ {{ a.comm }} comissão · {{ a.scale }}</div></div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+
+      <!-- ADMINISTRAÇÃO -->
+      <sc-if value="{{ isAdmin }}" hint-placeholder-val="{{ false }}">
+        <div class="dash-kpi" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px">
+          <sc-for list="{{ adminKpis }}" as="k" hint-placeholder-count="4">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px">
+              <div style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8891a3">{{ k.label }}</div>
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:30px;color:#fff;margin-top:8px">{{ k.value }}</div>
+              <div style="font-size:13px;color:#C99A2E;margin-top:2px">{{ k.sub }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div class="dash-sim" style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px">
+          <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:24px">
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:16px">Usuários &amp; permissões</div>
+            <div style="display:flex;flex-direction:column;gap:9px">
+              <sc-for list="{{ adminUsers }}" as="u" hint-placeholder-count="5">
+                <div style="display:flex;align-items:center;gap:14px;background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.06);border-radius:11px;padding:13px 16px">
+                  <div style="flex-shrink:0;width:38px;height:38px;border-radius:10px;background:linear-gradient(140deg,#1a1c24,#2a2d38);display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#E7C871">{{ u.i }}</div>
+                  <div style="flex:1;min-width:140px"><div style="font-family:'Space Grotesk';font-weight:600;font-size:15px;color:#fff">{{ u.name }}</div><div style="font-size:12px;color:#8891a3">{{ u.email }}</div></div>
+                  <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;padding:5px 11px;border-radius:999px;background:{{ u.roleBg }};color:{{ u.roleColor }}">{{ u.role }}</div>
+                  <div style="flex-shrink:0;font-family:'JetBrains Mono',monospace;font-size:11px;color:#7bd88f">{{ u.status }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:16px">
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#fff;margin-bottom:14px">Parâmetros de comissão</div>
+              <div style="display:flex;flex-direction:column;gap:8px">
+                <sc-for list="{{ arch }}" as="a" hint-placeholder-count="7">
+                  <div style="display:flex;align-items:center;justify-content:space-between;font-size:13px"><span style="font-family:'JetBrains Mono',monospace;color:{{ a.accent }}">{{ a.code }}</span><span style="color:#aab1c2">{{ a.price }}</span><span style="font-family:'Space Grotesk';font-weight:700;color:#E7C871">{{ a.comm }}</span></div>
+                </sc-for>
+              </div>
+            </div>
+            <div style="background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:22px">
+              <div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#fff;margin-bottom:6px">Transações intermediadas</div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">
+                <sc-for list="{{ adminTx }}" as="t" hint-placeholder-count="3">
+                  <div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-size:14px;color:#e8eaf0;font-weight:600">{{ t.what }}</div><div style="font-size:12px;color:#8891a3">{{ t.parties }}</div></div><div style="text-align:right"><div style="font-family:'Space Grotesk';font-weight:700;font-size:14px;color:#fff">{{ t.value }}</div><div style="font-size:11px;color:#7bd88f">comissão {{ t.fee }}</div></div></div>
+                </sc-for>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL CADASTRO -->
+<sc-if value="{{ regOpen }}" hint-placeholder-val="{{ false }}">
+  <div onclick="{{ closeReg }}" style="position:fixed;inset:0;background:rgba(4,5,9,.74);backdrop-filter:blur(6px);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px">
+    <div onclick="{{ stop }}" class="sc" style="width:100%;max-width:560px;max-height:88vh;overflow-y:auto;background:#121e48;border:1px solid rgba(201,154,46,.24);border-radius:22px;padding:34px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><h2 style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#fff">Cadastrar empresa</h2><button onclick="{{ closeReg }}" style="background:none;border:none;color:#8891a3;font-size:24px;cursor:pointer">×</button></div>
+      <p style="color:#8891a3;font-size:14px;margin-bottom:22px">Entrada no passo 1 — Diagnosticar. Os agentes iniciam a análise automaticamente.</p>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Nome da empresa</label><input value="{{ fName }}" oninput="{{ setName }}" placeholder="Ex.: Padaria do Bairro" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:13px 15px;color:#fff;font-size:15px"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
+          <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Setor</label><input value="{{ fSector }}" oninput="{{ setSector }}" placeholder="Ex.: Alimentação" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:13px 15px;color:#fff;font-size:15px"></div>
+          <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Nível de entrada</label><select value="{{ fArch }}" onchange="{{ setArch }}" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:13px 15px;color:#fff;font-size:15px">
+            <option value="7M1">7M1 · Empreendedor</option><option value="7M2">7M2 · Núcleo</option><option value="7M3">7M3 · Capítulo</option>
+          </select></div>
+        </div>
+        <button onclick="{{ submitReg }}" style="margin-top:8px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer">Cadastrar e iniciar diagnóstico</button>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- MODAL PUBLICAR (marketplace) -->
+<sc-if value="{{ pubOpen }}" hint-placeholder-val="{{ false }}">
+  <div onclick="{{ closePub }}" style="position:fixed;inset:0;background:rgba(4,5,9,.74);backdrop-filter:blur(6px);z-index:50;display:flex;align-items:center;justify-content:center;padding:24px">
+    <div onclick="{{ stop }}" class="sc pub-modal" style="width:100%;max-width:900px;max-height:90vh;overflow-y:auto;background:#121e48;border:1px solid rgba(201,154,46,.24);border-radius:22px;padding:0;display:grid;grid-template-columns:1.3fr .9fr">
+      <!-- form -->
+      <div style="padding:30px 30px 30px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><h2 style="font-family:'Space Grotesk';font-weight:700;font-size:23px;color:#fff">Publicar no marketplace</h2><button onclick="{{ closePub }}" style="background:none;border:none;color:#8891a3;font-size:24px;cursor:pointer">×</button></div>
+        <!-- type toggle -->
+        <div style="display:flex;gap:8px;margin:16px 0 20px">
+          <button onclick="{{ pubTypeOffer }}" style="{{ pubTypeOfferStyle }}">Vender produto/serviço</button>
+          <button onclick="{{ pubTypeIntent }}" style="{{ pubTypeIntentStyle }}">Intenção de compra</button>
+        </div>
+        <!-- photos -->
+        <div style="margin-bottom:16px">
+          <label style="font-size:13px;color:#aab1c2;font-weight:600">Fotos</label>
+          <div style="margin-top:8px;display:flex;gap:10px">
+            <div style="width:88px;height:88px;border-radius:12px;border:2px dashed rgba(201,154,46,.4);display:flex;flex-direction:column;align-items:center;justify-content:center;color:#C99A2E;cursor:pointer;gap:4px"><span style="font-size:24px">＋</span><span style="font-size:10px">Adicionar</span></div>
+            <div style="width:88px;height:88px;border-radius:12px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.5">🖼️</div>
+            <div style="width:88px;height:88px;border-radius:12px;background:rgba(255,255,255,.05);display:flex;align-items:center;justify-content:center;font-size:26px;opacity:.5">🖼️</div>
+          </div>
+          <div style="font-size:11px;color:#6b7488;margin-top:6px;font-family:'JetBrains Mono',monospace">Até 10 fotos · a primeira vira a capa</div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:13px">
+          <div><label style="font-size:13px;color:#aab1c2;font-weight:600">{{ pubTitleLabel }}</label><input value="{{ pubTitle }}" oninput="{{ setPubTitle }}" placeholder="{{ pubTitlePh }}" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 14px;color:#fff;font-size:15px"></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Categoria</label><select value="{{ pubCat }}" onchange="{{ setPubCat }}" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 14px;color:#fff;font-size:15px"><option>Produtos</option><option>Serviços</option><option>Equipamentos</option><option>Imóveis comerciais</option><option>Veículos</option><option>Outros</option></select></div>
+            <div><label style="font-size:13px;color:#aab1c2;font-weight:600">{{ pubPriceLabel }}</label><input value="{{ pubPrice }}" oninput="{{ setPubPrice }}" placeholder="R$ 0,00" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 14px;color:#fff;font-size:15px"></div>
+          </div>
+          <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Descrição padrão</label><textarea value="{{ pubDesc }}" oninput="{{ setPubDesc }}" placeholder="{{ pubDescPh }}" style="width:100%;margin-top:6px;min-height:80px;resize:vertical;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 14px;color:#fff;font-size:15px;line-height:1.5"></textarea></div>
+          <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Informações adicionais <span style="color:#6b7488;font-weight:400">(opcional)</span></label><textarea value="{{ pubExtra }}" oninput="{{ setPubExtra }}" placeholder="Condições de entrega, garantia, prazos, formas de pagamento, permuta aceita…" style="width:100%;margin-top:6px;min-height:60px;resize:vertical;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 14px;color:#fff;font-size:15px;line-height:1.5"></textarea></div>
+          <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Localização</label><input value="{{ pubLoc }}" oninput="{{ setPubLoc }}" placeholder="Cidade · UF" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:12px 14px;color:#fff;font-size:15px"></div>
+          <button onclick="{{ submitPub }}" style="margin-top:6px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer">{{ pubSubmitLabel }}</button>
+        </div>
+      </div>
+      <!-- Q&A helper -->
+      <div class="pub-help" style="background:rgba(201,154,46,.06);border-left:1px solid rgba(201,154,46,.2);padding:30px 26px">
+        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C99A2E;margin-bottom:6px">Ajuda para anunciar</div>
+        <div style="font-family:'Space Grotesk';font-weight:700;font-size:17px;color:#fff;margin-bottom:16px">Perguntas &amp; respostas intuitivas</div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+          <sc-for list="{{ pubHelp }}" as="h" hint-placeholder-count="4">
+            <div><div style="font-size:14px;color:#fff;font-weight:600;line-height:1.35">{{ h.q }}</div><div style="font-size:13px;color:#9aa2b4;line-height:1.5;margin-top:4px">{{ h.a }}</div></div>
+          </sc-for>
+        </div>
+        <div style="margin-top:22px;padding-top:18px;border-top:1px solid rgba(255,255,255,.08);font-size:12px;color:#6b7488;line-height:1.5">Anúncios com foto e descrição completa recebem até 3× mais contatos. Transações fechadas pela 7M Advisory pagam comissão do seu nível.</div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:28px;left:50%;transform:translateX(-50%);z-index:60;background:#121e48;border:1px solid rgba(201,154,46,.4);border-radius:12px;padding:14px 24px;font-weight:600;color:#fff;box-shadow:0 20px 50px rgba(0,0,0,.5)">{{ toast }}</div>
+</sc-if>
+</sc-if>
+
+<!-- ===================== MODAL SOLICITAR ACESSO ===================== -->
+<sc-if value="{{ accessOpen }}" hint-placeholder-val="{{ false }}">
+  <div onclick="{{ closeAccess }}" style="position:fixed;inset:0;background:rgba(4,8,24,.76);backdrop-filter:blur(6px);z-index:65;display:flex;align-items:center;justify-content:center;padding:24px">
+    <div onclick="{{ stop }}" style="width:100%;max-width:440px;background:#121e48;border:1px solid rgba(201,154,46,.28);border-radius:22px;padding:34px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px"><h2 style="font-family:'Space Grotesk';font-weight:700;font-size:23px;color:#fff">Solicitar acesso</h2><button onclick="{{ closeAccess }}" style="background:none;border:none;color:#8891a3;font-size:24px;cursor:pointer">×</button></div>
+      <p style="color:#8891a3;font-size:14px;margin-bottom:20px">Acesso exclusivo para <strong style="color:#E7C871">CNPJ cadastrado como cliente</strong> no ecossistema 7M Advisory. Informe seus dados para liberar o modelo completo.</p>
+      <div style="display:flex;flex-direction:column;gap:13px">
+        <div><label style="font-size:13px;color:#aab1c2;font-weight:600">CNPJ</label><input value="{{ acCnpj }}" oninput="{{ setAcCnpj }}" placeholder="00.000.000/0000-00" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:13px 15px;color:#fff;font-size:15px"></div>
+        <div><label style="font-size:13px;color:#aab1c2;font-weight:600">Nome</label><input value="{{ acName }}" oninput="{{ setAcName }}" placeholder="Seu nome" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:13px 15px;color:#fff;font-size:15px"></div>
+        <div><label style="font-size:13px;color:#aab1c2;font-weight:600">E-mail</label><input type="email" value="{{ acEmail }}" oninput="{{ setAcEmail }}" placeholder="voce@empresa.com" style="width:100%;margin-top:6px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:13px 15px;color:#fff;font-size:15px"></div>
+        <button onclick="{{ submitAccess }}" style="margin-top:6px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer">Liberar acesso</button>
+        <div style="text-align:center;font-size:12px;color:#8891a3">Ainda não é cliente? <span onclick="{{ startDiagFromAccess }}" style="color:#E7C871;cursor:pointer;font-weight:600">Ver meu próximo passo →</span></div>
+      </div>
+    </div>
+  </div>
+</sc-if>
+
+<!-- ===================== ONBOARDING WIZARD ===================== -->
+<sc-if value="{{ wizOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:70;background:#0a1436;display:flex;flex-direction:column">
+    <!-- top bar -->
+    <div class="l-pad" style="flex-shrink:0;padding:20px 40px;display:flex;align-items:center;gap:20px;border-bottom:1px solid rgba(255,255,255,.06)">
+      <div style="display:flex;align-items:baseline;gap:2px"><span style="font-family:'Instrument Serif';font-style:italic;font-size:30px;background:linear-gradient(150deg,#B07E1C,#F4D48A 44%,#9A6E12);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:.7">7</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:19px;color:#fff">Advisory</span></div>
+      <div style="flex:1;max-width:460px"><div style="display:flex;justify-content:space-between;font-family:'JetBrains Mono',monospace;font-size:11px;color:#8891a3;margin-bottom:6px"><span>PASSO {{ wStepNum }} DE 7 · {{ wStepLabel }}</span><span>{{ wPct }}%</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div style="height:100%;width:{{ wPct }}%;background:linear-gradient(90deg,#8A6210,#E7C871);border-radius:3px;transition:width .3s"></div></div></div>
+      <button onclick="{{ closeWizard }}" style="background:none;border:none;color:#8891a3;font-size:26px;cursor:pointer">×</button>
+    </div>
+
+    <!-- body -->
+    <div class="sc" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;align-items:center;padding:40px 24px">
+      <div style="width:100%;max-width:640px">
+
+        <sc-if value="{{ isW0 }}" hint-placeholder-val="{{ true }}">
+          <div style="text-align:center;padding-top:40px">
+            <div style="font-size:52px">🧭</div>
+            <h1 style="margin-top:20px;font-family:'Space Grotesk';font-weight:700;font-size:44px;letter-spacing:-.03em;color:#fff;text-wrap:balance">Vamos descobrir onde seu negócio está.</h1>
+            <p style="margin-top:16px;font-size:19px;color:#aab1c2;line-height:1.5">Em 2 minutos você vê seu <strong style="color:#E7C871">próximo passo</strong>, o especialista que conduz e o plano do seu porte, e agenda uma conversa com um especialista humano. Sem compromisso.</p>
+            <div style="margin-top:32px;display:flex;justify-content:center;gap:26px;font-family:'JetBrains Mono',monospace;font-size:13px;color:#8891a3">
+              <span>✓ Grátis</span><span>✓ 100% guiado</span><span>✓ Atendimento humano</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isW1 }}" hint-placeholder-val="{{ false }}">
+          <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:32px;color:#fff;letter-spacing:-.02em">Sobre a sua empresa</h2>
+          <p style="margin-top:8px;font-size:16px;color:#8891a3">Só o essencial para personalizar o seu próximo passo.</p>
+          <div style="margin-top:26px;display:flex;flex-direction:column;gap:20px">
+            <div><label style="font-size:14px;color:#aab1c2;font-weight:600">Nome da empresa</label><input value="{{ wName }}" oninput="{{ setWName }}" placeholder="Ex.: Padaria do Bairro" style="width:100%;margin-top:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;color:#fff;font-size:16px"></div>
+            <div><label style="font-size:14px;color:#aab1c2;font-weight:600">Setor</label><input value="{{ wSector }}" oninput="{{ setWSector }}" placeholder="Ex.: Alimentação, Serviços, Varejo…" style="width:100%;margin-top:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;color:#fff;font-size:16px"></div>
+            <div><label style="font-size:14px;color:#aab1c2;font-weight:600">E-mail <span style="color:#8891a3;font-weight:400">— para receber seu plano</span></label><input type="email" value="{{ wEmail }}" oninput="{{ setWEmail }}" placeholder="voce@empresa.com" style="width:100%;margin-top:7px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:12px;padding:14px 16px;color:#fff;font-size:16px"></div>
+            <div><label style="font-size:14px;color:#aab1c2;font-weight:600">Tempo de operação</label><div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wAges }}" as="a" hint-placeholder-count="4"><div onclick="{{ a.pick }}" style="{{ a.style }}">{{ a.label }}</div></sc-for></div></div>
+            <div><label style="font-size:14px;color:#aab1c2;font-weight:600">Faturamento mensal aproximado</label><div style="margin-top:9px;display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wRevs }}" as="r" hint-placeholder-count="4"><div onclick="{{ r.pick }}" style="{{ r.style }}">{{ r.label }}</div></sc-for></div></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isW2 }}" hint-placeholder-val="{{ false }}">
+          <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:32px;color:#fff;letter-spacing:-.02em">Qual é o seu maior desafio agora?</h2>
+          <p style="margin-top:8px;font-size:16px;color:#8891a3">Escolha o que mais te tira o sono. Vamos priorizar por aí.</p>
+          <div style="margin-top:24px;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ wChallenges }}" as="c" hint-placeholder-count="6">
+              <div onclick="{{ c.pick }}" style="{{ c.style }}"><span style="font-size:26px">{{ c.icon }}</span><span style="font-family:'Space Grotesk';font-weight:600;font-size:18px;color:#fff">{{ c.label }}</span></div>
+            </sc-for>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isW3 }}" hint-placeholder-val="{{ false }}">
+          <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:32px;color:#fff;letter-spacing:-.02em">Duas perguntas rápidas</h2>
+          <p style="margin-top:8px;font-size:16px;color:#8891a3">Elas ajustam o seu próximo passo.</p>
+          <div style="margin-top:28px;display:flex;flex-direction:column;gap:26px">
+            <div><div style="font-family:'Space Grotesk';font-weight:600;font-size:19px;color:#fff;margin-bottom:12px">O negócio funciona sem você por uma semana?</div><div style="display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wRuns }}" as="r" hint-placeholder-count="3"><div onclick="{{ r.pick }}" style="{{ r.style }}">{{ r.label }}</div></sc-for></div></div>
+            <div><div style="font-family:'Space Grotesk';font-weight:600;font-size:19px;color:#fff;margin-bottom:12px">Você tem controle organizado do fluxo de caixa?</div><div style="display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wCash }}" as="r" hint-placeholder-count="3"><div onclick="{{ r.pick }}" style="{{ r.style }}">{{ r.label }}</div></sc-for></div></div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isW4 }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center"><div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:#C99A2E">Seu próximo passo 7M</div>
+            <div style="display:flex;align-items:baseline;gap:6px;justify-content:center;margin-top:10px"><span style="font-family:'Space Grotesk';font-weight:700;font-size:72px;color:#fff;line-height:1">{{ resScore }}</span><span style="font-family:'Space Grotesk';font-weight:700;font-size:28px;color:#8891a3">/7</span></div>
+            <div style="font-family:'Space Grotesk';font-weight:700;font-size:24px;color:#E7C871;margin-top:6px">{{ resHeadline }}</div>
+          </div>
+          <div style="margin-top:24px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:22px;display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ resDims }}" as="d" hint-placeholder-count="7"><div><div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px"><span style="color:#c2c8d6;font-weight:600">{{ d.name }}</span><span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:{{ d.accent }}">{{ d.v }}/7</span></div><div style="height:6px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden"><div style="height:100%;width:{{ d.pct }}%;background:{{ d.accent }};border-radius:3px"></div></div></div></sc-for>
+          </div>
+          <div style="margin-top:16px;background:radial-gradient(130% 120% at 15% 0%,#1a1608,#121e48);border:1px solid rgba(201,154,46,.3);border-radius:16px;padding:22px">
+            <div style="font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#C99A2E">Recomendação personalizada</div>
+            <div style="margin-top:10px;font-size:16px;color:#e8eaf0;line-height:1.6">Nível de entrada sugerido: <strong style="color:#E7C871">{{ resPlan }}</strong> · Próximo passo: <strong style="color:#fff">{{ resStep }}</strong><br>Especialista ideal para você: <strong style="color:#fff">{{ resSpec }}</strong></div>
+            <div style="margin-top:12px;font-family:'JetBrains Mono',monospace;font-size:12px;color:#8891a3">📧 O relatório completo será enviado para {{ wEmail }}</div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ isW5 }}" hint-placeholder-val="{{ false }}">
+          <h2 style="font-family:'Space Grotesk';font-weight:700;font-size:32px;color:#fff;letter-spacing:-.02em">Agende seu atendimento humanizado</h2>
+          <p style="margin-top:8px;font-size:16px;color:#8891a3">Uma conversa gratuita com <strong style="color:#E7C871">{{ resSpec }}</strong> para desenhar seu plano.</p>
+          <div style="margin-top:24px"><div style="font-size:14px;color:#aab1c2;font-weight:600;margin-bottom:10px">Escolha o dia</div><div style="display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wDays }}" as="d" hint-placeholder-count="5"><div onclick="{{ d.pick }}" style="{{ d.style }}">{{ d.label }}</div></sc-for></div></div>
+          <div style="margin-top:20px"><div style="font-size:14px;color:#aab1c2;font-weight:600;margin-bottom:10px">Horário</div><div style="display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wSlots }}" as="t" hint-placeholder-count="5"><div onclick="{{ t.pick }}" style="{{ t.style }}">{{ t.label }}</div></sc-for></div></div>
+          <div style="margin-top:20px"><div style="font-size:14px;color:#aab1c2;font-weight:600;margin-bottom:10px">Formato</div><div style="display:flex;flex-wrap:wrap;gap:9px"><sc-for list="{{ wFormats }}" as="f" hint-placeholder-count="3"><div onclick="{{ f.pick }}" style="{{ f.style }}">{{ f.label }}</div></sc-for></div></div>
+        </sc-if>
+
+        <sc-if value="{{ isW6 }}" hint-placeholder-val="{{ false }}">
+          <div style="text-align:center;padding-top:20px">
+            <div style="width:82px;height:82px;border-radius:50%;background:linear-gradient(140deg,#C99A2E,#E7C871);display:flex;align-items:center;justify-content:center;margin:0 auto;font-size:40px;color:#0a1233">✓</div>
+            <h1 style="margin-top:22px;font-family:'Space Grotesk';font-weight:700;font-size:38px;color:#fff;letter-spacing:-.02em">Tudo certo, {{ wName }}!</h1>
+            <p style="margin-top:12px;font-size:18px;color:#aab1c2">Seu atendimento está agendado e o diagnóstico completo foi enviado para <strong style="color:#E7C871">{{ wEmail }}</strong>.</p>
+            <div style="margin-top:26px;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;text-align:left;max-width:440px;margin-left:auto;margin-right:auto">
+              <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:#8891a3;font-size:14px">Data</span><span style="color:#fff;font-weight:600">{{ wDay }} · {{ wSlot }}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:#8891a3;font-size:14px">Formato</span><span style="color:#fff;font-weight:600">{{ wFormat }}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.06)"><span style="color:#8891a3;font-size:14px">Especialista</span><span style="color:#fff;font-weight:600">{{ resSpec }}</span></div>
+              <div style="display:flex;justify-content:space-between;padding:9px 0"><span style="color:#8891a3;font-size:14px">Seu índice 7M</span><span style="color:#E7C871;font-weight:700">{{ resScore }}/7 · {{ resPlan }}</span></div>
+            </div>
+            <div style="margin-top:24px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap">
+              <a href="https://wa.me/41779578583" target="_blank" style="background:#25D366;color:#0a2e1a;padding:15px 26px;border-radius:12px;font-weight:800;font-size:16px;text-decoration:none">Confirmar no WhatsApp</a>
+              <button onclick="{{ goToDash }}" style="background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px 26px;border-radius:12px;font-weight:800;font-size:16px;cursor:pointer">Acessar minha plataforma</button>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+    </div>
+
+    <!-- footer nav -->
+    <sc-if value="{{ showWizNav }}" hint-placeholder-val="{{ true }}">
+    <div class="l-pad" style="flex-shrink:0;padding:18px 40px;border-top:1px solid rgba(255,255,255,.06);display:flex;align-items:center;justify-content:space-between">
+      <button onclick="{{ wBack }}" style="background:none;border:1px solid rgba(255,255,255,.14);color:#aab1c2;padding:13px 24px;border-radius:12px;font-weight:600;font-size:15px;cursor:pointer">← Voltar</button>
+      <button onclick="{{ wNext }}" style="background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:13px 30px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;opacity:{{ wNextOpacity }}">{{ wNextLabel }}</button>
+    </div>
+    </sc-if>
+  </div>
+</sc-if>
+
+<!-- ===================== WIDGET FLUTUANTE (global): WhatsApp + Guia 7M AI ===================== -->
+<a href="https://wa.me/41779578583" target="_blank" style="position:fixed;bottom:26px;left:26px;z-index:55;display:flex;align-items:center;gap:10px;background:#25D366;color:#0a2e1a;padding:14px 20px;border-radius:999px;font-weight:800;font-size:15px;box-shadow:0 16px 40px rgba(37,211,102,.4);text-decoration:none">
+  <span style="font-size:20px">💬</span>WhatsApp
+</a>
+
+<sc-if value="{{ chatOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;bottom:100px;right:26px;z-index:56;width:380px;max-width:calc(100vw - 40px);height:540px;max-height:calc(100vh - 140px);background:#121e48;border:1px solid rgba(201,154,46,.3);border-radius:20px;box-shadow:0 30px 70px rgba(0,0,0,.6);display:flex;flex-direction:column;overflow:hidden">
+    <!-- header -->
+    <div style="padding:18px 20px;background:radial-gradient(120% 140% at 90% -10%,#1a1608,#121e48);border-bottom:1px solid rgba(255,255,255,.07);display:flex;align-items:center;gap:12px">
+      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(140deg,#C99A2E,#E7C871);display:flex;align-items:center;justify-content:center;font-family:'Instrument Serif';font-style:italic;font-size:24px;color:#0a1233">7</div>
+      <div style="flex:1"><div style="font-family:'Space Grotesk';font-weight:700;font-size:16px;color:#fff">Guia 7M AI</div><div style="font-size:12px;color:#7bd88f">● online · responde por nível</div></div>
+      <button onclick="{{ closeChat }}" style="background:none;border:none;color:#8891a3;font-size:22px;cursor:pointer">×</button>
+    </div>
+    <!-- level selector (só após o diagnóstico) -->
+    <sc-if value="{{ showChatLevels }}" hint-placeholder-val="{{ false }}">
+    <div class="sc" style="display:flex;gap:6px;padding:10px 14px;overflow-x:auto;border-bottom:1px solid rgba(255,255,255,.06)">
+      <sc-for list="{{ chatLevels }}" as="lv" hint-placeholder-count="7"><button onclick="{{ lv.pick }}" style="{{ lv.style }}">{{ lv.code }}</button></sc-for>
+    </div>
+    </sc-if>
+    <!-- messages -->
+    <div class="sc" style="flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{ chatMsgs }}" as="m" hint-placeholder-count="2">
+        <div style="{{ m.wrap }}"><div style="{{ m.bubble }}">{{ m.text }}</div></div>
+      </sc-for>
+    </div>
+    <!-- quick chips -->
+    <div class="sc" style="display:flex;gap:7px;padding:8px 14px;overflow-x:auto;border-top:1px solid rgba(255,255,255,.06)">
+      <sc-for list="{{ chatChips }}" as="c" hint-placeholder-count="4"><button onclick="{{ c.ask }}" style="flex-shrink:0;background:rgba(201,154,46,.12);border:1px solid rgba(201,154,46,.3);color:#E7C871;padding:7px 12px;border-radius:999px;font-size:12px;cursor:pointer;white-space:nowrap">{{ c.q }}</button></sc-for>
+    </div>
+    <!-- input -->
+    <div style="display:flex;gap:8px;padding:12px 14px;border-top:1px solid rgba(255,255,255,.06)">
+      <input value="{{ chatInput }}" oninput="{{ setChatInput }}" placeholder="Pergunte sobre a 7M Advisory…" style="flex:1;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:11px;padding:11px 14px;color:#fff;font-size:14px">
+      <button onclick="{{ sendChat }}" style="flex-shrink:0;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:0 18px;border-radius:11px;font-weight:800;font-size:15px;cursor:pointer">→</button>
+    </div>
+  </div>
+</sc-if>
+
+<button onclick="{{ toggleChat }}" style="position:fixed;bottom:26px;right:26px;z-index:55;display:flex;align-items:center;gap:11px;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;border:none;padding:15px 22px;border-radius:999px;font-family:'Space Grotesk';font-weight:800;font-size:15px;box-shadow:0 16px 40px rgba(201,154,46,.42);cursor:pointer">
+  <span style="font-family:'Instrument Serif';font-style:italic;font-size:22px;line-height:.7">7</span>{{ chatBtnLabel }}
+</button>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = { view:'landing', dash:'my', role:'', diagDone:false, authed:false, pwd:'', pwdError:false, regOpen:false, toast:'', fName:'', fSector:'', fArch:'7M1',
+    mkTab:'ofertas', pubOpen:false, pubType:'offer', pubTitle:'', pubCat:'Produtos', pubPrice:'', pubDesc:'', pubExtra:'', pubLoc:'',
+    simVolume:40000, simCounts:[6,4,2,1,1,0,0],
+    accessGranted:false, accessOpen:false, acName:'', acEmail:'', acCnpj:'',
+    heroChallenge:'',
+    wizOpen:false, wStep:0, wName:'', wSector:'', wEmail:'', wAge:'', wRev:'', wChallenge:'', wRuns:'', wCash:'', wDay:'', wSlot:'', wFormat:'Vídeo-chamada',
+    faqOpen:0, chatOpen:false, chatLevel:'7M1', chatInput:'',
+    chatMsgs:[{who:'bot',text:'Olá! Somos a 7M Advisory — uma equipe de consultores especializados no varejo e em empreendedores. Criamos o método 7M (especialistas humanos + IA, do diagnóstico ao patrimônio). Me conte do seu negócio, ou faça o diagnóstico gratuito e eu te mostro o próximo passo.'}],
+    companies:[
+      {i:'PB',name:'Padaria do Bairro',sector:'Alimentação',arch:'7M2',step:2,stepName:'Qualificar',pct:28,status:'No prazo',ok:true},
+      {i:'MT',name:'MotoTech Peças',sector:'Autopeças',arch:'7M3',step:4,stepName:'Divulgar',pct:57,status:'Acelerando',ok:true},
+      {i:'BE',name:'Bella Estética',sector:'Beleza',arch:'7M2',step:3,stepName:'Organizar',pct:41,status:'Atenção',ok:false},
+      {i:'CV',name:'ConstruVale',sector:'Construção',arch:'7M4',step:6,stepName:'Multiplicar',pct:82,status:'No prazo',ok:true},
+      {i:'AL',name:'AgroLuz',sector:'Agro',arch:'7M5',step:7,stepName:'Valorizar',pct:94,status:'Topo',ok:true},
+    ]
+  };
+
+  st(v){ const on=this.state.dash===v; return `display:flex;align-items:center;gap:11px;background:${on?'rgba(201,154,46,.14)':'none'};border:1px solid ${on?'rgba(201,154,46,.3)':'transparent'};color:${on?'#E7C871':'#aab1c2'};padding:11px 14px;border-radius:11px;font-weight:${on?'700':'600'};font-size:14px;cursor:pointer;text-align:left;width:100%`; }
+
+  showToast(m){ this.setState({toast:m}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:''}),2600); }
+
+  get stepMeta(){ return [
+    {n:'1',verb:'Diagnosticar',phase:'Estruturar',accent:'#8FB4FF',desc:'Raio-x do negócio: público-alvo, capital de giro, precificação e concorrência. Entrega um plano estratégico de 12 meses.',owner:'Admin. de Empresas'},
+    {n:'2',verb:'Qualificar',phase:'Estruturar',accent:'#8FB4FF',desc:'Capacitação do dono e da equipe em gestão e processos — para o negócio rodar sem depender 60h/semana do fundador.',owner:'Admin. de Empresas'},
+    {n:'3',verb:'Organizar',phase:'Estruturar',accent:'#8FB4FF',desc:'Fluxo de caixa, formalização e balanços organizados. Pré-requisito para acesso a crédito com credibilidade.',owner:'Contador'},
+    {n:'4',verb:'Crescer',phase:'Crescer',accent:'#E7C871',desc:'Marketing digital completo: posicionamento, tráfego pago, redes sociais e funil de vendas. O motor da receita.',owner:'Growth & Mkt Specialist'},
+    {n:'5',verb:'Capitalizar',phase:'Crescer',accent:'#E7C871',desc:'Com a casa organizada, estruturamos o acesso a crédito e capital nas melhores condições e o uso planejado.',owner:'Financial Advisor'},
+    {n:'6',verb:'Escalar',phase:'Escalar',accent:'#E9611A',desc:'Escala e expansão: padronização, filiais, franquia e novos canais. Um negócio que se replica.',owner:'Operations & Scale'},
+    {n:'7',verb:'Valorizar',phase:'Topo',accent:'#E9611A',desc:'Valuation e patrimônio: a empresa vira ativo que se vende, atrai sócio e capta investimento. Governança e saída.',owner:'Esp. Investimentos'},
+  ]; }
+
+  get archMeta(){ return [
+    {code:'7M1',name:'Empreendedor',accent:'#8FB4FF',bg:'rgba(143,180,255,.06)',border:'rgba(143,180,255,.25)',desc:'Uma empresa individual entra no método e roda os 7 passos.',scale:'1 CNPJ',price:'R$ 1.000/mês',comm:'1%'},
+    {code:'7M2',name:'Núcleo',accent:'#8FB4FF',bg:'rgba(143,180,255,.06)',border:'rgba(143,180,255,.25)',desc:'Grupo local de empresas que trocam indicações e permutas.',scale:'até 12 empresas',price:'R$ 2.000/mês',comm:'2%'},
+    {code:'7M3',name:'Capítulo',accent:'#9db8ff',bg:'rgba(143,180,255,.08)',border:'rgba(143,180,255,.3)',desc:'Capítulo formal com reuniões periódicas e metas de rede.',scale:'até 40 empresas',price:'R$ 3.000/mês',comm:'3%'},
+    {code:'7M4',name:'Região',accent:'#E7C871',bg:'rgba(231,200,113,.07)',border:'rgba(231,200,113,.28)',desc:'Vários capítulos de uma mesma cidade ou microrregião.',scale:'multi-capítulo',price:'R$ 4.000/mês',comm:'4%'},
+    {code:'7M5',name:'Hub Estadual',accent:'#E7C871',bg:'rgba(231,200,113,.09)',border:'rgba(231,200,113,.32)',desc:'Coordenação estadual: eventos, capital e marca compartilhada.',scale:'estado',price:'R$ 5.000/mês',comm:'5%'},
+    {code:'7M6',name:'Rede Nacional',accent:'#E9611A',bg:'rgba(233,97,26,.1)',border:'rgba(233,97,26,.35)',desc:'Malha nacional de hubs, com fundo de investimento próprio.',scale:'país',price:'R$ 6.000/mês',comm:'6%'},
+    {code:'7M7',name:'Rede Global',accent:'#E9611A',bg:'rgba(233,97,26,.14)',border:'rgba(233,97,26,.4)',desc:'Expansão internacional — o topo da arquitetura.',scale:'global',price:'R$ 7.000/mês',comm:'7%'},
+  ]; }
+
+  botAnswer(q){
+    if(!this.state.diagDone){
+      const tt=q.toLowerCase();
+      if(/quem|somos|7market|voc[eê]|consultor|time|equipe/.test(tt)) return 'Somos uma equipe de consultores especializados no mercado de varejo e em empreendedores. Criamos o método 7M para levar empresas do diagnóstico ao patrimônio, unindo especialistas humanos e agentes de IA. O primeiro passo é o diagnóstico gratuito — em 1 clique você descobre onde o seu negócio trava.';
+      if(/diagn|come[cç]|primeiro|start|come[cç]ar/.test(tt)) return 'É gratuito e leva 2 minutos: você responde duas perguntas, vê o seu próximo passo e quem conduz. É a partir dele que o método se revela para o seu caso. Quer começar agora?';
+      if(/atend|meu neg|tipo|serve|varejo|setor/.test(tt)) return 'Atendemos pequenos, médios e grandes empreendedores — com foco em varejo e serviços, do Brasil à Europa. O jeito de saber se serve para você é o diagnóstico gratuito: ele mostra exatamente onde podemos ajudar.';
+      return 'Antes dos detalhes, vamos entender o seu negócio. Somos consultores especializados em varejo e empreendedores e criamos o método 7M (especialistas humanos + IA, do diagnóstico ao patrimônio). Faça o diagnóstico gratuito em 1 clique — depois eu te explico exatamente o que se aplica a você. Ou fale conosco no WhatsApp +41 77 957 8583.';
+    }
+    const lv=this.state.chatLevel;
+    const priceMap={ '7M1':'R$ 1.000/mês','7M2':'R$ 2.000/mês','7M3':'R$ 3.000/mês','7M4':'R$ 4.000/mês','7M5':'R$ 5.000/mês','7M6':'R$ 6.000/mês','7M7':'R$ 7.000/mês' };
+    const commMap={ '7M1':'1%','7M2':'2%','7M3':'3%','7M4':'4%','7M5':'5%','7M6':'6%','7M7':'7%' };
+    const nameMap={ '7M1':'Empreendedor','7M2':'Núcleo','7M3':'Capítulo','7M4':'Região','7M5':'Hub Estadual','7M6':'Rede Nacional','7M7':'Rede Global' };
+    const t=q.toLowerCase();
+    if(/pre|valor|custa|mensal|quanto/.test(t)) return `No nível ${lv} (${nameMap[lv]}) a mensalidade é ${priceMap[lv]}, com todos os 7 passos inclusos. Existe também o plano de entrada 7M0 a R$ 497/mês (2 meses) para quem está começando.`;
+    if(/comiss|taxa|intermedia/.test(t)) return `A comissão do ${lv} é de ${commMap[lv]} sobre qualquer transação de compra e venda intermediada pela 7M Advisory — dentro ou fora do ecossistema. Ela sobe 1 ponto a cada nível (1% no 7M1 até 7% no 7M7).`;
+    if(/passo|método|metodo|etapa/.test(t)) return `O método 7M Advisory tem 7 passos: 1 Diagnosticar, 2 Qualificar, 3 Organizar, 4 Crescer, 5 Capitalizar, 6 Escalar, 7 Valorizar. Do diagnóstico ao patrimônio. Cada passo é conduzido por um especialista + um agente de IA.`;
+    if(/market|vender|anunci|comprar/.test(t)) return `No Marketplace você publica produtos, serviços ou intenções de compra (estilo Facebook: fotos, descrição e infos). No ${lv}, negócios fechados pela 7M Advisory pagam ${commMap[lv]} de comissão.`;
+    if(/sobe|avan|próx|proxi|evolu|nível|nivel/.test(t)) return `Você sobe de nível quando a empresa cresce — do ${lv} (${nameMap[lv]}) para o próximo. A mensalidade só reajusta quando você sobe, e o reajuste vem acompanhado de mais rede, mais alcance e mais entregas.`;
+    if(/whats|falar|contato|humano|especialista/.test(t)) return `Você pode falar com um especialista humano pelo WhatsApp +41 77 957 8583 (botão verde ao lado). No ${lv}, seu especialista responsável acompanha os passos correspondentes.`;
+    if(/o que|que é|quem|7market|infra/.test(t)) return `A 7M Advisory é a infraestrutura de crescimento empresarial — seu Growth Office. Combina consultoria, especialistas humanos, agentes de IA, dashboard, marketplace e rede. No ${lv} você tem acesso ao método completo dos 7 passos.`;
+    return `Boa pergunta! No seu nível ${lv} (${nameMap[lv]}, ${priceMap[lv]}, comissão ${commMap[lv]}), isso é acompanhado pelo seu especialista + agente de IA. Quer que eu detalhe método, preços, comissões ou marketplace? Ou fale conosco no WhatsApp +41 77 957 8583.`;
+  }
+  pushChat(q){
+    const a=this.botAnswer(q);
+    this.setState(st=>({ chatMsgs:[...st.chatMsgs,{who:'me',text:q},{who:'bot',text:a}], chatInput:'' }));
+  }
+  _hc(s){ const m={growth:{step:'Passo 4 — Crescer',plan:'7M3',spec:'Growth & Marketing Specialist'},finance:{step:'Passo 3 — Organizar',plan:'7M2',spec:'Financial Advisor'},owner:{step:'Passo 2 — Qualificar',plan:'7M2',spec:'Business Strategist'},capital:{step:'Passo 5 — Capitalizar',plan:'7M4',spec:'Financial Advisor'},scale:{step:'Passo 6 — Escalar',plan:'7M5',spec:'Operations & Scale Specialist'},legacy:{step:'Passo 7 — Valorizar',plan:'7M6',spec:'Wealth & Legacy Advisor'}}; return m[s.heroChallenge]; }
+  wizardVals(s){
+    const chip=(on)=>`padding:12px 18px;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;border:1px solid ${on?'rgba(201,154,46,.6)':'rgba(255,255,255,.14)'};background:${on?'rgba(201,154,46,.16)':'rgba(255,255,255,.03)'};color:${on?'#E7C871':'#c2c8d6'};text-align:left`;
+    const set=(k,v)=>()=>this.setState({[k]:v});
+    const challenges=[
+      {id:'growth',label:'Vender mais e atrair clientes',icon:'📈',spec:'Growth & Marketing Specialist',step:'Passo 4 — Crescer',plan:'7M3'},
+      {id:'finance',label:'Organizar finanças e caixa',icon:'📊',spec:'Financial Advisor',step:'Passo 3 — Organizar',plan:'7M2'},
+      {id:'owner',label:'Sair da operação (tudo depende de mim)',icon:'🧭',spec:'Business Strategist',step:'Passo 2 — Qualificar',plan:'7M2'},
+      {id:'capital',label:'Acessar capital e crédito',icon:'💰',spec:'Financial Advisor',step:'Passo 5 — Capitalizar',plan:'7M4'},
+      {id:'scale',label:'Escalar e abrir novas unidades',icon:'🚀',spec:'Operations & Scale Specialist',step:'Passo 6 — Escalar',plan:'7M5'},
+      {id:'legacy',label:'Valorizar ou vender a empresa',icon:'🏆',spec:'Wealth & Legacy Advisor',step:'Passo 7 — Valorizar',plan:'7M6'},
+    ];
+    const runsScore={'Sim':2,'Às vezes':1,'Não':0}[s.wRuns]||0;
+    const cashScore={'Sim':2,'Parcial':1,'Não':0}[s.wCash]||0;
+    const score=Math.max(1,Math.min(7,1+runsScore+cashScore));
+    const ch=challenges.find(c=>c.id===s.wChallenge)||challenges[0];
+    const dims=[
+      {name:'Finance',v:cashScore*2+1},{name:'Structure',v:runsScore*2+1},{name:'Growth',v:s.wChallenge==='growth'?4:2},
+      {name:'Capital',v:s.wChallenge==='capital'?3:1},{name:'Deals',v:1},{name:'Scale',v:s.wChallenge==='scale'?3:1},{name:'Legacy',v:s.wChallenge==='legacy'?2:0},
+    ].map(d=>({ ...d, pct:Math.round(Math.min(7,d.v)/7*100), accent:d.v>=4?'#E7C871':d.v>=2?'#8FB4FF':'#E9611A' }));
+    const days=['Seg 05/ago','Ter 06/ago','Qua 07/ago','Qui 08/ago','Sex 09/ago'];
+    const slots=['09:00','10:30','14:00','15:30','17:00'];
+    const formats=['Vídeo-chamada','WhatsApp','Presencial · BH'];
+    const emailOk=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.wEmail);
+    const canNext=[true, !!s.wName.trim()&&!!s.wSector.trim()&&emailOk, !!s.wChallenge, !!s.wRuns&&!!s.wCash, true, !!s.wDay&&!!s.wSlot, true][s.wStep];
+    const labels=['Boas-vindas','Sua empresa','Seu desafio','Seu momento','Seu resultado','Agendar','Confirmado'];
+    return {
+      wizOpen:s.wizOpen, wStep:s.wStep, wPct:Math.round(s.wStep/6*100), wStepLabel:labels[s.wStep], wStepNum:s.wStep+1,
+      openWizard:()=>this.setState({wizOpen:true,wStep:0}), closeWizard:()=>this.setState({wizOpen:false}),
+      isW0:s.wStep===0,isW1:s.wStep===1,isW2:s.wStep===2,isW3:s.wStep===3,isW4:s.wStep===4,isW5:s.wStep===5,isW6:s.wStep===6,
+      wNext:()=>{ if(!canNext) return; if(s.wStep===5){ this.wizardVals(this.state).submitWizard(); } else if(s.wStep<6){ this.setState({wStep:s.wStep+1, diagDone:s.wStep>=3?true:s.diagDone}); } },
+      wBack:()=>{ if(s.wStep>0) this.setState({wStep:s.wStep-1}); },
+      showWizNav:s.wStep<6, wNextOpacity:canNext?'1':'.45',
+      wCanNext:canNext, wNextLabel:s.wStep===4?'Agendar meu atendimento':s.wStep===5?'Confirmar agendamento':'Continuar',
+      wName:s.wName, setWName:(e)=>this.setState({wName:e.target.value}),
+      wSector:s.wSector, setWSector:(e)=>this.setState({wSector:e.target.value}),
+      wEmail:s.wEmail, setWEmail:(e)=>this.setState({wEmail:e.target.value}),
+      wAges:['Menos de 1 ano','1 a 3 anos','3 a 10 anos','Mais de 10 anos'].map(a=>({label:a,style:chip(s.wAge===a),pick:set('wAge',a)})),
+      wRevs:['Até R$ 20 mil/mês','R$ 20–100 mil','R$ 100–500 mil','Acima de R$ 500 mil'].map(r=>({label:r,style:chip(s.wRev===r),pick:set('wRev',r)})),
+      wChallenges:challenges.map(c=>({ ...c, style:`display:flex;align-items:center;gap:14px;padding:16px 18px;border-radius:13px;cursor:pointer;border:1px solid ${s.wChallenge===c.id?'rgba(201,154,46,.6)':'rgba(255,255,255,.1)'};background:${s.wChallenge===c.id?'rgba(201,154,46,.14)':'rgba(255,255,255,.03)'}`, pick:set('wChallenge',c.id) })),
+      wRuns:['Não','Às vezes','Sim'].map(r=>({label:r,style:chip(s.wRuns===r),pick:set('wRuns',r)})),
+      wCash:['Não','Parcial','Sim'].map(r=>({label:r,style:chip(s.wCash===r),pick:set('wCash',r)})),
+      resScore:String(score), resDims:dims, resPlan:ch.plan, resSpec:ch.spec, resStep:ch.step,
+      resHeadline:score<=2?'Sua empresa precisa de estrutura urgente.':score<=4?'Sua empresa tem base — falta destravar o crescimento.':'Sua empresa está pronta para escalar.',
+      wDays:days.map(d=>({label:d,style:chip(s.wDay===d),pick:set('wDay',d)})),
+      wSlots:slots.map(t=>({label:t,style:chip(s.wSlot===t),pick:set('wSlot',t)})),
+      wFormats:formats.map(f=>({label:f,style:chip(s.wFormat===f),pick:set('wFormat',f)})),
+      wDay:s.wDay, wSlot:s.wSlot, wFormat:s.wFormat,
+      submitWizard:()=>{ if(s.wName.trim()){ const ini=s.wName.trim().slice(0,2).toUpperCase();
+        this.setState(st=>({ companies:[...st.companies,{i:ini,name:st.wName,sector:st.wSector||'—',arch:ch.plan,step:1,stepName:'Diagnosticar',pct:8,status:'Novo',ok:true}], wStep:6, diagDone:true })); } },
+      goToDash:()=>this.setState({wizOpen:false,view:'dash'}),
+    };
+  }
+  renderVals(){
+    const s=this.state;
+    const heroSteps=this.stepMeta.map((m,idx)=>({ n:m.n, label:m.verb, num:m.accent,
+      style:`display:flex;align-items:center;gap:14px;width:${52+idx*7}%;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-left:4px solid ${m.accent};border-radius:12px;padding:14px 18px` }));
+    const steps=this.stepMeta.map(m=>({ ...m, bg:m.accent==='#E9611A'?'rgba(233,97,26,.07)':m.accent==='#E7C871'?'rgba(231,200,113,.05)':'rgba(143,180,255,.04)', border:'rgba(255,255,255,.08)' }));
+    const pains=[
+      {stat:'60%',text:'das micro e pequenas fecham em até 5 anos.'},
+      {stat:'78%',text:'dos donos trabalham +50h/semana — o gargalo é o dono.'},
+      {stat:'45%',text:'têm dificuldade de acessar crédito.'},
+      {stat:'#1',text:'causa de morte: falha de gestão e planejamento.'},
+    ];
+    const team=[
+      {i:'A',role:'Administrador de Empresas',agent:'+ agente de gestão & processos',step:'Passo 1–2',c1:'#8FB4FF',c2:'#b9ceff'},
+      {i:'C',role:'Contador',agent:'+ agente fiscal & fluxo de caixa',step:'Passo 3',c1:'#8FB4FF',c2:'#cfe0ff'},
+      {i:'M',role:'Gestor de Marketing Digital',agent:'+ agente de tráfego & funil',step:'Passo 4',c1:'#E7C871',c2:'#f4d48a'},
+      {i:'K',role:'Gestor de Capital',agent:'+ agente de crédito & escala',step:'Passo 5–6',c1:'#E7C871',c2:'#f0c76a'},
+      {i:'I',role:'Especialista em Investimentos',agent:'+ agente de valuation',step:'Passo 7',c1:'#E9611A',c2:'#ff9143'},
+    ];
+    const clientNav=[
+      {key:'my',icon:'◈',label:'Minha empresa'},
+      {key:'pipeline',icon:'▤',label:'Minha esteira 7 passos'},
+      {key:'method',icon:'◆',label:'O Método 7M'},
+      {key:'agents',icon:'✦',label:'Meus agentes de IA'},
+      {key:'network',icon:'◇',label:'Rede 7M · Circle'},
+      {key:'market',icon:'▦',label:'Marketplace'},
+    ];
+    const adminNav=[
+      {key:'overview',icon:'▚',label:'Visão geral · todas'},
+      {key:'pilot',icon:'◉',label:'Piloto BH 180'},
+      {key:'arch',icon:'⬢',label:'Arquitetura 7M'},
+      {key:'simulator',icon:'∑',label:'Simulador de receita'},
+      {key:'market',icon:'▦',label:'Moderar marketplace'},
+      {key:'admin',icon:'⚙',label:'Advisory Admin'},
+    ];
+    const repNav=[
+      {key:'rep',icon:'◈',label:'Meu painel'},
+      {key:'repnet',icon:'◇',label:'Minha rede'},
+      {key:'repcomm',icon:'∑',label:'Minhas comissões'},
+      {key:'repevents',icon:'◉',label:'Meus eventos'},
+    ];
+    const nav=(s.role==='admin'?adminNav:s.role==='rep'?repNav:clientNav).map(n=>({ ...n, style:this.st(n.key), go:()=>this.setState({dash:n.key}) }));
+    const panelLabel=s.role==='admin'?'Advisory Admin':s.role==='rep'?'Advisory Rep':'Área do 7M Member';
+
+    const kpis=[
+      {label:'Empresas ativas',value:String(s.companies.length),delta:'+2 este mês'},
+      {label:'No passo 4+',value:String(s.companies.filter(c=>c.step>=4).length),delta:'em fase de crescimento'},
+      {label:'Progresso médio',value:Math.round(s.companies.reduce((a,c)=>a+c.pct,0)/s.companies.length)+'%',delta:'na esteira'},
+      {label:'Capítulos (7M3+)',value:String(s.companies.filter(c=>c.arch>='7M3').length),delta:'em rede'},
+    ];
+    const companies=s.companies.map(c=>({ ...c, stBg:c.ok?'rgba(123,216,143,.12)':'rgba(233,97,26,.14)', stColor:c.ok?'#7bd88f':'#ff9143' }));
+
+    const agentPool={
+      1:'Diagnóstico',2:'Qualificação',3:'Contábil',4:'Marketing',5:'Capital',6:'Escala',7:'Valuation'};
+    const pipeline=this.stepMeta.map((m,i)=>({ n:m.n, verb:m.verb, accent:m.accent,
+      cards:s.companies.filter(c=>c.step===i+1).map(c=>({ name:c.name, note:c.sector+' · '+c.arch, agent:'Agente '+agentPool[i+1] })) }));
+
+    const agentCards=[
+      {name:'Agente de Gestão',scope:'Padaria do Bairro · Passo 2',insight:'Identificou que 3 processos-chave dependem só do dono. Sugeriu delegação e checklist operacional para liberar 12h/semana.',metric:'Autonomia da equipe',gain:'+34%'},
+      {name:'Agente Fiscal',scope:'Bella Estética · Passo 3',insight:'Fluxo de caixa sem categorização travava o crédito. Propôs plano de contas e conciliação semanal automática.',metric:'Prontidão bancária',gain:'+61%'},
+      {name:'Agente de Tráfego',scope:'MotoTech Peças · Passo 4',insight:'Funil com queda no checkout. Recomendou remarketing e prova social; CPL projetado cai.',metric:'Custo por lead',gain:'−22%'},
+      {name:'Agente de Valuation',scope:'AgroLuz · Passo 7',insight:'Empresa pronta para captação. Montou dossiê de valuation e governança para atrair sócio investidor.',metric:'Múltiplo estimado',gain:'+1.8x'},
+    ];
+
+    const viewTitles={ my:['MY 7M Advisory','Seu Growth Office — visão da sua empresa'], method:['O Método 7M','Seus 7 passos — do diagnóstico ao patrimônio'], rep:['Advisory Rep','Seu nível, sua faixa e sua comissão'], repnet:['Minha rede','Membros que você trouxe — o override empilha sobre eles'], repcomm:['Minhas comissões','Override de 1–7% sobre o volume da sua rede'], repevents:['Meus eventos','Produza eventos e apresente o método 7M à sua faixa'], overview:['Visão geral','Todas as empresas na esteira do método'], pipeline:['Esteira dos 7 passos','Onde cada empresa está na jornada'], market:['Marketplace','Produtos, serviços e intenções de compra da rede'], simulator:['Simulador de receita','Projete mensalidades + comissões da sua carteira'], agents:['Agentes & melhorias','Sugestões dos agentes de IA por empresa'], arch:['Arquitetura de expansão','Do CNPJ à rede global — modelo de capítulos'], admin:['Advisory Admin','Usuários, permissões, comissões e transações'], network:['7M Advisory Business Circle','Rede de negócios, indicações e conexões'], pilot:['Piloto BH 180','7M Advisory BH Growth Hub · validação em 180 dias com a CityWorking'] };
+    const vt=viewTitles[s.dash]||viewTitles.overview;
+
+    // ---- Rede 7M / Business Circle ----
+    const netScore=[
+      {label:'7M Network Score',value:'68',sub:'sua reputação na rede'},
+      {label:'Indicações dadas',value:'14',sub:'Give 7'},
+      {label:'Indicações recebidas',value:'9',sub:'Get 7'},
+      {label:'Negócios gerados',value:'R$ 47k',sub:'via rede'},
+    ];
+    const give7=[
+      {i:'1',t:'Referência',d:'Indique um cliente para outro membro'},
+      {i:'2',t:'Conexão',d:'Apresente duas pessoas que devem se conhecer'},
+      {i:'3',t:'Conhecimento',d:'Compartilhe uma expertise ou aula'},
+      {i:'4',t:'Cliente',d:'Traga uma oportunidade de venda'},
+      {i:'5',t:'Parceiro',d:'Indique um fornecedor ou parceiro'},
+      {i:'6',t:'Oportunidade',d:'Sinalize um edital, evento ou abertura'},
+      {i:'7',t:'Inteligência',d:'Traga um dado ou insight de mercado'},
+    ];
+    const circle=[
+      {i:'PB',name:'Padaria do Bairro',sector:'Alimentação',arch:'7M2',city:'BH',give:8,get:5},
+      {i:'MT',name:'MotoTech Peças',sector:'Autopeças',arch:'7M3',city:'Contagem',give:12,get:9},
+      {i:'BE',name:'Bella Estética',sector:'Beleza',arch:'7M2',city:'Nova Lima',give:6,get:7},
+      {i:'CV',name:'ConstruVale',sector:'Construção',arch:'7M4',city:'Betim',give:15,get:11},
+      {i:'AL',name:'AgroLuz',sector:'Agro',arch:'7M5',city:'Patrocínio',give:9,get:14},
+    ];
+    const matches=[
+      {a:'Padaria do Bairro',b:'Studio Foco',why:'precisa de fotos de produto — Studio Foco oferece ensaio e-commerce'},
+      {a:'AgroLuz',b:'Carla Tavares (Contadora)',why:'busca contador para holding — Carla é especialista em estruturação'},
+      {a:'MotoTech Peças',b:'ConstruVale',why:'oferece manutenção de frota — ConstruVale tem frota de obra'},
+    ];
+
+    // ---- Piloto BH 180 ----
+    const pilotDays=112, pilotTotal=180;
+    const pilotGoals=[
+      {label:'Empresas cadastradas',cur:63,goal:100},{label:'Empresas ativas',cur:34,goal:50},
+      {label:'Clientes pagantes',cur:13,goal:20},{label:'Cases documentados',cur:6,goal:10},
+      {label:'Conexões na rede',cur:78,goal:100},{label:'Oportunidades',cur:41,goal:50},
+      {label:'Negócios gerados',cur:14,goal:20},{label:'Passo médio da rede',cur:3,goal:4},
+    ].map(g=>({ ...g, pct:Math.min(100,Math.round(g.cur/g.goal*100)) }));
+    const pilotFunnel=[
+      {stage:'Leads',v:240,accent:'#8FB4FF'},{stage:'MQL',v:120,accent:'#8FB4FF'},
+      {stage:'SQL',v:58,accent:'#E7C871'},{stage:'Clientes',v:13,accent:'#E9611A'},
+    ];
+
+    const adminKpis=[
+      {label:'Usuários ativos',value:'12',sub:'3 admins · 9 gestores'},
+      {label:'Receita mês (MRR)',value:'R$ 40,6k',sub:'mensalidades + comissões'},
+      {label:'Transações/mês',value:'38',sub:'intermediadas na rede'},
+      {label:'Comissão média',value:'3,2%',sub:'ponderada por nível'},
+    ];
+    const adminUsers=[
+      {i:'MS',name:'Marcelo Santos',email:'marcelo@7madvisory.com',role:'ADMIN',status:'ativo',roleBg:'rgba(201,154,46,.18)',roleColor:'#E7C871'},
+      {i:'AL',name:'Alexandre Lima',email:'alexandre@7madvisory.com',role:'ADMIN',status:'ativo',roleBg:'rgba(201,154,46,.18)',roleColor:'#E7C871'},
+      {i:'CT',name:'Carla Tavares',email:'carla@7madvisory.com',role:'CONTADOR',status:'ativo',roleBg:'rgba(143,180,255,.16)',roleColor:'#8FB4FF'},
+      {i:'RG',name:'Rafael Gomes',email:'rafael@7madvisory.com',role:'MKT',status:'ativo',roleBg:'rgba(143,180,255,.16)',roleColor:'#8FB4FF'},
+      {i:'JP',name:'Joana Pires',email:'joana@7madvisory.com',role:'CAPITAL',status:'ativo',roleBg:'rgba(143,180,255,.16)',roleColor:'#8FB4FF'},
+    ];
+    const adminTx=[
+      {what:'Fornada atacado — 3.000un',parties:'Padaria do Bairro → Rede',value:'R$ 13.500',fee:'R$ 270'},
+      {what:'Contrato manutenção frota',parties:'MotoTech → ConstruVale',value:'R$ 8.000',fee:'R$ 240'},
+      {what:'Lote de mudas certificadas',parties:'AgroLuz → externo',value:'R$ 22.000',fee:'R$ 1.540'},
+    ];
+
+    // ---- Marketplace ----
+    const offers=[
+      {tag:'PRODUTO',cat:'produto',icon:'🍞',photo:'linear-gradient(140deg,#3a2f1a,#5a4626)',title:'Fornada artesanal — atacado',price:'R$ 4,50/un',desc:'Pães e salgados congelados para revenda. Produção diária, entrega própria.',seller:'Padaria do Bairro',location:'BH · MG',arch:'7M2',qa:[{q:'Faz entrega?',a:'Sim, raio de 20km sem custo acima de 200 un.'},{q:'Tem permuta?',a:'Aceito permuta parcial com insumos.'}]},
+      {tag:'SERVIÇO',cat:'servico',icon:'🔧',photo:'linear-gradient(140deg,#1e2a3a,#2f4258)',title:'Manutenção de frota — contrato',price:'sob consulta',desc:'Revisão preventiva e corretiva para frotas. Plano mensal com desconto.',seller:'MotoTech Peças',location:'Contagem · MG',arch:'7M3',qa:[{q:'Atende fim de semana?',a:'Sim, plantão sábado até 14h.'},{q:'Emite nota?',a:'Nota fiscal e relatório por veículo.'}]},
+      {tag:'SERVIÇO',cat:'servico',icon:'💇',photo:'linear-gradient(140deg,#3a1e33,#58304f)',title:'Day-spa corporativo',price:'R$ 90/pessoa',desc:'Pacotes de bem-estar para equipes. Agenda flexível, in-company ou no salão.',seller:'Bella Estética',location:'Nova Lima · MG',arch:'7M2',qa:[{q:'Mínimo de pessoas?',a:'A partir de 5 colaboradores.'},{q:'Vai até a empresa?',a:'Sim, levamos a estrutura.'}]},
+      {tag:'EQUIPAMENTO',cat:'produto',icon:'🏗️',photo:'linear-gradient(140deg,#3a3320,#59502e)',title:'Betoneira 400L seminova',price:'R$ 3.200',desc:'Equipamento revisado, pouco uso. Ideal para pequenas obras.',seller:'ConstruVale',location:'Betim · MG',arch:'7M4',qa:[{q:'Aceita cartão?',a:'Até 6x no cartão ou 8% à vista.'},{q:'Tem garantia?',a:'90 dias de garantia mecânica.'}]},
+      {tag:'PRODUTO',cat:'produto',icon:'🌱',photo:'linear-gradient(140deg,#1e3a24,#2f583b)',title:'Mudas certificadas — lote',price:'R$ 12/muda',desc:'Mudas de café e cítricos com certificação. Lotes a partir de 500.',seller:'AgroLuz',location:'Patrocínio · MG',arch:'7M5',qa:[{q:'Faz frete interestadual?',a:'Sim, com transportadora parceira.'},{q:'Volume mínimo?',a:'500 mudas por pedido.'}]},
+      {tag:'SERVIÇO',cat:'servico',icon:'📸',photo:'linear-gradient(140deg,#2a2440,#403860)',title:'Ensaio de produto para e-commerce',price:'R$ 15/foto',desc:'Fotografia profissional de catálogo. Fundo branco ou lifestyle.',seller:'Studio Foco',location:'BH · MG',arch:'7M1',qa:[{q:'Prazo de entrega?',a:'48h após o recebimento dos produtos.'},{q:'Edição inclusa?',a:'Sim, tratamento e recorte inclusos.'}]},
+    ];
+    const intents=[
+      {tag:'PROCURO',cat:'produto',icon:'🔎',photo:'linear-gradient(140deg,#2a2a2a,#3d3d3d)',title:'Procuro embalagens sustentáveis',price:'orçamento',desc:'Busco fornecedor de embalagens compostáveis para delivery, recorrência mensal.',seller:'Padaria do Bairro',location:'BH · MG',arch:'7M2',qa:[{q:'Qual volume?',a:'~3.000 unidades/mês.'},{q:'Prazo?',a:'Início imediato, contrato de 12 meses.'}]},
+      {tag:'PROCURO',cat:'servico',icon:'🔎',photo:'linear-gradient(140deg,#2a2a2a,#3d3d3d)',title:'Preciso de contador para holding',price:'orçamento',desc:'Estruturação de holding patrimonial e planejamento tributário.',seller:'AgroLuz',location:'Patrocínio · MG',arch:'7M5',qa:[{q:'Já tem CNPJ?',a:'Sim, operação ativa há 8 anos.'},{q:'Urgência?',a:'Fechar até o fim do trimestre.'}]},
+      {tag:'PROCURO',cat:'produto',icon:'🔎',photo:'linear-gradient(140deg,#2a2a2a,#3d3d3d)',title:'Busco lote de notebooks corporativos',price:'até R$ 2.500/un',desc:'10 a 15 notebooks para equipe comercial, novos ou seminovos com NF.',seller:'MotoTech Peças',location:'Contagem · MG',arch:'7M3',qa:[{q:'Novos ou usados?',a:'Aceito seminovos em bom estado.'},{q:'Pagamento?',a:'À vista para o melhor preço.'}]},
+    ];
+    const rawList=(s.mkTab==='ofertas'?offers:intents).map(l=>({ ...l,
+      tagBg:l.tag==='PROCURO'?'#8FB4FF':(l.tag==='SERVIÇO'?'#E7C871':'#7bd88f'),
+      btn:l.tag==='PROCURO'?'Tenho isso — oferecer':'Tenho interesse',
+      btnBg:'rgba(201,154,46,.12)',btnColor:'#E7C871',btnBorder:'rgba(201,154,46,.35)',
+      act:()=>this.showToast(l.tag==='PROCURO'?'Proposta enviada a '+l.seller:'Interesse enviado a '+l.seller) }));
+
+    // ---- Publish modal ----
+    const isIntent=s.pubType==='intent';
+    const pubTypeBtn=(on)=>`flex:1;padding:11px;border-radius:11px;font-weight:700;font-size:13px;cursor:pointer;border:1px solid ${on?'rgba(201,154,46,.5)':'rgba(255,255,255,.12)'};background:${on?'rgba(201,154,46,.16)':'rgba(255,255,255,.03)'};color:${on?'#E7C871':'#aab1c2'}`;
+    const pubHelpOffer=[
+      {q:'Que foto usar?',a:'A primeira é a capa — use luz natural e mostre o produto inteiro. Fotos reais vendem mais que catálogo.'},
+      {q:'Como escrever a descrição?',a:'Diga o que é, para quem serve e o diferencial em 1–2 linhas. Seja direto.'},
+      {q:'O que vai em info adicional?',a:'Garantia, prazo de entrega, formas de pagamento e se aceita permuta.'},
+      {q:'Como definir o preço?',a:'Pesquise anúncios parecidos. Preço claro recebe mais contato que "sob consulta".'},
+    ];
+    const pubHelpIntent=[
+      {q:'O que descrever?',a:'Seja específico sobre o que procura: quantidade, marca, faixa de preço e prazo.'},
+      {q:'Precisa de foto?',a:'Opcional, mas uma referência visual ajuda os fornecedores a entender o que você quer.'},
+      {q:'Como acelerar respostas?',a:'Informe orçamento e urgência. Intenções claras recebem propostas em horas.'},
+      {q:'E a comissão?',a:'Se fechar pela 7M Advisory, a comissão do seu nível se aplica sobre a transação.'},
+    ];
+
+    // ---- Simulator ----
+    const priceMap=[1000,2000,3000,4000,5000,6000,7000];
+    const commMap=[.01,.02,.03,.04,.05,.06,.07];
+    const brl=(v)=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+    const simRows=this.archMeta.map((a,i)=>{
+      const count=s.simCounts[i];
+      const rev=count*priceMap[i]+count*s.simVolume*commMap[i];
+      return { code:a.code, accent:a.accent, price:a.price, comm:a.comm, count,
+        rev:brl(rev),
+        inc:()=>this.setState(st=>{const c=[...st.simCounts];c[i]++;return{simCounts:c};}),
+        dec:()=>this.setState(st=>{const c=[...st.simCounts];c[i]=Math.max(0,c[i]-1);return{simCounts:c};}) };
+    });
+    let feesTot=0,commTot=0,compTot=0;
+    s.simCounts.forEach((c,i)=>{ feesTot+=c*priceMap[i]; commTot+=c*s.simVolume*commMap[i]; compTot+=c; });
+    const totMonth=feesTot+commTot;
+
+    return {
+      heroChallenges:[
+        {id:'growth',label:'Vender mais e atrair clientes',icon:'📈',spec:'Growth & Marketing Specialist',step:'Passo 4 — Crescer',plan:'7M3'},
+        {id:'finance',label:'Organizar finanças e caixa',icon:'📊',spec:'Financial Advisor',step:'Passo 3 — Organizar',plan:'7M2'},
+        {id:'owner',label:'Sair da operação',icon:'🧭',spec:'Business Strategist',step:'Passo 2 — Qualificar',plan:'7M2'},
+        {id:'capital',label:'Acessar capital e crédito',icon:'💰',spec:'Financial Advisor',step:'Passo 5 — Capitalizar',plan:'7M4'},
+        {id:'scale',label:'Escalar e abrir unidades',icon:'🚀',spec:'Operations & Scale Specialist',step:'Passo 6 — Escalar',plan:'7M5'},
+        {id:'legacy',label:'Valorizar ou vender a empresa',icon:'🏆',spec:'Wealth & Legacy Advisor',step:'Passo 7 — Valorizar',plan:'7M6'},
+      ].map(c=>({ ...c, style:`display:flex;align-items:center;gap:13px;padding:13px 16px;border-radius:12px;cursor:pointer;border:1px solid ${s.heroChallenge===c.id?'rgba(201,154,46,.6)':'rgba(255,255,255,.1)'};background:${s.heroChallenge===c.id?'rgba(201,154,46,.16)':'rgba(255,255,255,.03)'}`, pick:()=>this.setState({heroChallenge:c.id}) })),
+      heroPicked:!!s.heroChallenge, heroEmpty:!s.heroChallenge,
+      heroStep:(this._hc(s)||{}).step, heroPlan:(this._hc(s)||{}).plan, heroSpec:(this._hc(s)||{}).spec,
+      startFromHero:()=>this.setState({wChallenge:s.heroChallenge, wizOpen:true, wStep:1}),
+      accessGranted:s.accessGranted, accessLocked:!s.accessGranted, accessOpen:s.accessOpen,
+      pubMethodOpen:s.diagDone, pubMethodLocked:!s.diagDone, pubMechanism:false,
+      porte:[
+        {tag:'Pequeno · MEI e micro',name:'Ainda depende de você para tudo',accent:'#8FB4FF',bg:'rgba(143,180,255,.05)',border:'rgba(143,180,255,.22)',
+          pain:'O caixa é no susto, a venda vem quando dá e você faz de tudo um pouco. Falta previsibilidade.',
+          does:['Organizamos o caixa e a formalização','Tiramos você do operacional do dia a dia','Montamos o primeiro funil de vendas'],
+          win:'você passa a saber quanto entra, quanto sobra e de onde vem o próximo cliente.'},
+        {tag:'Médio · em crescimento',name:'Cresceu, mas travou na estrutura',accent:'#E7C871',bg:'rgba(231,200,113,.06)',border:'rgba(231,200,113,.26)',
+          pain:'A demanda aumentou, a equipe ainda depende do dono e o crédito não sai. O crescimento virou risco.',
+          does:['Profissionalizamos gestão e processos','Estruturamos o acesso a capital e crédito','Escalamos marketing e vendas com método'],
+          win:'a empresa cresce sem quebrar — com time, caixa e demanda sob controle.'},
+        {tag:'Grande · consolidado',name:'Quer expandir e valorizar o ativo',accent:'#E9611A',bg:'rgba(233,97,26,.07)',border:'rgba(233,97,26,.3)',
+          pain:'Você pensa em novas unidades, franquia, atrair sócio ou vender — mas falta governança e um plano de valor.',
+          does:['Padronizamos para escala e franquia','Estruturamos valuation e governança','Preparamos captação, sócio ou saída'],
+          win:'a empresa deixa de ser um emprego e vira patrimônio que se vende e capta investimento.'},
+      ],
+      openAccess:()=>this.setState({accessOpen:true}), closeAccess:()=>this.setState({accessOpen:false}),
+      acName:s.acName, acEmail:s.acEmail, acCnpj:s.acCnpj, setAcName:(e)=>this.setState({acName:e.target.value}), setAcEmail:(e)=>this.setState({acEmail:e.target.value}), setAcCnpj:(e)=>this.setState({acCnpj:e.target.value}),
+      submitAccess:()=>{ const digits=(s.acCnpj||'').replace(/\D/g,''); if(digits.length!==14){ this.showToast('Informe um CNPJ válido (14 dígitos)'); return; } if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(s.acEmail)){ this.showToast('Informe um e-mail válido'); return; } this.setState({accessGranted:true,accessOpen:false}); this.showToast('CNPJ verificado — área de clientes liberada'); },
+      startDiagFromAccess:()=>this.setState({accessOpen:false,wizOpen:true,wStep:0}),
+      showLanding:s.view==='landing', showLogin:s.view==='dash'&&!s.authed, showDash:s.view==='dash'&&s.authed,
+      goDash:()=>this.setState({view:'dash'}), goLanding:()=>this.setState({view:'landing'}),
+      pwd:s.pwd, pwdError:s.pwdError, pwdBorder:s.pwdError?'rgba(255,145,67,.6)':'rgba(255,255,255,.12)',
+      setPwd:(e)=>this.setState({pwd:e.target.value,pwdError:false}),
+      doLogin:()=>{ const p=(s.pwd||'').trim().toLowerCase(); if(p==='member'||p==='7market'||p==='cliente'){this.setState({authed:true,role:'client',dash:'my',pwd:'',pwdError:false});} else if(p==='admin'||p==='admin7m'){this.setState({authed:true,role:'admin',dash:'overview',pwd:'',pwdError:false});} else if(p==='rep'||p==='representante'){this.setState({authed:true,role:'rep',dash:'rep',pwd:'',pwdError:false});} else {this.setState({pwdError:true});} },
+      logout:()=>this.setState({authed:false,role:'',view:'landing',pwd:''}),
+      heroSteps, steps, pains, team, arch:this.archMeta,
+      nav, kpis, companies, companyCount:s.companies.length, pipeline, agentCards,
+      role:s.role, panelLabel,
+      isRep:s.dash==='rep'&&s.role==='rep', isRepNet:s.dash==='repnet'&&s.role==='rep', isRepComm:s.dash==='repcomm'&&s.role==='rep', isRepEvents:s.dash==='repevents'&&s.role==='rep',
+      repLevel:{code:'7M2',name:'7M City',pct:'2%',band:'R$ 1–2M/ano'},
+      repKpis:[
+        {label:'Membros na rede',value:'18',sub:'que você trouxe'},
+        {label:'Volume de assinaturas',value:'R$ 9.000',sub:'líquido no mês'},
+        {label:'Comissão do mês',value:'R$ 1.240',sub:'override empilhado'},
+        {label:'Próximo evento',value:'12/ago',sub:'7M Advisory Connect · BH'},
+      ],
+      repNext:[
+        {t:'Produzir o Connect de agosto',d:'Convide candidatos de até R$ 2M/ano da sua praça. Meta: 20 presentes.'},
+        {t:'Ativar 3 novos 7M Comunit',d:'Indique líderes comunitários abaixo de você — sua comissão empilha sobre a rede deles.'},
+        {t:'Fechar 2 diagnósticos em aberto',d:'Dois candidatos do último evento estão no diagnóstico. Feche a assinatura com apoio do especialista.'},
+      ],
+      repMembers:[
+        {i:'PB',name:'Padaria do Bairro',sector:'Alimentação',level:'7M1',sub:'R$ 500/mês'},
+        {i:'BE',name:'Bella Estética',sector:'Beleza',level:'7M1',sub:'R$ 500/mês'},
+        {i:'MT',name:'MotoTech Peças',sector:'Autopeças',level:'7M2',sub:'R$ 900/mês'},
+        {i:'ST',name:'Studio Foco',sector:'Fotografia',level:'7M1',sub:'R$ 500/mês'},
+        {i:'CV',name:'ConstruVale',sector:'Construção',level:'7M2',sub:'R$ 900/mês'},
+      ],
+      repCommKpis:[
+        {label:'Comissão do mês',value:'R$ 1.240',sub:'2% sobre sua rede'},
+        {label:'Volume da rede',value:'R$ 62.000',sub:'assinaturas + deals'},
+        {label:'Projeção anual',value:'R$ 14.880',sub:'no ritmo atual'},
+      ],
+      repCommRows:[
+        {src:'Assinaturas diretas · 5 membros',vol:'R$ 3.300',rate:'2%',earn:'R$ 66'},
+        {src:'Rede dos meus Comunit · downline',vol:'R$ 5.700',rate:'2%',earn:'R$ 114'},
+        {src:'Negócios intermediados no mês',vol:'R$ 53.000',rate:'2%',earn:'R$ 1.060'},
+      ],
+      repEvents:[
+        {date:'12/ago',name:'7M Advisory Connect · BH',type:'Mensal · aberto',faixa:'até R$ 2M/ano',status:'Produzindo',statusColor:'#E7C871',statusBg:'rgba(201,154,46,.14)'},
+        {date:'26/ago',name:'7M Round · Capítulo Centro',type:'Quinzenal · fechado',faixa:'membros ativos',status:'Agendado',statusColor:'#8FB4FF',statusBg:'rgba(143,180,255,.14)'},
+        {date:'09/set',name:'Apresentação do Método',type:'Comunit · convidados',faixa:'até R$ 1M/ano',status:'Planejando',statusColor:'#aab1c2',statusBg:'rgba(255,255,255,.06)'},
+      ],
+      isMy:s.dash==='my'&&s.role==='client', isMethod:s.dash==='method'&&s.role==='client', isPipeline:s.dash==='pipeline'&&s.role==='client', isAgents:s.dash==='agents'&&s.role==='client', isNetwork:s.dash==='network'&&s.role==='client',
+      isMarket:s.dash==='market', isAdminMarket:s.dash==='market'&&s.role==='admin',
+      isOverview:s.dash==='overview'&&s.role==='admin', isArch:s.dash==='arch'&&s.role==='admin', isSim:s.dash==='simulator'&&s.role==='admin', isAdmin:s.dash==='admin'&&s.role==='admin', isPilot:s.dash==='pilot'&&s.role==='admin',
+      adminKpis, adminUsers, adminTx,
+      netScore, give7, circle, matches,
+      pilotDays, pilotTotal, pilotPct:Math.round(pilotDays/pilotTotal*100), pilotGoals, pilotFunnel,
+      gsScore:'3', gsDims:[
+        {name:'Finance',v:2,accent:'#8FB4FF'},{name:'Structure',v:3,accent:'#8FB4FF'},{name:'Growth',v:4,accent:'#E7C871'},
+        {name:'Capital',v:2,accent:'#E7C871'},{name:'Deals',v:1,accent:'#E9611A'},{name:'Scale',v:1,accent:'#E9611A'},{name:'Legacy',v:0,accent:'#E9611A'},
+      ].map(d=>({ ...d, pct:Math.round(d.v/7*100), bars:'●'.repeat(d.v)+'○'.repeat(7-d.v) })),
+      myTasks:[
+        {t:'Enviar balancete dos últimos 3 meses',due:'até sex',done:false},
+        {t:'Definir público-alvo com o Growth Advisor',due:'esta semana',done:false},
+        {t:'Aprovar plano de tráfego (passo 4)',due:'próx. semana',done:false},
+        {t:'Diagnóstico inicial concluído',due:'feito',done:true},
+      ].map(x=>({ ...x, mk:x.done?'✓':'○', col:x.done?'#7bd88f':'#8891a3', deco:x.done?'line-through':'none' })),
+      goChat:()=>this.setState({chatOpen:true}),
+      viewTitle:vt[0], viewSub:vt[1],
+      headerLabel:s.dash==='market'?(s.role==='admin'?'Moderar pendentes':'+ Publicar anúncio'):(s.role==='admin'?'+ Cadastrar empresa':s.role==='rep'?'+ Produzir evento':'Falar com 7M AI'),
+      headerAction:s.dash==='market'?()=>this.setState({pubOpen:true}):(s.role==='admin'?()=>this.setState({regOpen:true}):s.role==='rep'?()=>this.showToast('Evento criado — convites enviados à sua faixa'):()=>this.setState({chatOpen:true})),
+      regOpen:s.regOpen, openReg:()=>this.setState({regOpen:true}), closeReg:()=>this.setState({regOpen:false}), stop:(e)=>e.stopPropagation(),
+      fName:s.fName, fSector:s.fSector, fArch:s.fArch,
+      setName:(e)=>this.setState({fName:e.target.value}), setSector:(e)=>this.setState({fSector:e.target.value}), setArch:(e)=>this.setState({fArch:e.target.value}),
+      submitReg:()=>{ if(!s.fName.trim()){this.showToast('Informe o nome da empresa');return;}
+        const ini=s.fName.trim().slice(0,2).toUpperCase();
+        this.setState(st=>({ companies:[...st.companies,{i:ini,name:st.fName,sector:st.fSector||'—',arch:st.fArch,step:1,stepName:'Diagnosticar',pct:6,status:'Novo',ok:true}], regOpen:false, fName:'',fSector:'',fArch:'7M1' }));
+        this.showToast('Empresa cadastrada — diagnóstico iniciado pelos agentes'); },
+      // marketplace
+      listings:rawList, mkCount:rawList.length,
+      mkTabOfertas:pubTypeBtn(s.mkTab==='ofertas'), mkTabProcuro:pubTypeBtn(s.mkTab==='procuro'),
+      mkOfertas:()=>this.setState({mkTab:'ofertas'}), mkProcuro:()=>this.setState({mkTab:'procuro'}),
+      // publish
+      pubOpen:s.pubOpen, closePub:()=>this.setState({pubOpen:false}),
+      pubTypeOffer:()=>this.setState({pubType:'offer'}), pubTypeIntent:()=>this.setState({pubType:'intent'}),
+      pubTypeOfferStyle:pubTypeBtn(!isIntent), pubTypeIntentStyle:pubTypeBtn(isIntent),
+      pubTitleLabel:isIntent?'O que você procura':'Título do anúncio',
+      pubTitlePh:isIntent?'Ex.: Procuro fornecedor de embalagens':'Ex.: Betoneira 400L seminova',
+      pubPriceLabel:isIntent?'Orçamento (opcional)':'Preço',
+      pubDescPh:isIntent?'Descreva o que precisa: quantidade, marca, prazo…':'Descreva o produto ou serviço, condição e diferencial.',
+      pubSubmitLabel:isIntent?'Publicar intenção de compra':'Publicar anúncio',
+      pubHelp:isIntent?pubHelpIntent:pubHelpOffer,
+      pubTitle:s.pubTitle,pubCat:s.pubCat,pubPrice:s.pubPrice,pubDesc:s.pubDesc,pubExtra:s.pubExtra,pubLoc:s.pubLoc,
+      setPubTitle:(e)=>this.setState({pubTitle:e.target.value}), setPubCat:(e)=>this.setState({pubCat:e.target.value}),
+      setPubPrice:(e)=>this.setState({pubPrice:e.target.value}), setPubDesc:(e)=>this.setState({pubDesc:e.target.value}),
+      setPubExtra:(e)=>this.setState({pubExtra:e.target.value}), setPubLoc:(e)=>this.setState({pubLoc:e.target.value}),
+      submitPub:()=>{ if(!s.pubTitle.trim()){this.showToast('Dê um título ao anúncio');return;}
+        this.setState({pubOpen:false,pubTitle:'',pubPrice:'',pubDesc:'',pubExtra:'',pubLoc:''});
+        this.showToast(isIntent?'Intenção de compra publicada':'Anúncio publicado no marketplace'); },
+      // simulator
+      simRows, simVolume:s.simVolume, setVol:(e)=>this.setState({simVolume:+e.target.value}),
+      simVolLabel:brl(s.simVolume), simTotal:brl(totMonth), simFees:brl(feesTot), simComm:brl(commTot),
+      simYear:brl(totMonth*12), simCompanies:compTot,
+      ...this.wizardVals(s),
+      // prova social
+      cases:[
+        {i:'MT',name:'MotoTech Peças',sector:'Autopeças · Contagem',metric:'+38%',metricLabel:'em faturamento em 6 meses',quote:'Saí de planilha bagunçada para um funil de vendas que roda sozinho. O agente de tráfego apontou onde eu perdia cliente.',who:'Rafael, sócio'},
+        {i:'BE',name:'Bella Estética',sector:'Beleza · Nova Lima',metric:'12h',metricLabel:'por semana devolvidas ao dono',quote:'Eu era o gargalo de tudo. Depois do passo 2, a equipe passou a resolver sem mim. Hoje eu penso no negócio, não corro atrás dele.',who:'Bruna, fundadora'},
+        {i:'AL',name:'AgroLuz',sector:'Agro · Patrocínio',metric:'R$ 220k',metricLabel:'em crédito destravado',quote:'Sem balanço organizado eu nem conseguia pedir crédito. Organizaram minha casa e o banco aprovou. Agora estou no passo 7.',who:'Antônio, diretor'},
+      ],
+      commCounts:[
+        'Venda fechada com um lead que a 7M Advisory te enviou',
+        'Negócio intermediado dentro do Marketplace 7M',
+        'Contrato originado por uma indicação da rede',
+        'Permuta ou parceria conectada pela plataforma',
+      ],
+      commNot:[
+        'Vendas do seu balcão/loja que você já faria sozinho',
+        'Clientes que chegaram por canais 100% seus',
+        'Faturamento anterior à sua entrada na 7M Advisory',
+        'Operações sem qualquer participação da 7M Advisory',
+      ],
+      // FAQ
+      faqs:[
+        {q:'Quem é a 7M Advisory?',a:'Somos uma equipe de consultores especializados no mercado de varejo e em empreendedores. Desenvolvemos o método 7M para levar empresas do diagnóstico ao patrimônio, unindo especialistas humanos e agentes de IA.'},
+        {q:'O que é o método 7M?',a:'Um sistema de crescimento que combina especialistas humanos e inteligência artificial. Cada empresa entra num ponto diferente da jornada — o diagnóstico gratuito mostra o seu e revela quais passos se aplicam a você.'},
+        {q:'Como eu começo?',a:'Pelo diagnóstico gratuito: em 2 minutos você recebe seu Growth Score e conversa com um especialista. A partir daí, o método se revela para o seu caso, sem compromisso.'},
+        {q:'Preciso ter empresa estruturada para começar?',a:'Não. Começamos de onde você está — do MEI que ainda organiza o caixa à empresa que quer virar patrimônio.'},
+        {q:'A IA substitui o especialista humano?',a:'Não. Os agentes de IA coletam, analisam e recomendam; o especialista humano valida e decide. Você tem os dois.'},
+        {q:'Onde vocês atuam?',a:'Do Brasil à Europa, com foco em varejo e em pequenos, médios e grandes empreendedores. O diagnóstico é o primeiro passo para descobrir onde seu negócio trava.'},
+      ].map((f,i)=>({ ...f, open:s.faqOpen===i, sign:s.faqOpen===i?'−':'+', toggle:()=>this.setState({faqOpen:s.faqOpen===i?-1:i}) })),
+      // Chat Guia 7M AI
+      chatOpen:s.chatOpen, chatBtnLabel:s.chatOpen?'Fechar':'Guia 7M AI',
+      toggleChat:()=>this.setState({chatOpen:!s.chatOpen}), closeChat:()=>this.setState({chatOpen:false}),
+      chatInput:s.chatInput, setChatInput:(e)=>this.setState({chatInput:e.target.value}),
+      sendChat:()=>{ if(s.chatInput.trim()) this.pushChat(s.chatInput.trim()); },
+      chatMsgs:s.chatMsgs.map(m=>({ text:m.text,
+        wrap:`display:flex;justify-content:${m.who==='me'?'flex-end':'flex-start'}`,
+        bubble:m.who==='me'?'max-width:80%;background:linear-gradient(140deg,#C99A2E,#E7C871);color:#0a1233;padding:10px 14px;border-radius:14px 14px 4px 14px;font-size:14px;line-height:1.45;font-weight:600':'max-width:82%;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);color:#e8eaf0;padding:10px 14px;border-radius:14px 14px 14px 4px;font-size:14px;line-height:1.5' })),
+      chatLevels:['7M1','7M2','7M3','7M4','7M5','7M6','7M7'].map(c=>({ code:c,
+        style:`flex-shrink:0;padding:6px 12px;border-radius:999px;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700;cursor:pointer;border:1px solid ${s.chatLevel===c?'rgba(201,154,46,.5)':'rgba(255,255,255,.12)'};background:${s.chatLevel===c?'rgba(201,154,46,.18)':'transparent'};color:${s.chatLevel===c?'#E7C871':'#8891a3'}`,
+        pick:()=>this.setState({chatLevel:c}) })),
+      showChatLevels:s.diagDone,
+      chatChips:(s.diagDone?[{q:'Quanto custa?'},{q:'Como funciona a comissão?'},{q:'Quais são os 7 passos?'},{q:'Como subo de nível?'}]:[{q:'Quem é a 7M Advisory?'},{q:'Como funciona o diagnóstico?'},{q:'Vocês atendem meu tipo de negócio?'}]).map(c=>({ q:c.q, ask:()=>this.pushChat(c.q) })),
+      toast:s.toast,
+    };
+  }
+}
+</script>
+</body>
+</html>

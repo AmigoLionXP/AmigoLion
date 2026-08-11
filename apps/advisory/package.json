@@ -1,0 +1,41 @@
+{
+  "name": "@7madvisory/web",
+  "version": "0.1.0",
+  "description": "7M Advisory — plataforma web + PWA (Next.js/Supabase/Drizzle/Stripe)",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx db/migrate.ts",
+    "db:seed": "tsx db/seed.ts",
+    "db:studio": "drizzle-kit studio"
+  },
+  "dependencies": {
+    "next": "14.2.35",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "@supabase/supabase-js": "^2.45.4",
+    "@supabase/ssr": "^0.5.1",
+    "drizzle-orm": "^0.33.0",
+    "postgres": "^3.4.4",
+    "stripe": "^16.9.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "dotenv": "^16.4.5",
+    "drizzle-kit": "^0.24.2",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.35",
+    "postcss": "^8.5.26",
+    "tailwindcss": "^3.4.4",
+    "tsx": "^4.19.1",
+    "typescript": "^5.5.4"
+  }
+}
